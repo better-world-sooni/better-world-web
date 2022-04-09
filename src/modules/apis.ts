@@ -41,6 +41,9 @@ const apis = {
     email: {
       _: () => apiV1('/auth/email')
     }
+  },
+  nft_collection: {
+    contractAddress: (contractAddress) => apiV1(`/nft_collection/${contractAddress}`)
   }
 }
 

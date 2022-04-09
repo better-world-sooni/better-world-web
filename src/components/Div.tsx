@@ -126,15 +126,16 @@ const propsToClx = (props) => {
 		lineHeight: (v) => addStyle(styles, v, { lineHeight: v }),
 		//font-size
 		textXs: () => addStyle(styles, "", { fontSize: 5 }),
-		textSm: () => addStyle(styles, "", { fontSize: 10 }),
-		textBase: () => addStyle(styles, "", { fontSize: 15 }),
+		textSm: () => addStyle(styles, "", { fontSize: 13 }),
+		textBase: () => addStyle(styles, "", { fontSize: 16 }),
 		textLg: () => addStyle(styles, "", { fontSize: 20 }),
 		textXl: () => addStyle(styles, "", { fontSize: 30 }),
-		textXxl: () => addStyle(styles, "", { fontSize: 70 }),
-		textXxxl: () => addStyle(styles, "", { fontSize: 150 }),
+		textXxl: () => addStyle(styles, "", { fontSize: 40 }),
+		textXxxl: () => addStyle(styles, "", { fontSize: 70 }),
 		// background-color
 		bgColor: (v) => addStyle(styles, "", { backgroundColor: v }),
-
+		
+		fontWeight: (v) => addStyle(styles, v, { fontWeight: v }),
 		// ==== Layout ====
 		// breakpoints
 		sm: (v) => addToClxs(clxs, v, "sm"),
@@ -422,6 +423,7 @@ const propsToClx = (props) => {
 		textOpacity80: () => clxs.push("text-opacity-80"),
 		//font-family
 		moonget: (v) => addStyle(styles, "", { fontFamily: "MOONGET" }),
+		uniSans: (v) => addStyle(styles, "", { fontFamily: "Uni Sans" }),
 
 		// font-smoothing
 		antialiased: () => clxs.push("antialiased"),

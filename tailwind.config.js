@@ -9,8 +9,8 @@ const px = (num) => ({ [num]: `${num}px` })
 
 const basicColors = {
   primary: {
-    DEFAULT: 'rgb(143, 105, 77\)',
-    light: 'rgba(122, 93, 232, 0.2)',
+    DEFAULT: 'rgb(25, 110, 237)',
+    light: 'rgba(25, 110, 237, 0.1)',
     pastel: '#dddaf6',
     teens: '#4c9cff',
     teensLight: '#d5ebff',
@@ -269,9 +269,9 @@ module.exports = {
         sm: '0.125rem',
         md: '0.3125rem',
         lg: '10px',
-        xl: '0.75rem',
-        '2xl': '1rem',
-        '3xl': '1.5rem',
+        xl: '20px',
+        '2xl': '30px',
+        '3xl': '50px',
         full: '9999px',
       },
       borderWidth: {

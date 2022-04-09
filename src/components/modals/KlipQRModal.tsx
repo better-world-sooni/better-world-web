@@ -21,7 +21,7 @@ export default function KlipQRModal() {
 		dispatch(modalActions.closeKlipQR());
 	};
 	const onClickKlipQRDone = async () => {
-		const klipAuthResult = await klipResult(klipQR.requestKey);
+		const klipAuthResult = await klipResult(klipQR.requestKey, locale);
 		console.log(klipQR);
 		console.log(klipAuthResult);
 		if (klipAuthResult.status == "prepared") {

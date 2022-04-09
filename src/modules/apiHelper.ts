@@ -1,8 +1,16 @@
 import fetch from 'isomorphic-unfetch'
 import { getJwt } from './cookieHelper'
+import cookies from 'next-cookies'
 
 export function apiHelper(url, method = 'GET', body = null) {
     return http(url, method, body, {})
+}
+
+export function apiHelperWithJwtFromContext(context, url, method = 'GET', body = null) {
+  const {jwt} = cookies(context);
+  return http(url, method, body, {
+    Authorization: 'Bearer ' + jwt
+  })
 }
 
 export function apiHelperWithToken(url, method = 'GET', body = null) {

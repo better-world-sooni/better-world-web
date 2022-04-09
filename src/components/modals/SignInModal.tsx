@@ -1,6 +1,6 @@
 import { Fragment, useRef, useState } from "react";
 import { Dialog, Transition } from "@headlessui/react";
-import { ExclamationIcon } from "@heroicons/react/outline";
+import { ExclamationIcon, XIcon } from "@heroicons/react/outline";
 import Div from "../Div";
 import Modal from "./Modal";
 import { useDispatch, useSelector } from "react-redux";
@@ -8,7 +8,7 @@ import { RootState } from "src/store/reducers/rootReducer";
 import { modalActions } from "src/store/reducers/modalReducer";
 import Row from "../Row";
 import Col from "../Col";
-import { images } from "src/modules/images";
+import { IMAGES } from "src/modules/images";
 import { modalsWording } from "src/wording/modals";
 import { HOME_URL, KAIKAS, KLIP, PLATFORM } from "src/modules/constants";
 import { klipPrepareAuth, klipRequestQRUrl, klipResult } from "src/modules/klipApiHelper";
@@ -30,7 +30,7 @@ export default function SignInModal() {
 		qrImage: null,
 		requestKey: null,
 	});
-	const [error, setError] = useState(<Div spanTag>{modalsWording.signIn.encourageKlip[locale]}</Div>);
+	const [error, setError] = useState(null);
 	const closeModal = () => {
 		dispatch(modalActions.setSignInEnabled(false));
 		setError(<Div spanTag>{modalsWording.signIn.encourageKlip[locale]}</Div>);
@@ -136,7 +136,7 @@ export default function SignInModal() {
 	};
 
 	return (
-		<Modal open={signInEnabled} onClose={closeModal}>
+		<Modal open={signInEnabled} onClose={closeModal} clx={"bg-black/30"}>
 			{qrCode.enabled ? (
 				<Div mx20 px15 py30>
 					<Div imgTag src={qrCode.qrImage} w300 h300 mxAuto></Div>
@@ -150,17 +150,25 @@ export default function SignInModal() {
 					</Div>
 				</Div>
 			) : (
-				<Div maxW={600} mx20 px15>
-					<Div textCenter py30>
-						<Div spanTag fontBold textXl>
-							{modalsWording.signIn.title[locale]}
-						</Div>
-					</Div>
+				<Div mx20 px15>
+					<Row my30 flex itemsCenter>
+						<Col />
+						<Col auto>
+							<Div spanTag textLg fontSemibold>
+								{modalsWording.signIn.title[locale]}
+							</Div>
+						</Col>
+						<Col flex justifyEnd>
+							<Div h20 w20 textGray700 cursorPointer onClick={closeModal}>
+								<XIcon />
+							</Div>
+						</Col>
+					</Row>
 					<Row
 						my15
 						bgColor="#216FEA"
 						onClick={handleClickKlip}
-						roundedMd
+						roundedFull
 						h56
 						flex
 						itemsCenter
@@ -169,7 +177,7 @@ export default function SignInModal() {
 						<Col />
 						<Col auto px0>
 							<Div>
-								<Div imgTag src={images.KAKAO_KLIP_ICON}></Div>
+								<Div imgTag src={IMAGES.KAKAO_KLIP_ICON}></Div>
 							</Div>
 						</Col>
 						<Col auto pr0>
@@ -179,22 +187,11 @@ export default function SignInModal() {
 						</Col>
 						<Col />
 					</Row>
-					<Row my15 h56 flex itemsCenter>
-						<Col>
-							<Div hrTag />
-						</Col>
-						<Col auto>
-							<Div spanTag>{modalsWording.signIn.or[locale]}</Div>
-						</Col>
-						<Col>
-							<Div hrTag />
-						</Col>
-					</Row>
 					<Row
 						my15
 						bgColor="rgb(89, 82, 72)"
 						onClick={handleClickKaikas}
-						roundedMd
+						roundedFull
 						h56
 						flex
 						itemsCenter
@@ -203,7 +200,7 @@ export default function SignInModal() {
 						<Col />
 						<Col auto px0>
 							<Div>
-								<Div imgTag h24 w24 src={images.KAIKAS_ICON}></Div>
+								<Div imgTag h24 w24 src={IMAGES.KAIKAS_ICON}></Div>
 							</Div>
 						</Col>
 						<Col auto pr0>
@@ -213,16 +210,16 @@ export default function SignInModal() {
 						</Col>
 						<Col />
 					</Row>
-					<Div textCenter pb15 pt30>
-						<Div spanTag fontLight>
-							{error}
-						</Div>
-					</Div>
-					<Div textCenter pb30 pt15>
-						<Div spanTag fontLight underline>
-							{modalsWording.signIn.noWallet[locale]}
-						</Div>
-					</Div>
+					<Div w={600}></Div>
+					<Row roundedFull h56 flex itemsCenter my15 border1>
+						<Col />
+						<Col auto>
+							<Div spanTag fontLight>
+								{modalsWording.signIn.noWallet[locale]}
+							</Div>
+						</Col>
+						<Col />
+					</Row>
 				</Div>
 			)}
 		</Modal>

@@ -4,17 +4,17 @@ import Div from "src/components/Div";
 export const modalsWording = {
 	signIn: {
 		title: {
-			ko: "Gomz 시작하기",
-			en: "Start Gomz",
+			ko: "BetterWorld 입장",
+			en: "Enter BetterWorld",
 		},
 		methods: {
 			klip: {
-				ko: "Klip으로 로그인",
-				en: "Login with Klip",
+				ko: "Klip 으로 입장",
+				en: "Enter with Klip",
 			},
 			kaikas: {
-				ko: "Kaikas로 로그인",
-				en: "Login with Kaikas",
+				ko: "Kaikas 로 입장",
+				en: "Enter with Kaikas",
 			},
 			metamask: {
 				ko: "Metamask로 로그인",

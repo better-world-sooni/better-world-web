@@ -1,9 +1,7 @@
-export const images = {
-    KAKAO_KLIP_ICON: 'static/images/klipLogo.svg',
-    KAIKAS_ICON: 'static/images/kaikasLogo.svg',
-    METAMASK_ICON: 'static/images/metamaskLogo.webp',
+export const IMAGES = {
+    KAKAO_KLIP_ICON: '/images/logos/klipLogo.svg',
+    KAIKAS_ICON: '/images/logos/kaikasLogo.svg',
     basicBearWhite: "static/images/basicBearWhite.png",
-    basicBearNoBg: "static/images/basicBearNoBg.png",
     planets: {
         11: "static/images/planets/11.png",
         13: "static/images/planets/13.png",
@@ -13,6 +11,11 @@ export const images = {
     gomzPlanet: "static/images/gomzPlanet.png",
     gomz: {
         '1cut': "static/images/1cut.png",
-    }
-
+    },
+    gomz9: '/images/9.png',
+    metaverse: '/videos/metaverse.mp4',
+    basicBearNoBg: "/images/basicBearNoBg.png",
+    betterWorldBWLogo: '/images/logos/betterWorldBWLogo.png',
+    betterWorldBlueLogo: '/images/logos/betterWorldBlueLogo.png',
+    gomzDAOExample: '/images/gomzDAOExample.png',
 }
