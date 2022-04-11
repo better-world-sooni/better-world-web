@@ -1,5 +1,5 @@
 import Router from "next/router"
 
-export const moveTo = (url) => {
+export const href = (url) => {
     Router.replace(url)
 }

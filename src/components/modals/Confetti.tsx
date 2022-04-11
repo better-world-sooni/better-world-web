@@ -2,7 +2,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "src/store/reducers/rootReducer";
 import ConfettiExplosion from "@reonomy/react-confetti-explosion";
 import { useLayoutEffect } from "react";
-import { modalActions } from "src/store/reducers/modalReducer";
+import { confettiAction } from "src/store/reducers/modalReducer";
 
 export default function Confetti() {
 	const { confettiEnabled } = useSelector((state: RootState) => ({
@@ -19,7 +19,7 @@ export default function Confetti() {
 	useLayoutEffect(() => {
 		return () => {
 			setTimeout(() => {
-				dispatch(modalActions.setConfettiEnabled(false));
+				dispatch(confettiAction({ enabled: false }));
 			}, confettiProps.duration);
 		};
 	});

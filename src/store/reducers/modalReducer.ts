@@ -1,43 +1,76 @@
-import { createSlice } from '@reduxjs/toolkit'
-
-const modalSlice = createSlice({
-  name: 'modal',
-  initialState: {
-    signIn: {
-      enabled: false
-    },
-    emailVerification: {
-      enabled: false
-    },
-    klipQR: {
-      enabled: false,
-      qrImage: null,
-      requestKey: null,
-    },
-    confetti: {
-      enabled: false,
-    }
+const initialState = {
+  signIn: {
+    enabled: false
   },
-  reducers: {
-    setSignInEnabled(state, action) {
-      state.signIn.enabled = action.payload
-    },
-    setEmailVerificationEnabled(state,action){
-      state.emailVerification.enabled = action.payload
-    },
-    openKlipQR(state, action) {
-      state.klipQR.enabled = true
-      state.klipQR.qrImage = action.payload.qrImage
-      state.klipQR.requestKey = action.payload.requestKey
-    },
-    closeKlipQR(state) {
-      state.klipQR.enabled = false;
-    },
-    setConfettiEnabled(state, action) {
-      state.confetti.enabled = action.payload
-    }
+  emailVerification: {
+    enabled: false
   },
-})
+  klipQR: {
+    enabled: false,
+    qrImage: null,
+    requestKey: null,
+  },
+  confetti: {
+    enabled: false,
+  }
+}
 
-export const modalReducer = modalSlice.reducer
-export const modalActions = modalSlice.actions
+// action type
+export const CONFETTI = 'modal/LOGIN' as const
+export const SIGN_IN = 'modal/SIGNIN' as const
+export const EMAIL_VERIFICATION = 'modal/EMAIL_VERIFICATION' as const
+export const KLIP_QR_ACTION = 'modal/KLIP_QR_ACTION' as const
+
+// action function
+export const confettiAction = ({enabled}) => ({ type: CONFETTI, enabled })
+export const signInAction = ({enabled}) => ({ type: SIGN_IN, enabled })
+export const emailVerificationAction = ({enabled}) => ({ type: EMAIL_VERIFICATION, enabled })
+export const klipQRAction = ({enabled, qrImage, requestKey}) => ({ type: KLIP_QR_ACTION, enabled, qrImage, requestKey })
+
+const f = (action, func) => func(action)
+
+export const modalReducer = (state = initialState, action) => {
+  switch (action.type) {
+    case CONFETTI:
+      return f(action, ({ enabled }) => {
+        return {
+          ...state,
+          confetti: {
+            enabled
+          }
+        }
+      })
+    case SIGN_IN:
+      return f(action, ({ enabled }) => {
+        return {
+          ...state,
+          signIn: {
+            enabled
+          }
+        }
+      })
+    case EMAIL_VERIFICATION:
+      return f(action, ({ enabled }) => {
+        return {
+          ...state,
+          emailVerification: {
+            enabled
+          }
+        }
+      })
+    case KLIP_QR_ACTION:
+      return f(action, ({ enabled, qrImage, requestKey }) => {
+        return {
+          ...state,
+          klipQR: {
+            enabled,
+            qrImage, 
+            requestKey
+          }
+        }
+      })
+    default: {
+      return state
+    }
+  }
+}

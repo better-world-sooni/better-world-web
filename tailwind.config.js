@@ -2276,8 +2276,6 @@ module.exports = {
         '.flex-basis-0': {
           flexBasis: 0,
         },
-
-        // col, row
         '.row': {
           display: 'flex',
           flexWrap: 'wrap',
@@ -2295,131 +2293,22 @@ module.exports = {
           flexGrow: 1,
           maxWidth: '100%',
         },
-        // '.col-1': {
-        //   position: 'relative',
-        //   width: '100%',
-        //   flex: '0 0 8.33333%',
-        //   maxWidth: '8.33333%',
-        // },
-        // '.col-2': {
-        //   position: 'relative',
-        //   width: '100%',
-        //   flex: '0 0 16.66667%',
-        //   maxWidth: '16.66667%',
-        // },
-        // '.col-3': {
-        //   position: 'relative',
-        //   width: '100%',
-        //   flex: '0 0 25%',
-        //   maxWidth: '25%',
-        // },
-        // '.col-4': {
-        //   position: 'relative',
-        //   width: '100%',
-        //   flex: '0 0 33.33333%',
-        //   maxWidth: '33.33333%',
-        // },
-        // '.col-5': {
-        //   position: 'relative',
-        //   width: '100%',
-        //   flex: '0 0 41.66667%',
-        //   maxWidth: '41.66667%',
-        // },
-        // '.col-6': {
-        //   position: 'relative',
-        //   width: '100%',
-        //   flex: '0 0 50%',
-        //   maxWidth: '50%',
-        // },
-        // '.col-7': {
-        //   position: 'relative',
-        //   width: '100%',
-        //   flex: '0 0 58.33333%',
-        //   maxWidth: '58.33333%',
-        // },
-        // '.col-8': {
-        //   position: 'relative',
-        //   width: '100%',
-        //   flex: '0 0 66.66667%',
-        //   maxWidth: '66.66667%',
-        // },
-        // '.col-9': {
-        //   position: 'relative',
-        //   width: '100%',
-        //   flex: '0 0 75%',
-        //   maxWidth: '75%',
-        // },
-        // '.col-10': {
-        //   position: 'relative',
-        //   width: '100%',
-        //   flex: '0 0 83.33333%',
-        //   maxWidth: '83.33333%',
-        // },
-        // '.col-11': {
-        //   position: 'relative',
-        //   width: '100%',
-        //   flex: '0 0 91.66667%',
-        //   maxWidth: '91.66667%',
-        // },
-        // '.col-12': {
-        //   position: 'relative',
-        //   width: '100%',
-        //   flex: '0 0 100%',
-        //   maxWidth: '100%',
-        // },
         '.col-auto': {
           position: 'relative',
           flex: '0 0 auto',
           width: 'auto',
           maxWidth: '100%',
         },
-
-        // '.offset-1': {
-        //   marginLeft: '8.33333%',
-        // },
-
-        // '.offset-2': {
-        //   marginLeft: '16.66667%',
-        // },
-
-        // '.offset-3': {
-        //   marginLeft: '25%',
-        // },
-
-        // '.offset-4': {
-        //   marginLeft: '33.33333%',
-        // },
-
-        // '.offset-5': {
-        //   marginLeft: '41.66667%',
-        // },
-
-        // '.offset-6': {
-        //   marginLeft: '50%',
-        // },
-
-        // '.offset-7': {
-        //   marginLeft: '58.33333%',
-        // },
-
-        // '.offset-8': {
-        //   marginLeft: '66.66667%',
-        // },
-
-        // '.offset-9': {
-        //   marginLeft: '75%',
-        // },
-
-        // '.offset-10': {
-        //   marginLeft: ' 83.33333%',
-        // },
-
-        // '.offset-11': {
-        //   marginLeft: '91.66667%',
-        // },
       }
 
       addUtilities(newUtilities)
+    }),
+    plugin(function({ addBase, theme }) {
+      addBase({
+        'h1': { fontSize: 40 },
+        'h2': { fontSize: 30 },
+        'h3': { fontSize: 20 },
+      })
     }),
   ],
   corePlugins: {

@@ -2,13 +2,13 @@ import Div from "../Div";
 import Modal from "./Modal";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "src/store/reducers/rootReducer";
-import { modalActions } from "src/store/reducers/modalReducer";
 import { modalsWording } from "src/wording/modals";
 import RoundedButton from "../RoundedButton";
 import { useState } from "react";
 import { klipResult } from "src/modules/klipApiHelper";
 import { KLIP } from "src/modules/constants";
 import { useRouter } from "next/router";
+import { confettiAction, klipQRAction } from "src/store/reducers/modalReducer";
 
 export default function KlipQRModal() {
 	const { locale } = useRouter();
@@ -18,7 +18,7 @@ export default function KlipQRModal() {
 	}));
 	const [error, setError] = useState(<Div spanTag>{"Please scan the QR code to authorize your action."}</Div>);
 	const closeModal = () => {
-		dispatch(modalActions.closeKlipQR());
+		dispatch(klipQRAction({ enabled: false, qrImage: null, requestKey: null }));
 	};
 	const onClickKlipQRDone = async () => {
 		const klipAuthResult = await klipResult(klipQR.requestKey, locale);
@@ -32,7 +32,7 @@ export default function KlipQRModal() {
 			setError(<Div spanTag>{"Preparing QR code."}</Div>);
 		} else if (klipAuthResult.status == "completed") {
 			closeModal();
-			dispatch(modalActions.setConfettiEnabled(true));
+			dispatch(confettiAction({ enabled: true }));
 		} else {
 			setError(<Div spanTag>{"Error occurred while authorizing."}</Div>);
 		}

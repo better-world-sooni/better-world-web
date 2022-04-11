@@ -8,15 +8,15 @@ import Col from "src/components/Col";
 import { IMAGES } from "src/modules/images";
 import { truncateKlaytnAddress } from "src/modules/constants";
 
-export default function Home() {
+export default function Home({ user }) {
 	return (
 		<Div>
 			<Helmet bodyAttributes={{ style: "background-color : white;" }} />
-			<TopBar mode={"light"} />
+			<TopBar user={user} />
 			<Confetti />
 			<Div>
 				<EmptyBlock h={200} />
-				<Div mxAuto maxW={700} px30 textXxl textCenter fontSemibold>
+				<Div mxAuto maxW={700} px30 text2xl textCenter fontSemibold>
 					BetterWorld 는 당신의 NFT 와 함께 만드는{" "}
 					<Div spanTag textPrimary>
 						더 나은 세상{" "}

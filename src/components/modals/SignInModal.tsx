@@ -5,7 +5,6 @@ import Div from "../Div";
 import Modal from "./Modal";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "src/store/reducers/rootReducer";
-import { modalActions } from "src/store/reducers/modalReducer";
 import Row from "../Row";
 import Col from "../Col";
 import { IMAGES } from "src/modules/images";
@@ -18,6 +17,7 @@ import { useRouter } from "next/router";
 import { apiHelper } from "src/modules/apiHelper";
 import apis from "src/modules/apis";
 import { loginAction } from "src/store/reducers/authReducer";
+import { signInAction } from "src/store/reducers/modalReducer";
 
 export default function SignInModal() {
 	const dispatch = useDispatch();
@@ -32,7 +32,7 @@ export default function SignInModal() {
 	});
 	const [error, setError] = useState(null);
 	const closeModal = () => {
-		dispatch(modalActions.setSignInEnabled(false));
+		dispatch(signInAction({enabled: false}));
 		setError(<Div spanTag>{modalsWording.signIn.encourageKlip[locale]}</Div>);
 		setQRCode({
 			enabled: false,
@@ -50,12 +50,11 @@ export default function SignInModal() {
 			setError(<Div spanTag>{"Preparing QR code."}</Div>);
 		} else if (klipAuthResult.status == "completed") {
 			const loginParams = {
-				user: klipAuthResult.user,
+				loggedIn: true,
 				jwt: klipAuthResult.jwt,
 			};
 			dispatch(loginAction(loginParams));
 			closeModal();
-			dispatch(modalActions.setConfettiEnabled(true));
 		} else {
 			setError(<Div spanTag>{"Error occurred while authorizing."}</Div>);
 		}
@@ -76,55 +75,37 @@ export default function SignInModal() {
 		// @ts-ignore
 		if (typeof window !== "undefined" && typeof window.klaytn !== "undefined") {
 			const klaytn = window["klaytn"];
-			// const unlocked = await klaytn._kaikas.isUnlocked();
-			// if (!unlocked || !klaytn._kaikas.isEnabled()) {
-			if (true) {
-				try {
-					const res = await klaytn.enable();
-					const selectedAddress = window["klaytn"].selectedAddress;
-					const caver = window["caver"];
-					if (caver && selectedAddress) {
-						const nonceResponse = await apiHelper(apis.auth.kaikas.nonce(), "POST", {
+			try {
+				const res = await klaytn.enable();
+				const selectedAddress = res[0];
+				const caver = window["caver"];
+				if (caver && selectedAddress) {
+					const nonceResponse = await apiHelper(apis.auth.kaikas.nonce(), "POST", {
+						address: selectedAddress,
+						platform: PLATFORM,
+						locale: locale,
+					});
+					if (nonceResponse.success) {
+						const signature = await caver.klay.sign(nonceResponse.nonce, selectedAddress);
+						const verificationResponse = await apiHelper(apis.auth.kaikas.verification(), "POST", {
+							signature,
 							address: selectedAddress,
-							platform: PLATFORM,
-							locale: locale,
+							signup_uuid: typeof nonceResponse.signup == "undefined" ? null : nonceResponse.signup.uuid,
 						});
-						if (nonceResponse.success) {
-							const signature = await caver.klay.sign(nonceResponse.nonce, selectedAddress);
-							const verifyResponse = await apiHelper(apis.auth.kaikas.verification(), "POST", {
-								signature,
-								address: selectedAddress,
-								signup_uuid: typeof nonceResponse.signup == "undefined" ? null : nonceResponse.signup.uuid,
-							});
-							console.log(verifyResponse);
-							const loginParams = {
-								user: verifyResponse.user,
-								jwt: verifyResponse.jwt,
-							};
-							dispatch(loginAction(loginParams));
-							closeModal();
-							dispatch(modalActions.setConfettiEnabled(true));
-						}
+						const loginParams = {
+							loggedIn: true,
+							jwt: verificationResponse.jwt,
+						};
+						dispatch(loginAction(loginParams));
+						closeModal();
 					}
-				} catch (error) {
-					console.log(error);
-					setError(
-						<Div spanTag textWarning>
-							{modalsWording.signIn.userCancelledRequest[locale]}
-						</Div>,
-					);
 				}
-			} else {
+			} catch (error) {
 				setError(
-					<Div spanTag textSuccess>
-						{modalsWording.signIn.alreadyLoggedIn[locale]}
+					<Div spanTag textWarning>
+						{modalsWording.signIn.userCancelledRequest[locale]}
 					</Div>,
 				);
-				const loginParams = {
-					walletType: KAIKAS,
-					address: window["klaytn"].selectedAddress,
-				};
-				// dispatch(authActions.login(loginParams));
 			}
 		} else {
 			setError(
@@ -136,7 +117,7 @@ export default function SignInModal() {
 	};
 
 	return (
-		<Modal open={signInEnabled} onClose={closeModal} clx={"bg-black/30"}>
+		<Modal open={signInEnabled} onClose={closeModal} bdClx={"bg-black/30"} clx={"bg-white"}>
 			{qrCode.enabled ? (
 				<Div mx20 px15 py30>
 					<Div imgTag src={qrCode.qrImage} w300 h300 mxAuto></Div>

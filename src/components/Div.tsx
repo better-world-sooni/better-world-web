@@ -130,11 +130,11 @@ const propsToClx = (props) => {
 		textBase: () => addStyle(styles, "", { fontSize: 16 }),
 		textLg: () => addStyle(styles, "", { fontSize: 20 }),
 		textXl: () => addStyle(styles, "", { fontSize: 30 }),
-		textXxl: () => addStyle(styles, "", { fontSize: 40 }),
-		textXxxl: () => addStyle(styles, "", { fontSize: 70 }),
+		text2xl: () => addStyle(styles, "", { fontSize: 40 }),
+		text3xl: () => addStyle(styles, "", { fontSize: 50 }),
 		// background-color
 		bgColor: (v) => addStyle(styles, "", { backgroundColor: v }),
-		
+
 		fontWeight: (v) => addStyle(styles, v, { fontWeight: v }),
 		// ==== Layout ====
 		// breakpoints

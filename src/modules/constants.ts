@@ -921,6 +921,11 @@ export type Land = {
    
 }
 
+export enum Locale {
+    KO = "ko",
+    EN = "en"
+}
+
 export const defaultSelectedLandCoordinates = {
     x: 186, 
     y: 192
@@ -941,4 +946,4 @@ export function truncateKlaytnAddress(fullStr, strLen = 12, separator = '...') {
       separator +
       fullStr.substr(fullStr.length - backChars)
     );
-  }
+}

@@ -3,7 +3,7 @@ import { Dialog, Transition } from "@headlessui/react";
 import { ExclamationIcon } from "@heroicons/react/outline";
 import Div from "../Div";
 
-export default function Modal({ children, open, onClose, clx = "" }) {
+export default function Modal({ children, open, onClose, bdClx = "", clx = "" }) {
 	return (
 		<Transition.Root show={open} as={Fragment}>
 			<Dialog as="div" className="fixed z-10 inset-0 overflow-y-auto" onClose={onClose}>
@@ -17,7 +17,7 @@ export default function Modal({ children, open, onClose, clx = "" }) {
 						leaveFrom="opacity-100"
 						leaveTo="opacity-0"
 					>
-						<Dialog.Overlay className={`fixed inset-0 ${clx} transition-opacity`} />
+						<Dialog.Overlay className={`fixed inset-0 ${bdClx} transition-opacity`} />
 					</Transition.Child>
 
 					{/* This element is to trick the browser into centering the modal contents. */}
@@ -33,7 +33,9 @@ export default function Modal({ children, open, onClose, clx = "" }) {
 						leaveFrom="opacity-100 translate-y-0 sm:scale-100"
 						leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
 					>
-						<div className="inline-block align-bottom bg-white rounded-2xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg">
+						<div
+							className={`${clx} inline-block align-bottom rounded-2xl text-left overflow-hidden shadow-xl transform transition-all sm:align-middle`}
+						>
 							{children}
 						</div>
 					</Transition.Child>

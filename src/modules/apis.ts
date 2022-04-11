@@ -40,6 +40,9 @@ const apis = {
     },
     email: {
       _: () => apiV1('/auth/email')
+    },
+    user: {
+      _: () => apiV1('/auth/user')
     }
   },
   nft_collection: {

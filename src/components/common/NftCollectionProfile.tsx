@@ -1,6 +1,6 @@
 import { BadgeCheckIcon } from "@heroicons/react/outline";
 import { memo } from "react";
-import { moveTo } from "src/modules/routeHelper";
+import { href } from "src/modules/routeHelper";
 import { urls } from "src/modules/urls";
 import Col from "../Col";
 import Div from "../Div";
@@ -9,7 +9,7 @@ import Row from "../Row";
 
 function NftCollectionProfile({ image_uri, name, contract_address, collection_member_count, joined, verified }) {
 	const handleClickProfile = () => {
-		moveTo(urls.collection.contractAddress(contract_address));
+		href(urls.collection.contractAddress(contract_address));
 	};
 	return (
 		<Div w250 mxAuto roundedXl border1 py30 px20 cursorPointer onClick={handleClickProfile}>

@@ -3,11 +3,11 @@ import Div from "../Div";
 import Modal from "./Modal";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "src/store/reducers/rootReducer";
-import { modalActions } from "src/store/reducers/modalReducer";
 import Row from "../Row";
 import { useRouter } from "next/router";
 import { apiHelper, apiHelperWithToken } from "src/modules/apiHelper";
 import apis from "src/modules/apis";
+import { emailVerificationAction } from "src/store/reducers/modalReducer";
 
 export default function EmailVerificationModal() {
 	const dispatch = useDispatch();
@@ -17,7 +17,7 @@ export default function EmailVerificationModal() {
 		user: state.auth.user,
 	}));
 	const closeModal = () => {
-		dispatch(modalActions.setEmailVerificationEnabled(false));
+		dispatch(emailVerificationAction({ enabled: false }));
 	};
 
 	const [email, setEmail] = useState<string>("");

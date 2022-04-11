@@ -1,7 +1,6 @@
 import { GlobeAltIcon } from "@heroicons/react/outline";
 import { useDispatch, useSelector } from "react-redux";
 import useIsTablet from "src/hooks/useIsTablet";
-import { modalActions } from "src/store/reducers/modalReducer";
 import { RootState } from "src/store/reducers/rootReducer";
 import Link from "next/link";
 import Col from "./Col";
@@ -11,8 +10,9 @@ import { useRouter } from "next/router";
 import SignInModal from "./modals/SignInModal";
 import KlipQRModal from "./modals/KlipQRModal";
 import { urls } from "src/modules/urls";
-import { moveTo } from "src/modules/routeHelper";
-import { images } from "src/modules/images";
+import { href } from "src/modules/routeHelper";
+import { signInAction } from "src/store/reducers/modalReducer";
+import { IMAGES } from "src/modules/images";
 
 const FullMapTopBar = ({ mode, clx = {} }) => {
 	const { locale } = useRouter();
@@ -25,9 +25,9 @@ const FullMapTopBar = ({ mode, clx = {} }) => {
 	const isTablet = useIsTablet();
 	const onClickLogin = () => {
 		if (isLoggedIn && selectedAddress) return;
-		dispatch(modalActions.setSignInEnabled(true));
+		dispatch(signInAction({ enabled: true }));
 	};
-	const logoSrc = mode == "dark" ? images.basicBearWhite : images.basicBearNoBg;
+	const logoSrc = mode == "dark" ? IMAGES.basicBearWhite : IMAGES.basicBearNoBg;
 	const logoTextProps = mode == "dark" ? { textWhite: true } : { textPrimary: true };
 	const textColorProp = mode == "dark" ? { textWhite: true, bgColor: "rgba(0, 0, 0, 0.8)" } : { textBlack: true };
 	const loginButtonProps = mode == "dark" ? { bgWhite: true, textBlack: true } : { bgPrimary: true, textWhite: true };
@@ -64,7 +64,7 @@ const FullMapTopBar = ({ mode, clx = {} }) => {
 		<Div absolute top0 bdBlurXl wFull pt10 pb10 z100 {...textColorProp}>
 			<Row mxAuto flex justifyCenter px30>
 				<Col auto cursorPointer>
-					<Row roundedLg px={20} onClick={() => moveTo(urls.home)}>
+					<Row roundedLg px={20} onClick={() => href(urls.home)}>
 						<Col auto px0>
 							<Div imgTag src={logoSrc} h={30} w={30} style={{ objectFit: "cover" }} />
 						</Col>
