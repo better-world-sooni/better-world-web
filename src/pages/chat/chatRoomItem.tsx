@@ -21,7 +21,7 @@ import { useSelector } from "react-redux";
 import ImageModal from "src/components/modals/ImageModal";
 
 export default function chatRoomItem() {
-
+    const test = "";
     return(
         <Row px20 py10 flex onPress={() => goToChatRoom(chatRoomId)} bgWhite>
             <Col auto mr10 relative>
