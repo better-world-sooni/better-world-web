@@ -8,7 +8,7 @@ import { confettiAction } from '../reducers/modalReducer'
 function* loginSaga(action) {
     yield call(setJwt, action.jwt)
     yield put(confettiAction({enabled: true}))
-    yield call(href, urls.home)
+    yield call(href, urls.profile)
     // yield put(loginAction(action.payload)) call another fx
 }
 
