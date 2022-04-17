@@ -82,7 +82,23 @@ export default function Chat({ nftCollection, proposals, about, user }) {
 	}, [])
 
 	const openRoom = (currentRoomId) => {
-		console.log("click");
+		console.log("open");
+		setCurrentRoomId(currentRoomId);
+	}
+	const closeRoom = () => {
+		console.log("close");
+		setCurrentRoomId(null);
+	}
+
+	const sendMessage = async(message) => {
+		// messages[0]["read_user_ids"] = enterUsers
+		// console.log("send: ", messages[0]);
+		// if(chatSocket) {
+		// 	const _ = await chatSocket.send(messages);
+		// } else {
+		// 	Alert.alert('네트워크가 불안정하여 메세지를 보내지 못했습니다');
+		// }
+		console.log(message);
 	}
 
 
@@ -134,6 +150,8 @@ export default function Chat({ nftCollection, proposals, about, user }) {
 					{currentRoomId ? 
 					<Messages
 						currentRoomId = {currentRoomId}
+						closeOnClick = {closeRoom}
+						sendOnClick = {sendMessage}
 					/>
 					: <Image src={IMAGES.betterWorldBWLogo} height={50} width={50} alt="avatarOne"/>
 					}

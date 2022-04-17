@@ -18,6 +18,7 @@ export const IMAGES = {
     betterWorldBWLogo: '/images/logos/betterWorldBWLogo.png',
     betterWorldBlueLogo: '/images/logos/betterWorldBlueLogo.png',
     gomzDAOExample: '/images/gomzDAOExample.png',
+    backButton: '/images/back.png',
     characters: {
         alien: '/images/characters/alien.png',
         blue: '/images/characters/blue.png',
