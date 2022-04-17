@@ -9,9 +9,14 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@anycable/web": "^0.3.2",
+    "@emotion/react": "^11.9.0",
+    "@emotion/styled": "^11.8.1",
     "@headlessui/react": "^1.4.3",
     "@heroicons/react": "^1.0.5",
     "@metamask/detect-provider": "^1.2.0",
+    "@mui/icons-material": "^5.6.1",
+    "@mui/material": "^5.6.1",
     "@pmmmwh/react-refresh-webpack-plugin": "^0.5.4",
     "@react-three/drei": "^8.8.4",
     "@react-three/fiber": "^7.0.26",
@@ -31,6 +36,7 @@
     "js-sha3": "^0.8.0",
     "lerp": "^1.0.3",
     "lodash": "^4.17.21",
+    "moment": "^2.29.2",
     "next": "11.1.0",
     "next-cookies": "^2.0.3",
     "next-redux-wrapper": "^7.0.5",

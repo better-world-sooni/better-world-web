@@ -1,3 +1,9 @@
+import moment from 'moment';
+import 'moment/min/locales';
+moment.locale('ko');
+
+export const kmoment = moment;
+
 export const APP_NAME = 'Gomz Website'
 export const deployedABI = [
     {

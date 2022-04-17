@@ -47,6 +47,11 @@ const apis = {
   },
   nft_collection: {
     contractAddress: (contractAddress) => apiV1(`/nft_collection/${contractAddress}`)
+  }, 
+  chat: {
+    chatRoom: {
+      main: () => apiV1('chat/room/all')
+    }
   }
 }
 

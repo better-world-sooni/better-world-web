@@ -1,29 +1,47 @@
 import Div from "src/components/Div";
-import Helmet from "react-helmet";
-import Confetti from "src/components/modals/Confetti";
-import EmptyBlock from "src/components/EmptyBlock";
 import Row from "src/components/Row";
 import Col from "src/components/Col";
-import { IMAGES } from "src/modules/images";
-import { truncateKlaytnAddress } from "src/modules/constants";
-import MainTopBar from "src/components/MainTopBar";
-import { useEffect, useState } from "react";
-import { sha3_256 } from "js-sha3";
-import apis from "src/modules/apis";
-import { apiHelperWithJwtFromContext, apiHelperWithToken } from "src/modules/apiHelper";
-import { BadgeCheckIcon } from "@heroicons/react/solid";
-import NftCollectionProfile from "src/components/common/NftCollectionProfile";
-import { BellIcon, XCircleIcon } from "@heroicons/react/outline";
-import { NextPageContext } from "next";
-import remarkGfm from "remark-gfm";
-import ReactMarkdown from "react-markdown";
-import { useSelector } from "react-redux";
-import ImageModal from "src/components/modals/ImageModal";
+import { useCallback } from "react";
+import ChatRoomAvatars from "src/pages/chat/chatRoomAvatars"
+import { kmoment } from "src/modules/constants";
 
-export default function chatRoomItem() {
-    const test = "";
+export default function ChatRoomItem({
+    chatRoomId,
+    onclick,
+    category,
+    title,
+    createdAt,
+    lastMessage,
+    numUsers,
+    unreadMessageCount,
+    firstUserAvatar = null,
+    secondUserAvatar = null,
+    thirdUserAvatar = null,
+    fourthUserAvatar = null,
+}) {
+
+    const goToChatRoom = roomId => {
+        // navigation.navigate(NAV_NAMES.ChatRoom, {currentChatRoomId: roomId, title: title, numUsers: numUsers});
+        console.log("click")
+    };
+
+    const createdAtText = useCallback(createdAt => {
+        if (createdAt) {
+          const calendar = kmoment(createdAt).calendar();
+          const calendarArr = calendar.split(' ');
+          if (calendarArr[0] == '오늘') {
+            return calendarArr[1] + ' ' + calendarArr[2];
+          }
+          if (calendarArr[0] == '어제') {
+            return calendarArr[0];
+          }
+          return calendarArr[0] + ' ' + calendarArr[1];
+        }
+        return null;
+      }, []);
+
     return(
-        <Row px20 py10 flex onPress={() => goToChatRoom(chatRoomId)} bgWhite>
+        <Row px20 py10 flex bgWhite onClick={()=>onclick(chatRoomId)}>
             <Col auto mr10 relative>
                 <ChatRoomAvatars
                 firstUserAvatar={firstUserAvatar}
@@ -40,7 +58,7 @@ export default function chatRoomItem() {
                         </Div>
                     </Col>
                     <Col auto fontSize={15}>
-                        <Div color={GRAY_COLOR}>{category}</Div>
+                        <Div>{category}</Div>
                     </Col>
                     <Col justifyCenter itemsEnd>
                         <Div fontSize={13} light>
@@ -55,7 +73,7 @@ export default function chatRoomItem() {
                         </Div>
                     </Col>
                     {unreadMessageCount > 0 && (
-                    <Col auto fontSize={15} rounded30 bg={APPLE_RED} px5 justifyCenter>
+                    <Col auto fontSize={15} rounded30 bg={'rgb(255, 69, 58)'} px5 justifyCenter>
                         <Div color={'white'}>
                             {unreadMessageCount >= 100 ? '99+' : unreadMessageCount}
                         </Div>
