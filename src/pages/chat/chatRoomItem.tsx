@@ -53,7 +53,7 @@ export default function ChatRoomItem({
             <Col justifyCenter>
                 <Row pb2>
                     <Col pr10 auto maxW={'60%'}>
-                        <Div fontSize={15} bold numberOfLines={1} ellipsizeMode={'tail'}>
+                        <Div fontSize={15} >
                             {title}
                         </Div>
                     </Col>
@@ -61,14 +61,14 @@ export default function ChatRoomItem({
                         <Div>{category}</Div>
                     </Col>
                     <Col justifyCenter itemsEnd>
-                        <Div fontSize={13} light>
+                        <Div fontSize={13}>
                             {createdAtText(createdAt)}
                         </Div>
                     </Col>
                 </Row>
                 <Row w={'100%'} pt2>
                     <Col pr10>
-                        <Div fontSize={15} numberOfLines={1} ellipsizeMode={'tail'}>
+                        <Div fontSize={15}>
                             {lastMessage}
                         </Div>
                     </Col>

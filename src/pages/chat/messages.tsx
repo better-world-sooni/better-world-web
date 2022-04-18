@@ -5,7 +5,13 @@ import Image from "next/image";
 import { IMAGES } from "src/modules/images";
 import { useEffect, useState, useCallback } from "react";
 
-export default function Messages({currentRoomId, closeOnClick, sendOnClick}) {
+export default function Messages({
+    currentRoomId,
+    closeOnClick,
+    sendOnClick,
+    userUuid,
+    userAvatar
+}) {
 
     const [text, setText] = useState("")
 

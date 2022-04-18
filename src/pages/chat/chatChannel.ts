@@ -34,14 +34,14 @@ interface Events extends ChannelEvents<Message> {
 }
 
 export class ChatChannel extends Channel<Params,Message,Events> {
-  static identifier = 'ChatChannel'
+  static identifier = 'ChatChannelWeb'
 
-  async send(message) {
-    return this.perform('send_message', {message})
+  async send(message, roomId) {
+    return this.perform('send_message', {message, roomId})
   }
 
-  async enter() {
-    return this.perform('enter_room')
+  async enter(roomId) {
+    return this.perform('enter_room', {roomId})
   }
   
   async leave() {

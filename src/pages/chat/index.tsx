@@ -24,15 +24,20 @@ import { ChatChannel } from 'src/pages/chat/chatChannel';
 import ChatRoomItem from 'src/pages/chat/chatRoomItem';
 import Messages from 'src/pages/chat/messages'
 import { IMAGES } from "src/modules/images";
+import { getJwt } from 'src/modules/cookieHelper'
+import { Alert } from 'react-alert'
 
 export default function Chat({ nftCollection, proposals, about, user }) {
 
-	const {loggedIn, jwt} = useSelector(
-		(root: RootState) => root.auth
-	);
-	const currentUser = user.uuid;
+	const jwt = getJwt();
+	const userUuid = user.uuid;
+	const userAvatar = user.main_nft.nft_metadatum.image_uri;
 	const [chatRooms, setChatRooms] = useState([]);
 	const [currentRoomId, setCurrentRoomId] = useState(null);
+	const [chatSocket, setChatSocket] = useState(null);
+	const [enterUsers, setEnterUsers] = useState([]);
+	const [messages, setMessages] = useState([]);
+
 
 	const updateList = useCallback((newmsg) => {
 		let list = [...chatRooms];
@@ -48,29 +53,44 @@ export default function Chat({ nftCollection, proposals, about, user }) {
 	useEffect(() => {
 		console.log("hi");
 		console.log(user);
-		console.log(loggedIn, jwt)
+		console.log(jwt)
 		let channel;
 		const wsConnect = async () => {
-			channel = new ChatChannel({userUuid: currentUser});
-			// await cable(jwt).subscribe(channel);
-			// const res = await getPromiseFn({
-			// 	url: APIS.chat.chatRoom.main().url,
-			// 	token,
-			// });
-			// if (res?.data) {
-			// 	const {chat_rooms} = res.data;
-			// 	setChatRooms(chat_rooms);
-			// }
-			// channel.on('message', res => {
-			// 	console.log("list receive", res['data'])
-			// 	setChatRooms([... updateList(res['data'])])
-			// });
-			// channel.on('close', () => console.log('Disconnected list socket connection'));
-			// channel.on('disconnect', () => channel.send('Dis'));
-
+			channel = new ChatChannel({userUuid: userUuid});
+			await cable(jwt).subscribe(channel);
+			setChatSocket(channel);     
 			const res = await apiHelperWithToken(apis.chat.chatRoom.main());
 			console.log(res);
-			setChatRooms(res.chat_rooms);
+			if (res?.chat_rooms) {
+				setChatRooms(res.chat_rooms);
+			}
+			channel.on('enter', res => {
+				console.log("check")
+				const newUsers = res['new_users'];
+				const newMsgs = res["update_msgs"];
+				console.log(newUsers);
+				console.log(newMsgs);
+				// setEnterUsers(newUsers)
+				// setMessages(newMsgs)
+			});
+			// let _ = await channel.enter();
+			channel.on('message', res => {
+				if(currentRoomId) {
+					console.log("message receive", res['data'])
+					// setMessages((m) => [res['data'], ...m]);
+				}
+			});
+			channel.on('leave', res => {
+				if(currentRoomId) {
+					console.log(res['leave_user'], res['new_users'])
+					// if(userUuid != res['leave_user']){
+					//   console.log("here")
+					//   setEnterUsers([...res['new_users']])
+					// }
+				}
+			})
+			channel.on('close', () => console.log('Disconnected from chat'));
+			channel.on('disconnect', () => console.log("check disconnect"));
 		};
 		wsConnect()
 		return () => {
@@ -81,24 +101,27 @@ export default function Chat({ nftCollection, proposals, about, user }) {
 		}
 	}, [])
 
-	const openRoom = (currentRoomId) => {
+	const openRoom = async (currentRoomId) => {
 		console.log("open");
+		let _ = await chatSocket.enter();
 		setCurrentRoomId(currentRoomId);
 	}
 	const closeRoom = () => {
 		console.log("close");
 		setCurrentRoomId(null);
+		setEnterUsers([]);
+		setMessages([]);
 	}
 
 	const sendMessage = async(message) => {
+		console.log("send", message);
 		// messages[0]["read_user_ids"] = enterUsers
 		// console.log("send: ", messages[0]);
-		// if(chatSocket) {
-		// 	const _ = await chatSocket.send(messages);
-		// } else {
-		// 	Alert.alert('네트워크가 불안정하여 메세지를 보내지 못했습니다');
-		// }
-		console.log(message);
+		if(chatSocket) {
+			const _ = await chatSocket.send(message, currentRoomId);
+		} else {
+			Alert.alert('네트워크가 불안정하여 메세지를 보내지 못했습니다');
+		}
 	}
 
 
@@ -149,11 +172,14 @@ export default function Chat({ nftCollection, proposals, about, user }) {
 				<Col style={{flex:7}} justifyCenter itemsCenter>
 					{currentRoomId ? 
 					<Messages
-						currentRoomId = {currentRoomId}
-						closeOnClick = {closeRoom}
-						sendOnClick = {sendMessage}
+						currentRoomId={currentRoomId}
+						userUuid={userUuid}
+						userAvatar={userAvatar}
+						closeOnClick={closeRoom}
+						sendOnClick={sendMessage}
 					/>
-					: <Image src={IMAGES.betterWorldBWLogo} height={50} width={50} alt="avatarOne"/>
+					: 
+					<Image src={IMAGES.betterWorldBWLogo} height={50} width={50} alt="avatarOne"/>
 					}
 				</Col>
 			</Row>
