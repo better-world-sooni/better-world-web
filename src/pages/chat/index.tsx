@@ -39,6 +39,7 @@ export default function Chat({ nftCollection, proposals, about, user }) {
 	const [messages, setMessages] = useState([]);
 	const enterUserFunRef = useRef(null);
 	const receiveMessageFunRef = useRef(null);
+	const receiveListFunRef = useRef(null);
 	const leaveRoomFunRef = useRef(null);
 
 
@@ -51,6 +52,19 @@ export default function Chat({ nftCollection, proposals, about, user }) {
 		list[0].unread_count += 1;
 		return list;
 	}, [chatRooms]);
+
+	useEffect(() =>{
+		const updateList = newMsg => {
+			let roomList = chatRooms;
+			const roomId = newMsg['room_id'];
+			const index = roomList.findIndex(x=>x.room_info.id === roomId);
+			roomList.splice(0, 0, roomList.splice(index, 1)[0]);
+			roomList[0].last_message = newMsg['text'];
+			roomList[0].unread_count += 1;
+			return roomList;
+		}
+		receiveListFunRef.current = updateList;
+	},[chatRooms])
 
 	useEffect(() => {
 		console.log("roomId change", currentRoomId)
@@ -70,14 +84,12 @@ export default function Chat({ nftCollection, proposals, about, user }) {
 				// setMessages((m) => [res['data'], ...m]);
 			}
 			else {
-				console.log("change list");
+				setChatRooms([...receiveListFunRef.current(res['data'])])
 			}
 		}
 		const leaveRoom = res => {
 			if(currentRoomId === res['room']) {
-				console.log(res['leave_user'], res['new_users']);
 				if(userUuid != res['leave_user']){
-					console.log("here");
 					setEnterUsers([...res['new_users']]);
 				}
 			}
@@ -121,10 +133,16 @@ export default function Chat({ nftCollection, proposals, about, user }) {
 		}
 	}, [])
 
-	const openRoom = async (currentRoomId) => {
-		console.log("open");
-		setCurrentRoomId(currentRoomId);
-		let _ = await chatSocket.enter(currentRoomId);
+	const openRoom = async (openRoomId) => {
+		console.log(currentRoomId);
+		if(currentRoomId != openRoomId) {
+			if(currentRoomId != null) {
+				let _ = await chatSocket.leave(currentRoomId);
+			}
+			console.log("open");
+			setCurrentRoomId(openRoomId);
+			let _ = await chatSocket.enter(openRoomId);
+		}
 	}
 	const closeRoom = async () => {
 		console.log("close");
