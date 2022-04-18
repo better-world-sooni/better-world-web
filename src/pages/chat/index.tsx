@@ -5,7 +5,7 @@ import Row from "src/components/Row";
 import Col from "src/components/Col";
 import Image from "next/image";
 import MainTopBar from "src/components/MainTopBar";
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import apis from "src/modules/apis";
 import { apiHelperWithToken } from "src/modules/apiHelper";
 import { RootState } from 'src/store/reducers/rootReducer';
@@ -37,6 +37,9 @@ export default function Chat({ nftCollection, proposals, about, user }) {
 	const [chatSocket, setChatSocket] = useState(null);
 	const [enterUsers, setEnterUsers] = useState([]);
 	const [messages, setMessages] = useState([]);
+	const enterUserFunRef = useRef(null);
+	const receiveMessageFunRef = useRef(null);
+	const leaveRoomFunRef = useRef(null);
 
 
 	const updateList = useCallback((newmsg) => {
@@ -49,11 +52,43 @@ export default function Chat({ nftCollection, proposals, about, user }) {
 		return list;
 	}, [chatRooms]);
 
-
 	useEffect(() => {
-		console.log("hi");
-		console.log(user);
-		console.log(jwt)
+		console.log("roomId change", currentRoomId)
+		const enterUser = res => {
+			if(currentRoomId === res['room']) {
+				const newUsers = res['new_users'];
+				const newMsgs = res["update_msgs"];
+				console.log(currentRoomId, "newUser:", newUsers);
+				console.log(currentRoomId, "newMsgs:", newMsgs);
+				setEnterUsers(newUsers);
+				// setMessages(newMsgs)
+			}
+		}
+		const receiveMessage = res => {
+			if(currentRoomId === res['room']) {
+				console.log("message receive", res['data']);
+				// setMessages((m) => [res['data'], ...m]);
+			}
+			else {
+				console.log("change list");
+			}
+		}
+		const leaveRoom = res => {
+			if(currentRoomId === res['room']) {
+				console.log(res['leave_user'], res['new_users']);
+				if(userUuid != res['leave_user']){
+					console.log("here");
+					setEnterUsers([...res['new_users']]);
+				}
+			}
+		}
+		enterUserFunRef.current = enterUser;
+		receiveMessageFunRef.current = receiveMessage;
+		leaveRoomFunRef.current = leaveRoom;
+	}, [currentRoomId])
+
+	
+	useEffect(() => {
 		let channel;
 		const wsConnect = async () => {
 			channel = new ChatChannel({userUuid: userUuid});
@@ -65,29 +100,14 @@ export default function Chat({ nftCollection, proposals, about, user }) {
 				setChatRooms(res.chat_rooms);
 			}
 			channel.on('enter', res => {
-				console.log("check")
-				const newUsers = res['new_users'];
-				const newMsgs = res["update_msgs"];
-				console.log(newUsers);
-				console.log(newMsgs);
-				// setEnterUsers(newUsers)
-				// setMessages(newMsgs)
+				enterUserFunRef.current(res);
 			});
 			// let _ = await channel.enter();
 			channel.on('message', res => {
-				if(currentRoomId) {
-					console.log("message receive", res['data'])
-					// setMessages((m) => [res['data'], ...m]);
-				}
+				receiveMessageFunRef.current(res);
 			});
 			channel.on('leave', res => {
-				if(currentRoomId) {
-					console.log(res['leave_user'], res['new_users'])
-					// if(userUuid != res['leave_user']){
-					//   console.log("here")
-					//   setEnterUsers([...res['new_users']])
-					// }
-				}
+				leaveRoomFunRef.current(res);
 			})
 			channel.on('close', () => console.log('Disconnected from chat'));
 			channel.on('disconnect', () => console.log("check disconnect"));
@@ -103,22 +123,28 @@ export default function Chat({ nftCollection, proposals, about, user }) {
 
 	const openRoom = async (currentRoomId) => {
 		console.log("open");
-		let _ = await chatSocket.enter();
 		setCurrentRoomId(currentRoomId);
+		let _ = await chatSocket.enter(currentRoomId);
 	}
-	const closeRoom = () => {
+	const closeRoom = async () => {
 		console.log("close");
+		let _ = await chatSocket.leave(currentRoomId);
 		setCurrentRoomId(null);
 		setEnterUsers([]);
 		setMessages([]);
 	}
 
-	const sendMessage = async(message) => {
-		console.log("send", message);
-		// messages[0]["read_user_ids"] = enterUsers
-		// console.log("send: ", messages[0]);
+	const sendMessage = async(text) => {
+		const msg = {
+			room_id: currentRoomId,
+			user_uuid: userUuid,
+			avatar: userAvatar,
+			text: text,
+			read_user_ids: enterUsers,
+		};
+		console.log("send", msg);
 		if(chatSocket) {
-			const _ = await chatSocket.send(message, currentRoomId);
+			const _ = await chatSocket.send(msg, currentRoomId);
 		} else {
 			Alert.alert('네트워크가 불안정하여 메세지를 보내지 못했습니다');
 		}

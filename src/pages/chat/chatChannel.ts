@@ -44,8 +44,8 @@ export class ChatChannel extends Channel<Params,Message,Events> {
     return this.perform('enter_room', {roomId})
   }
   
-  async leave() {
-    return this.perform('leave_room')
+  async leave(roomId) {
+    return this.perform('leave_room', {roomId})
   }
   
   receive(message: Message) {
