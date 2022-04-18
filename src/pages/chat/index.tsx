@@ -42,29 +42,23 @@ export default function Chat({ nftCollection, proposals, about, user }) {
 	const receiveListFunRef = useRef(null);
 	const leaveRoomFunRef = useRef(null);
 
-
-	const updateList = useCallback((newmsg) => {
-		let list = [...chatRooms];
-		let roomId = newmsg['room_id'];
-		let index = list.findIndex(x=>x.room.id === roomId);
-		list.splice(0, 0, list.splice(index, 1)[0]);
-		list[0].last_message = newmsg['text'];
-		list[0].unread_count += 1;
-		return list;
-	}, [chatRooms]);
-
 	useEffect(() =>{
 		const updateList = newMsg => {
-			let roomList = chatRooms;
+			let roomList = [...chatRooms];
 			const roomId = newMsg['room_id'];
 			const index = roomList.findIndex(x=>x.room_info.id === roomId);
 			roomList.splice(0, 0, roomList.splice(index, 1)[0]);
 			roomList[0].last_message = newMsg['text'];
-			roomList[0].unread_count += 1;
+			if(roomId != currentRoomId) {
+				console.log(roomList[0]);
+				console.log("here", roomId, currentRoomId)
+				roomList[0].unread_count += 1;
+				console.log(roomList[0]);
+			}
 			return roomList;
 		}
 		receiveListFunRef.current = updateList;
-	},[chatRooms])
+	},[chatRooms, currentRoomId])
 
 	useEffect(() => {
 		console.log("roomId change", currentRoomId)
@@ -79,13 +73,13 @@ export default function Chat({ nftCollection, proposals, about, user }) {
 			}
 		}
 		const receiveMessage = res => {
+
 			if(currentRoomId === res['room']) {
 				console.log("message receive", res['data']);
 				// setMessages((m) => [res['data'], ...m]);
 			}
-			else {
-				setChatRooms([...receiveListFunRef.current(res['data'])])
-			}
+			setChatRooms([...receiveListFunRef.current(res['data'])])
+
 		}
 		const leaveRoom = res => {
 			if(currentRoomId === res['room']) {
@@ -133,6 +127,13 @@ export default function Chat({ nftCollection, proposals, about, user }) {
 		}
 	}, [])
 
+	const refreshUnreadCount = useCallback((roomId) => {
+		let roomList = [...chatRooms];
+		const index = roomList.findIndex(x=>x.room_info.id === roomId);
+		roomList[index].unread_count = 0;
+		return roomList;
+	}, [chatRooms]);
+
 	const openRoom = async (openRoomId) => {
 		console.log(currentRoomId);
 		if(currentRoomId != openRoomId) {
@@ -140,8 +141,9 @@ export default function Chat({ nftCollection, proposals, about, user }) {
 				let _ = await chatSocket.leave(currentRoomId);
 			}
 			console.log("open");
-			setCurrentRoomId(openRoomId);
 			let _ = await chatSocket.enter(openRoomId);
+			setCurrentRoomId(openRoomId);
+			setChatRooms(refreshUnreadCount(openRoomId));
 		}
 	}
 	const closeRoom = async () => {

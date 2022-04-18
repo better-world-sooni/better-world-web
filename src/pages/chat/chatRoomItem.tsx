@@ -20,10 +20,6 @@ export default function ChatRoomItem({
     fourthUserAvatar = null,
 }) {
 
-    const goToChatRoom = roomId => {
-        // navigation.navigate(NAV_NAMES.ChatRoom, {currentChatRoomId: roomId, title: title, numUsers: numUsers});
-        console.log("click")
-    };
 
     const createdAtText = useCallback(createdAt => {
         if (createdAt) {
