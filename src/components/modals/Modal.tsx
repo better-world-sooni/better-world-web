@@ -33,9 +33,7 @@ export default function Modal({ children, open, onClose, bdClx = "", clx = "" })
 						leaveFrom="opacity-100 translate-y-0 sm:scale-100"
 						leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
 					>
-						<div
-							className={`${clx} inline-block align-bottom rounded-2xl text-left overflow-hidden shadow-xl transform transition-all sm:align-middle`}
-						>
+						<div className={`${clx} inline-block align-bottom rounded-2xl text-left overflow-hidden transform transition-all sm:align-middle`}>
 							{children}
 						</div>
 					</Transition.Child>

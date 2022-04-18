@@ -27,6 +27,9 @@ const MainTopBar = ({ user }) => {
 	const onClickEmailVerification = () => {
 		dispatch(emailVerificationAction({ enabled: true }));
 	};
+	const onClickProfile = () => {
+		href(urls.profile.klaytnAddress(user.klaytn_account.address));
+	};
 
 	return (
 		<>
@@ -35,7 +38,7 @@ const MainTopBar = ({ user }) => {
 					<Col auto px0 onClick={() => href(urls.home)}>
 						<Div imgTag src={IMAGES.betterWorldBlueLogo} h={50} w={50} style={{ objectFit: "cover" }} />
 					</Col>
-					<Col textLg textPrimary auto px0>
+					<Col textLg textPrimary auto px0 onClick={() => href(urls.index)} cursorPointer>
 						BetterWorld{" "}
 						<Div spanTag fontSemibold textPrimary pl2>
 							αlpha
@@ -43,10 +46,7 @@ const MainTopBar = ({ user }) => {
 					</Col>
 					<Col></Col>
 					<Col auto rounded3xl px20 pt5 cursorPointer border1 pb8 onClick={onClickLogin}>
-						Explore
-					</Col>
-					<Col auto rounded3xl px20 pt5 cursorPointer border1 pb8 onClick={onClickLogin}>
-						Forum
+						Feed
 					</Col>
 					<Col auto rounded3xl px20 pt5 cursorPointer border1 pb8 onClick={onClickLogin}>
 						Capsules
@@ -55,7 +55,7 @@ const MainTopBar = ({ user }) => {
 						Chat
 					</Col>
 					{user ? (
-						<Col auto rounded3xl px20 pt5 cursorPointer border1 pb8>
+						<Col auto rounded3xl px20 pt5 cursorPointer border1 pb8 onClick={onClickProfile}>
 							{truncateKlaytnAddress(user.klaytn_account.address)}
 						</Col>
 					) : (

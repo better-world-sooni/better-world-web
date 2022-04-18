@@ -49,11 +49,7 @@ export default function SignInModal() {
 		} else if (klipAuthResult.status == "preparing") {
 			setError(<Div spanTag>{"Preparing QR code."}</Div>);
 		} else if (klipAuthResult.status == "completed") {
-			const loginParams = {
-				loggedIn: true,
-				jwt: klipAuthResult.jwt,
-			};
-			dispatch(loginAction(loginParams));
+			dispatch(loginAction(klipAuthResult));
 			closeModal();
 		} else {
 			setError(<Div spanTag>{"Error occurred while authorizing."}</Div>);
@@ -92,11 +88,7 @@ export default function SignInModal() {
 							address: selectedAddress,
 							signup_uuid: typeof nonceResponse.signup == "undefined" ? null : nonceResponse.signup.uuid,
 						});
-						const loginParams = {
-							loggedIn: true,
-							jwt: verificationResponse.jwt,
-						};
-						dispatch(loginAction(loginParams));
+						dispatch(loginAction(verificationResponse));
 						closeModal();
 					}
 				}

@@ -45,6 +45,12 @@ const apis = {
       _: () => apiV1('/auth/user')
     }
   },
+  profile: {
+    klaytnAddress: (klaytnAddress) => apiV1(`/profile/${klaytnAddress}`)
+  },
+  nftProfile: {
+    contractAddressAndTokenId: (contractAddress, tokenId) => apiV1(`/nft_profile/${contractAddress}/${tokenId}`)
+  },
   nft_collection: {
     contractAddress: (contractAddress) => apiV1(`/nft_collection/${contractAddress}`)
   }

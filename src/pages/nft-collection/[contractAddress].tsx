@@ -20,8 +20,8 @@ import ReactMarkdown from "react-markdown";
 import { useSelector } from "react-redux";
 import ImageModal from "src/components/modals/ImageModal";
 
-function Forum({ proposals }) {
-	const length = proposals.length;
+function Feed({ posts }) {
+	const length = posts.length;
 	if (length == 0) {
 		return (
 			<Div textCenter py30>
@@ -31,8 +31,8 @@ function Forum({ proposals }) {
 	}
 	return (
 		<Div mxAuto maxW={1100} px10>
-			{proposals.map((proposal, index) => {
-				return <Div key={index}>{proposal}</Div>;
+			{posts.map((post, index) => {
+				return <Div key={index}>{post}</Div>;
 			})}
 		</Div>
 	);
@@ -208,10 +208,10 @@ function NewProposal({ nftCollection, user }) {
 		</Div>
 	);
 }
-function NftCollection({ nftCollection, proposals, about, user }) {
+function NftCollection({ nftCollection, posts, about, user }) {
 	console.log(user);
 	const [contentIndex, setContentIndex] = useState(0);
-	const handleClickForum = () => {
+	const handleClickFeed = () => {
 		setContentIndex(0);
 	};
 	const handleClickCapsules = () => {
@@ -247,8 +247,8 @@ function NftCollection({ nftCollection, proposals, about, user }) {
 								</Row>
 							</Col>
 							<Col auto pl20 pr5>
-								<Div h50 roundedFull px20 flex itemsCenter justifyCenter border1 cursorPointer onClick={handleClickForum}>
-									<Div textCenter>Forum</Div>
+								<Div h50 roundedFull px20 flex itemsCenter justifyCenter border1 cursorPointer onClick={handleClickFeed}>
+									<Div textCenter>Feed</Div>
 								</Div>
 							</Col>
 							<Col auto px5>
@@ -264,7 +264,7 @@ function NftCollection({ nftCollection, proposals, about, user }) {
 							<Col></Col>
 							<Col auto px5>
 								<Div h50 roundedFull px20 flex itemsCenter justifyCenter border1 onClick={handleClickProposal}>
-									<Div textCenter>+ New Proposal</Div>
+									<Div textCenter>+ New Post</Div>
 								</Div>
 							</Col>
 							<Col auto px5>
@@ -283,8 +283,8 @@ function NftCollection({ nftCollection, proposals, about, user }) {
 				<Div mxAuto maxW={1100}>
 					{
 						[
-							<Forum key={0} proposals={proposals} />,
-							<Forum key={1} proposals={proposals} />,
+							<Feed key={0} posts={posts} />,
+							<Feed key={1} posts={posts} />,
 							<About key={2} about={about} />,
 							<NewProposal key={2} nftCollection={nftCollection} user={user} />,
 						][contentIndex]
@@ -300,7 +300,7 @@ NftCollection.getInitialProps = async (context: NextPageContext) => {
 	const res = await apiHelperWithJwtFromContext(context, apis.nft_collection.contractAddress(contractAddress), "GET");
 	return {
 		nftCollection: res.nft_collection,
-		proposals: res.proposals,
+		posts: res.posts,
 		about: res.about,
 	};
 };

@@ -22,7 +22,7 @@ const HomeTopBar = ({ user }) => {
 	const isTablet = useIsTablet();
 	const onClickLogin = () => {
 		if (user) {
-			href(urls.home);
+			href(urls.profile.klaytnAddress(user.klaytn_account.address));
 		} else {
 			dispatch(signInAction({ enabled: true }));
 		}

@@ -11,6 +11,6 @@ import { href } from "src/modules/routeHelper";
 import { urls } from "src/modules/urls";
 
 export default function Home({ user }) {
-	href(urls.forum);
+	// href(urls.feed);
 	return null;
 }

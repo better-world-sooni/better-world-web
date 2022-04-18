@@ -9,7 +9,7 @@ import Row from "../Row";
 
 function NftCollectionProfile({ image_uri, name, contract_address, collection_member_count, joined, verified }) {
 	const handleClickProfile = () => {
-		href(urls.collection.contractAddress(contract_address));
+		href(urls.nftCollection.contractAddress(contract_address));
 	};
 	return (
 		<Div w250 mxAuto roundedXl border1 py30 px20 cursorPointer onClick={handleClickProfile}>
