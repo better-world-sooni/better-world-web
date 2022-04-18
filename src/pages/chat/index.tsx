@@ -69,17 +69,15 @@ export default function Chat({ nftCollection, proposals, about, user }) {
 				console.log(currentRoomId, "newUser:", newUsers);
 				console.log(currentRoomId, "newMsgs:", newMsgs);
 				setEnterUsers(newUsers);
-				// setMessages(newMsgs)
+				setMessages(newMsgs)
 			}
 		}
 		const receiveMessage = res => {
-
 			if(currentRoomId === res['room']) {
 				console.log("message receive", res['data']);
-				// setMessages((m) => [res['data'], ...m]);
+				setMessages((m) => [res['data'], ...m]);
 			}
 			setChatRooms([...receiveListFunRef.current(res['data'])])
-
 		}
 		const leaveRoom = res => {
 			if(currentRoomId === res['room']) {
@@ -221,6 +219,7 @@ export default function Chat({ nftCollection, proposals, about, user }) {
 						currentRoomId={currentRoomId}
 						userUuid={userUuid}
 						userAvatar={userAvatar}
+						messages={messages}
 						closeOnClick={closeRoom}
 						sendOnClick={sendMessage}
 					/>

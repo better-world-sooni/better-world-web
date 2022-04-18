@@ -7,10 +7,11 @@ import { useEffect, useState, useCallback } from "react";
 
 export default function Messages({
     currentRoomId,
-    closeOnClick,
-    sendOnClick,
     userUuid,
-    userAvatar
+    userAvatar,
+    messages,
+    closeOnClick,
+    sendOnClick
 }) {
 
     const [text, setText] = useState("")
@@ -45,7 +46,7 @@ export default function Messages({
             </Row>
             <Row flex>
                 <Div>
-                    {"hi"}    
+                    {messages.map(x=>x.text)}    
                 </Div>
             </Row>
             <Div flex flexCol roundedMd border1 borderBlack >
