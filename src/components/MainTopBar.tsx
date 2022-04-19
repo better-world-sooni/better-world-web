@@ -29,6 +29,8 @@ const MainTopBar = ({ user }) => {
 	};
 	const onClickProfile = () => {
 		href(urls.profile.klaytnAddress(user.klaytn_account.address));
+	const onClickChat = () => {
+		href(urls.chat);
 	};
 
 	return (
@@ -51,7 +53,7 @@ const MainTopBar = ({ user }) => {
 					<Col auto rounded3xl px20 pt5 cursorPointer border1 pb8 onClick={onClickLogin}>
 						Capsules
 					</Col>
-					<Col auto rounded3xl px20 pt5 cursorPointer border1 pb8 onClick={onClickLogin}>
+					<Col auto rounded3xl px20 pt5 cursorPointer border1 pb8 onClick={onClickChat}>
 						Chat
 					</Col>
 					{user ? (

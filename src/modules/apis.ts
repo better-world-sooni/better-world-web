@@ -68,6 +68,11 @@ const apis = {
   presignedUrl: {
     _: () => apiV1(`/presigned_url`)
   },
+  chat: {
+    chatRoom: {
+      main: () => apiV1(`chat/room/all`)
+    }
+  }
 }
 
 export default apis
