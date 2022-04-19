@@ -22,7 +22,7 @@ import { useSelector } from "react-redux";
 import { cable } from 'src/modules/cable';
 import { ChatChannel } from 'src/pages/chat/chatChannel';
 import ChatRoomItem from 'src/pages/chat/chatRoomItem';
-import Messages from 'src/pages/chat/messages'
+import ChatRoom from 'src/pages/chat/chatRoom'
 import { IMAGES } from "src/modules/images";
 import { getJwt } from 'src/modules/cookieHelper'
 import { Alert } from 'react-alert'
@@ -30,6 +30,7 @@ import { Alert } from 'react-alert'
 export default function Chat({ nftCollection, proposals, about, user }) {
 
 	const jwt = getJwt();
+	const currentUser = user;
 	const userUuid = user.uuid;
 	const userAvatar = user.main_nft.nft_metadatum.image_uri;
 	const [chatRooms, setChatRooms] = useState([]);
@@ -99,14 +100,12 @@ export default function Chat({ nftCollection, proposals, about, user }) {
 			await cable(jwt).subscribe(channel);
 			setChatSocket(channel);     
 			const res = await apiHelperWithToken(apis.chat.chatRoom.main());
-			console.log(res);
 			if (res?.chat_rooms) {
 				setChatRooms(res.chat_rooms);
 			}
 			channel.on('enter', res => {
 				enterUserFunRef.current(res);
 			});
-			// let _ = await channel.enter();
 			channel.on('message', res => {
 				receiveMessageFunRef.current(res);
 			});
@@ -213,12 +212,11 @@ export default function Chat({ nftCollection, proposals, about, user }) {
 						})}
 					</Div>
 				</Col>
-				<Col style={{flex:7}} justifyCenter itemsCenter>
+				<Col style={{flex:7}} justifyCenter itemsCenter hScreen>
 					{currentRoomId ? 
-					<Messages
+					<ChatRoom
 						currentRoomId={currentRoomId}
-						userUuid={userUuid}
-						userAvatar={userAvatar}
+						currentUser={currentUser}
 						messages={messages}
 						closeOnClick={closeRoom}
 						sendOnClick={sendMessage}

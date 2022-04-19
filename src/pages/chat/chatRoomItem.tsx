@@ -2,7 +2,7 @@ import Div from "src/components/Div";
 import Row from "src/components/Row";
 import Col from "src/components/Col";
 import { useCallback } from "react";
-import ChatRoomAvatars from "src/pages/chat/chatRoomAvatars"
+import ChatRoomItemAvatars from "src/pages/chat/chatRoomItemAvatars"
 import { kmoment } from "src/modules/constants";
 
 export default function ChatRoomItem({
@@ -39,7 +39,7 @@ export default function ChatRoomItem({
     return(
         <Row px20 py10 flex bgWhite onClick={()=>onclick(chatRoomId)}>
             <Col auto mr10 relative>
-                <ChatRoomAvatars
+                <ChatRoomItemAvatars
                 firstUserAvatar={firstUserAvatar}
                 secondUserAvatar={secondUserAvatar}
                 thirdUserAvatar={thirdUserAvatar}
