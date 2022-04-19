@@ -29,6 +29,7 @@ const MainTopBar = ({ user }) => {
 	};
 	const onClickProfile = () => {
 		href(urls.profile.klaytnAddress(user.klaytn_account.address));
+	}
 	const onClickChat = () => {
 		href(urls.chat);
 	};
