@@ -33,7 +33,7 @@ const MainTopBar = ({ user }) => {
 
 	return (
 		<>
-			<Div fixed bgWhite wFull borderB1 px30>
+			<Div fixed bgWhite wFull borderB1 px30 z1>
 				<Row maxW={1100} mxAuto flex itemsCenter py10 gapX={10}>
 					<Col auto px0 onClick={() => href(urls.home)}>
 						<Div imgTag src={IMAGES.betterWorldBlueLogo} h={50} w={50} style={{ objectFit: "cover" }} />

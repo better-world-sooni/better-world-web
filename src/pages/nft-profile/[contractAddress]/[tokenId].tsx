@@ -13,7 +13,7 @@ import apis from "src/modules/apis";
 import { apiHelperWithJwtFromContext, apiHelperWithToken } from "src/modules/apiHelper";
 import { BadgeCheckIcon } from "@heroicons/react/solid";
 import NftCollectionProfile from "src/components/common/NftCollectionProfile";
-import { BellIcon, CheckCircleIcon, PencilIcon, PlusIcon, RefreshIcon, XCircleIcon, XIcon } from "@heroicons/react/outline";
+import { BellIcon, ChatAltIcon, CheckCircleIcon, HeartIcon, PencilIcon, PlusIcon, RefreshIcon, XCircleIcon, XIcon } from "@heroicons/react/outline";
 import { NextPageContext } from "next";
 import remarkGfm from "remark-gfm";
 import ReactMarkdown from "react-markdown";
@@ -132,11 +132,6 @@ function NftCollection({ nft, holder, collection, posts, user }) {
 						</Col>
 						<Col>
 							<Row>
-								<Col auto pr5>
-									<Div h50 roundedFull px20 flex itemsCenter justifyCenter border1 cursorPointer onClick={() => setContentIndex(Content.Story)}>
-										<Div textCenter>Story</Div>
-									</Div>
-								</Col>
 								<Col auto px5>
 									<Div h50 roundedFull px20 flex itemsCenter justifyCenter border1 cursorPointer onClick={() => setContentIndex(Content.Feed)}>
 										<Div textCenter>Feed</Div>
@@ -145,6 +140,11 @@ function NftCollection({ nft, holder, collection, posts, user }) {
 								<Col auto px5>
 									<Div h50 roundedFull px20 flex itemsCenter justifyCenter border1 cursorPointer onClick={() => setContentIndex(Content.Capsules)}>
 										<Div textCenter>Capsules</Div>
+									</Div>
+								</Col>
+								<Col auto pr5>
+									<Div h50 roundedFull px20 flex itemsCenter justifyCenter border1 cursorPointer onClick={() => setContentIndex(Content.Story)}>
+										<Div textCenter>Story</Div>
 									</Div>
 								</Col>
 								<Col></Col>
@@ -415,7 +415,11 @@ function Posts({ posts }) {
 	return (
 		<Div py20>
 			{posts.map((post, index) => {
-				return <Post key={index} post={post} />;
+				return (
+					<Div key={index} mb20>
+						<Post post={post} />
+					</Div>
+				);
 			})}
 		</Div>
 	);
@@ -495,7 +499,11 @@ function NewProposal({ nft, feedState, setFeedState, user, collection }) {
 			return;
 		}
 		setError("");
-		setFeedState(FeedState.Stale);
+		if (location) {
+			location.reload();
+		} else {
+			setFeedState(FeedState.Stale);
+		}
 	};
 	const uploadAllSelectedFiles = async () => {
 		try {
@@ -536,12 +544,14 @@ function NewProposal({ nft, feedState, setFeedState, user, collection }) {
 	return (
 		<Div mt20>
 			{previewing ? (
-				<Post post={{
-					title,
-					content,
-					nft,
-					image_uris: selectedFiles.map((selectedFile)=> selectedFile.url)
-				}}/>
+				<Post
+					post={{
+						title,
+						content,
+						nft,
+						image_uris: selectedFiles.map((selectedFile) => selectedFile.url),
+					}}
+				/>
 			) : (
 				<>
 					<Div flex flexRow gapX={20}>
@@ -613,8 +623,7 @@ function NewProposal({ nft, feedState, setFeedState, user, collection }) {
 	);
 }
 
-const Post = ({post}) => {
-	const [previewing, setPreviewing] = useState(false);
+const Post = ({ post, preview = false }) => {
 	const [expandImageModal, setExpandImageModal] = useState(false);
 	const handleClickImage = () => {
 		setExpandImageModal(true);
@@ -622,8 +631,11 @@ const Post = ({post}) => {
 	const handleCloseModal = () => {
 		setExpandImageModal(false);
 	};
+	const handleClickLike = () => {
+		setExpandImageModal(false);
+	};
 	return (
-		<Div roundedXl border1 py20 px20>
+		<Div roundedXl border1 pt20 pb10 px20>
 			<Row flex itemsCenter>
 				<Col auto>
 					<Div imgTag src={post.nft.nft_metadatum.image_uri} h30 w30 roundedFull></Div>
@@ -639,14 +651,48 @@ const Post = ({post}) => {
 					{post.title}
 				</Div>
 			)}
-			<Div pt10>
-				<ReactMarkdown children={post.content}></ReactMarkdown>
-			</Div>
+			{post.content && (
+				<Div pt10>
+					<ReactMarkdown children={post.content}></ReactMarkdown>
+				</Div>
+			)}
 			<Div wFull hAuto flex flexRow itemsCenter overflowXScroll gapX={20} pt20 onClick={handleClickImage}>
-				{post.image_uris.map((image_uri, index) => {
-					return <Div key={index} imgTag wFull hAuto src={image_uri} w300 h300 roundedXl objectCover />;
-				})}
+				{post.image_uris.length == 1 ? (
+					<Div imgTag mxAuto src={post.image_uris[0]} w300 h300 roundedXl objectCover />
+				) : (
+					post.image_uris.map((image_uri, index) => {
+						return <Div key={index} imgTag src={image_uri} w300 h300 roundedXl objectCover />;
+					})
+				)}
 			</Div>
+			{preview && (
+				<Row borderT1 pt10 mt20 gapX={0}>
+					<Col flex itemsCenter justifyCenter borderR1 py10>
+						<Div>
+							<HeartIcon height={20} width={20} />
+						</Div>
+					</Col>
+					<Col flex itemsCenter justifyCenter py10>
+						<Div strokeWidth={0.5}>
+							<ChatAltIcon height={20} width={20} />
+						</Div>
+					</Col>
+				</Row>
+			)}
+			{!preview && (
+				<Row borderT1 pt10 mt20 gapX={0}>
+					<Col flex itemsCenter justifyCenter borderR1 py10>
+						<Div>
+							<HeartIcon height={20} width={20} />
+						</Div>
+					</Col>
+					<Col flex itemsCenter justifyCenter py10>
+						<Div strokeWidth={0.5}>
+							<ChatAltIcon height={20} width={20} />
+						</Div>
+					</Col>
+				</Row>
+			)}
 			{post.image_uris.length > 0 && <ImageModal open={expandImageModal} handleCloseModal={handleCloseModal} imgSrcArr={post.image_uris} />}
 		</Div>
 	);

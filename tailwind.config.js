@@ -188,6 +188,11 @@ module.exports = {
     },
     extend: {
       // numeric numbering
+      extend: {
+        strokeWidth: {
+          '0.5': '0.5px',
+        }
+      },
       spacing: {
         ...rem(1),
         ...rem(2),

@@ -94,6 +94,9 @@
     overflow: auto;
     word-break: keep-all;
   }
+  path {
+    stroke-width: 1.5;
+  }
   .file-input input[type=file] {
     left: 0;
     top: 0;

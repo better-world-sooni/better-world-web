@@ -54,6 +54,14 @@ const apis = {
   nft_collection: {
     contractAddress: (contractAddress) => apiV1(`/nft_collection/${contractAddress}`)
   },
+  comment: {
+    post: (postId) => apiV1(`/post/${postId}`),
+    comment: (commentId) => apiV1(`/post/${commentId}`)
+  },
+  like: {
+    post: (postId) => apiV1(`/post/${postId}`),
+    comment: (commentId) => apiV1(`/post/${commentId}`)
+  },
   post: {
     _: () => apiV1(`/post`)
   },

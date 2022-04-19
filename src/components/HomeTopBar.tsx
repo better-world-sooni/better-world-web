@@ -56,7 +56,7 @@ const HomeTopBar = ({ user }) => {
 					</Div>
 				</Col>
 				<Col></Col>
-				<Col auto rounded3xl px20 pt5 cursorPointer border1 pb8 onClick={onClickLogin} clx={"animate-bounce"}>
+				<Col auto rounded3xl px20 pt5 cursorPointer border1 pb8 onClick={onClickLogin}>
 					입장
 				</Col>
 			</Row>
