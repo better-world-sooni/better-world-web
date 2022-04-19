@@ -931,7 +931,7 @@ export const defaultSelectedLandCoordinates = {
     y: 192
 }
 
-export const PLATFORM = 'WEB-GOMZ'
+export const PLATFORM = 'WEB-BETTER-WORLD'
 
 export function truncateKlaytnAddress(fullStr, strLen = 12, separator = '...') {
     if (fullStr.length <= strLen) return fullStr;

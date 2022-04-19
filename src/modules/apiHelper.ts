@@ -5,6 +5,9 @@ import cookies from 'next-cookies'
 export function apiHelper(url, method = 'GET', body = null) {
     return http(url, method, body, {})
 }
+export function apiHelperPure(url, method = 'GET', body = null, headers) {
+  return httpPure(url, method, body, headers)
+}
 
 export function apiHelperWithJwtFromContext(context, url, method = 'GET', body = null) {
   const {jwt} = cookies(context);
@@ -25,7 +28,6 @@ function http(url: string, method: string, body: Object, headers: Object){
   if (body) {
     header = {
       method: method,
-      // mode:'no-cors',
       headers: {
         'Content-Type': 'application/json',
         ...headers
@@ -35,7 +37,6 @@ function http(url: string, method: string, body: Object, headers: Object){
   } else {
     header = {
       method: method,
-      // mode:'no-cors',
       headers: {
         'Content-Type': 'application/json',
         ...headers
@@ -44,7 +45,6 @@ function http(url: string, method: string, body: Object, headers: Object){
   }
 
   return fetch(url, header)
-    // .then((res) => res.json())
     .then((res) => res.json())
     .then(
       (result) => {
@@ -55,4 +55,27 @@ function http(url: string, method: string, body: Object, headers: Object){
         error,
       })
     )
+}
+function httpPure(url: string, method: string, body: Object, headers: Object){
+  let header = null
+  if (body) {
+    header = {
+      method: method,
+      headers: {
+        'Content-Type': 'application/json',
+        ...headers
+      },
+      body: body
+    }
+  } else {
+    header = {
+      method: method,
+      headers: {
+        'Content-Type': 'application/json',
+        ...headers
+      },
+    }
+  }
+
+  return fetch(url, header)
 }

@@ -21,6 +21,7 @@ import { useSelector } from "react-redux";
 import ImageModal from "src/components/modals/ImageModal";
 import { href } from "src/modules/routeHelper";
 import { urls } from "src/modules/urls";
+import { createPresignedUrl, fileChecksum, uploadToPresignedUrl } from "src/modules/fileHelper";
 
 enum Content {
 	Story,
@@ -42,14 +43,14 @@ enum FeedState {
 	Editting,
 	Loading,
 }
-function NftCollection({ nftProfile, holder, collection, posts, user }) {
+function NftCollection({ nft, holder, collection, posts, user }) {
 	// content types
 	const [contentIndex, setContentIndex] = useState(Content.Story);
 
 	// story state
 	const [story, setStory] = useState({
-		value: nftProfile?.nft_profile?.story,
-		edittingValue: nftProfile?.nft_profile?.story,
+		value: nft?.nft_profile?.story,
+		edittingValue: nft?.nft_profile?.story,
 		state: StoryState.Stale,
 		error: "",
 	});
@@ -74,7 +75,7 @@ function NftCollection({ nftProfile, holder, collection, posts, user }) {
 		if (isValidStory) {
 			setStory({ ...story, state: StoryState.Loading });
 			try {
-				const res = await apiHelperWithToken(apis.nftProfile.contractAddressAndTokenId(nftProfile.contract_address, nftProfile.token_id), "PUT", {
+				const res = await apiHelperWithToken(apis.nftProfile.contractAddressAndTokenId(nft.contract_address, nft.token_id), "PUT", {
 					property: "story",
 					value: story.edittingValue,
 				});
@@ -114,7 +115,7 @@ function NftCollection({ nftProfile, holder, collection, posts, user }) {
 					<Row flex py20>
 						<Col auto>
 							<Div w300>
-								<NftCard nftProfile={nftProfile} holder={holder} user={user} />
+								<NftCard nft={nft} holder={holder} user={user} />
 								<EmptyBlock h={20} />
 								<Div roundedXl px20 py20 border1 cursorPointer onClick={() => href(urls.nftCollection.contractAddress(collection.contract_address))}>
 									<Div fontWeight={500}>컬렉션</Div>
@@ -239,7 +240,9 @@ function NftCollection({ nftProfile, holder, collection, posts, user }) {
 								{
 									{
 										[Content.Story]: <Story story={story} handleEditStory={handleEditStory} />,
-										[Content.Feed]: <Feed posts={posts} feedState={feedState} setFeedState={setFeedState} user={user} collection={collection} />,
+										[Content.Feed]: (
+											<Feed nft={nft} posts={posts} feedState={feedState} setFeedState={setFeedState} user={user} collection={collection} />
+										),
 									}[contentIndex]
 								}
 							</Div>
@@ -251,8 +254,8 @@ function NftCollection({ nftProfile, holder, collection, posts, user }) {
 	);
 }
 
-function NftCard({ nftProfile, holder, user }) {
-	const initialName = nftProfile?.nft_profile?.name || nftProfile.nft_metadatum?.name;
+function NftCard({ nft, holder, user }) {
+	const initialName = nft?.nft_profile?.name || nft.nft_metadatum?.name;
 	const [name, setName] = useState({
 		value: initialName,
 		edittingValue: initialName,
@@ -271,7 +274,7 @@ function NftCard({ nftProfile, holder, user }) {
 		if (isValidName) {
 			setName({ ...name, state: NameState.Loading });
 			try {
-				const res = await apiHelperWithToken(apis.nftProfile.contractAddressAndTokenId(nftProfile.contract_address, nftProfile.token_id), "PUT", {
+				const res = await apiHelperWithToken(apis.nftProfile.contractAddressAndTokenId(nft.contract_address, nft.token_id), "PUT", {
 					property: "name",
 					value: name.edittingValue,
 				});
@@ -305,7 +308,7 @@ function NftCard({ nftProfile, holder, user }) {
 
 	return (
 		<Div border1 roundedXl overflowHidden pb20>
-			<Div imgTag src={nftProfile.nft_metadatum?.image_uri} bgGray200 hAuto></Div>
+			<Div imgTag src={nft.nft_metadatum?.image_uri} bgGray200 hAuto></Div>
 			<Row itemsCenter mt20 px20>
 				<Col>
 					{
@@ -395,11 +398,11 @@ function Story({ story, handleEditStory }) {
 		</Div>
 	);
 }
-function Feed({ feedState, setFeedState, posts, user, collection }) {
+function Feed({ nft, feedState, setFeedState, posts, user, collection }) {
 	if (FeedState.Stale == feedState) {
 		return <Posts posts={posts} />;
 	}
-	return <NewProposal feedState={feedState} setFeedState={setFeedState} user={user} collection={collection} />;
+	return <NewProposal nft={nft} feedState={feedState} setFeedState={setFeedState} user={user} collection={collection} />;
 }
 function Posts({ posts }) {
 	if (posts.length == 0) {
@@ -410,24 +413,27 @@ function Posts({ posts }) {
 		);
 	}
 	return (
-		<Div mxAuto maxW={1100} px10>
+		<Div py20>
 			{posts.map((post, index) => {
-				return <Div key={index}>{JSON.stringify(post)}</Div>;
+				return <Post key={index} post={post} />;
 			})}
 		</Div>
 	);
 }
-function NewProposal({ feedState, setFeedState, user, collection }) {
+function NewProposal({ nft, feedState, setFeedState, user, collection }) {
 	const [title, setTitle] = useState("");
 	const [content, setContent] = useState("");
+	const [error, setError] = useState("");
 	const [selectedFiles, setSelectedFiles] = useState([]);
 	const [previewing, setPreviewing] = useState(false);
 	const [expandImageModal, setExpandImageModal] = useState(false);
 	const handleContentChange = ({ target: { value } }) => {
 		setContent(value);
+		setError("");
 	};
 	const handleTitleChange = ({ target: { value } }) => {
 		setTitle(value);
+		setError("");
 	};
 	const handleAddFiles = (e) => {
 		const targetFilesLength = e.target.files.length;
@@ -435,27 +441,29 @@ function NewProposal({ feedState, setFeedState, user, collection }) {
 			return;
 		}
 		if (selectedFiles.length + targetFilesLength > 8) {
-			alert("이미지는 8개 이상 선택하실 수 없습니다.");
+			setError("이미지는 8개 이상 선택하실 수 없습니다.");
 			return;
 		}
 		const additionalFiles = [];
 		for (let fileIndex = 0; fileIndex < targetFilesLength; fileIndex++) {
-			additionalFiles.push(addFile(e.target.files[fileIndex]));
+			additionalFiles.push(createFileObject(e.target.files[fileIndex]));
 		}
+		setError("");
 		setSelectedFiles([...selectedFiles, ...additionalFiles]);
 	};
-	const addFile = (file) => {
+	const createFileObject = (file) => {
 		const url = URL.createObjectURL(file);
 		const fileObject = {
-			type: "image",
 			url,
 			file,
+			loading: false,
 		};
 		return fileObject;
 	};
 	const handleRemoveFile = (index) => {
 		const reducedArray = [...selectedFiles];
 		reducedArray.splice(index, 1);
+		setError("");
 		setSelectedFiles(reducedArray);
 	};
 	const handleClickPreview = () => {
@@ -467,42 +475,73 @@ function NewProposal({ feedState, setFeedState, user, collection }) {
 	const handleCloseModal = () => {
 		setExpandImageModal(false);
 	};
+	const uploadPost = async () => {
+		if (!(title || content || selectedFiles.length > 0)) {
+			setError("");
+			return;
+		}
+		setFeedState(FeedState.Loading);
+		const signedIdArray = await uploadAllSelectedFiles();
+		const res = await apiHelperWithToken(apis.post._(), "POST", {
+			title,
+			content,
+			contract_address: nft.contract_address,
+			token_id: nft.token_id,
+			images: signedIdArray,
+		});
+		if (!res) {
+			setError("게시물 업로드중 문제가 발생하였습니다.");
+			setFeedState(FeedState.Editting);
+			return;
+		}
+		setError("");
+		setFeedState(FeedState.Stale);
+	};
+	const uploadAllSelectedFiles = async () => {
+		try {
+			const signedIdArray = await Promise.all(selectedFiles.map((file, index) => uploadFileAtIndex(index)));
+			return signedIdArray;
+		} catch {
+			setError("이미지 업로드중 문제가 발생하였습니다.");
+			setSelectedFiles(setAllSelectedFileNotLoading);
+			return [];
+		}
+	};
+	const setAllSelectedFileNotLoading = (prevSelectedFiles) => {
+		const newSelectedFiles = prevSelectedFiles.map((file) => {
+			file.loading = true;
+			return file;
+		});
+		return newSelectedFiles;
+	};
+	const uploadFileAtIndex = async (index) => {
+		setSelectedFiles((prevSelectedFiles) => setSelectedFileLoadingAtIndex(prevSelectedFiles, index, true));
+		const res = await upload(selectedFiles[index].file);
+		setSelectedFiles((prevSelectedFiles) => setSelectedFileLoadingAtIndex(prevSelectedFiles, index, false));
+		return res;
+	};
+	const setSelectedFileLoadingAtIndex = (prevSelectedFiles, index, bool) => {
+		const newSelectedFiles = [...prevSelectedFiles];
+		newSelectedFiles[index].loading = bool;
+		return newSelectedFiles;
+	};
+	const upload = async (file) => {
+		const checksum = await fileChecksum(file);
+		const createPresignedUrlRes = await createPresignedUrl(file.name, file.type, file.size, checksum);
+		const uploadToPresignedUrlRes = await uploadToPresignedUrl(createPresignedUrlRes.presigned_url_object, file);
+		if (!uploadToPresignedUrlRes) throw new Error();
+		return createPresignedUrlRes.presigned_url_object.blob_signed_id;
+	};
 
 	return (
 		<Div mt20>
 			{previewing ? (
-				<Div roundedXl border1 py20 px20>
-					<Row flex itemsCenter>
-						<Col auto>
-							<Div imgTag src={user.main_nft.nft_metadatum.image_uri} h30 w30 roundedFull></Div>
-						</Col>
-						<Col auto pl0>
-							{collection.name} by {truncateKlaytnAddress(user.username)}
-						</Col>
-						<Col auto></Col>
-						<Col />
-					</Row>
-					{title && (
-						<Div textXl fontWeight={500} pt20>
-							{title}
-						</Div>
-					)}
-					<Div pt10>
-						<ReactMarkdown children={content}></ReactMarkdown>
-					</Div>
-					<Div wFull hAuto flex flexRow itemsCenter overflowXScroll gapX={20} pt20 onClick={handleClickImage}>
-						{selectedFiles.map((file, index) => {
-							return <Div key={index} imgTag wFull hAuto src={file.url} w300 h300 roundedXl objectCover />;
-						})}
-					</Div>
-					<ImageModal
-						open={expandImageModal}
-						handleCloseModal={handleCloseModal}
-						imgSrcArr={selectedFiles.map((file) => {
-							return file.url;
-						})}
-					/>
-				</Div>
+				<Post post={{
+					title,
+					content,
+					nft,
+					image_uris: selectedFiles.map((selectedFile)=> selectedFile.url)
+				}}/>
 			) : (
 				<>
 					<Div flex flexRow gapX={20}>
@@ -510,31 +549,26 @@ function NewProposal({ feedState, setFeedState, user, collection }) {
 							return (
 								<Div key={index} relative roundedXl overflowHidden cursorPointer onClick={() => handleRemoveFile(index)} mb20>
 									<Div imgTag src={fileObject.url} w100 h100 objectCover></Div>
-									<Div wFull hFull absolute z10 top0 flex itemsCenter justifyCenter clx={"opacity-0 bg-grayOpacity-100 hover:opacity-100"}>
-										<XIcon height={30} width={30} strokeWidth={0.5} />
-									</Div>
+									{fileObject.loading ? (
+										<Div wFull hFull absolute z10 top0 flex itemsCenter justifyCenter clx={"bg-grayOpacity-100"}>
+											<Div clx={"animate-spin"}>
+												<RefreshIcon height={30} width={30} strokeWidth={0.5} className={"-scale-x-100"} />
+											</Div>
+										</Div>
+									) : (
+										<Div wFull hFull absolute z10 top0 flex itemsCenter justifyCenter clx={"opacity-0 bg-grayOpacity-100 hover:opacity-100"}>
+											<XIcon height={30} width={30} strokeWidth={0.5} />
+										</Div>
+									)}
 								</Div>
 							);
 						})}
 					</Div>
 					<Div>
-						<Div
-							clx="file-input cursor-pointer rounded-full border-1 px-20 w-full focus:outline-none focus:border-gray-400"
-							h50
-							relative
-							flex
-							itemsCenter
-							justifyCenter
-						>
-							이미지 업로드
-							<input type={"file"} onChange={handleAddFiles} multiple accept="image/png, image/gif, image/jpeg"></input>
-						</Div>
-					</Div>
-					<Div>
 						<input
 							placeholder="제목"
 							value={title}
-							className={"rounded-full border-1 px-20 w-full focus:outline-none focus:border-gray-400 mt-20"}
+							className={"rounded-full border-1 px-20 w-full focus:outline-none focus:border-gray-400"}
 							style={{ height: 50 }}
 							onChange={handleTitleChange}
 						></input>
@@ -552,18 +586,77 @@ function NewProposal({ feedState, setFeedState, user, collection }) {
 					</Div>
 				</>
 			)}
-			<Div h50 my20 border1 roundedFull flex itemsCenter justifyCenter cursorPointer onClick={handleClickPreview}>
-				<Div spanTag>프리뷰</Div>
-			</Div>
+			<Row mt15>
+				<Col>
+					<Div clx="file-input rounded-full border-1 px-20 w-full" h50 relative flex itemsCenter justifyCenter>
+						이미지 업로드
+						<input type={"file"} onChange={handleAddFiles} multiple accept="image/png, image/gif, image/jpeg" className={"cursor-pointer"}></input>
+					</Div>
+				</Col>
+				<Col>
+					<Div h50 border1 roundedFull flex itemsCenter justifyCenter cursorPointer onClick={handleClickPreview}>
+						<Div spanTag>프리뷰</Div>
+					</Div>
+				</Col>
+				<Col>
+					<Div h50 border1 roundedFull flex itemsCenter justifyCenter cursorPointer onClick={uploadPost}>
+						<Div spanTag>게시</Div>
+					</Div>
+				</Col>
+			</Row>
+			{error && (
+				<Div mt20 textDanger textSm>
+					{error}
+				</Div>
+			)}
 		</Div>
 	);
 }
+
+const Post = ({post}) => {
+	const [previewing, setPreviewing] = useState(false);
+	const [expandImageModal, setExpandImageModal] = useState(false);
+	const handleClickImage = () => {
+		setExpandImageModal(true);
+	};
+	const handleCloseModal = () => {
+		setExpandImageModal(false);
+	};
+	return (
+		<Div roundedXl border1 py20 px20>
+			<Row flex itemsCenter>
+				<Col auto>
+					<Div imgTag src={post.nft.nft_metadatum.image_uri} h30 w30 roundedFull></Div>
+				</Col>
+				<Col auto pl0>
+					{truncateKlaytnAddress(post.nft.nft_profile?.name || post.nft.nft_metadatum.name)}
+				</Col>
+				<Col auto></Col>
+				<Col />
+			</Row>
+			{post.title && (
+				<Div textXl fontWeight={500} pt20>
+					{post.title}
+				</Div>
+			)}
+			<Div pt10>
+				<ReactMarkdown children={post.content}></ReactMarkdown>
+			</Div>
+			<Div wFull hAuto flex flexRow itemsCenter overflowXScroll gapX={20} pt20 onClick={handleClickImage}>
+				{post.image_uris.map((image_uri, index) => {
+					return <Div key={index} imgTag wFull hAuto src={image_uri} w300 h300 roundedXl objectCover />;
+				})}
+			</Div>
+			{post.image_uris.length > 0 && <ImageModal open={expandImageModal} handleCloseModal={handleCloseModal} imgSrcArr={post.image_uris} />}
+		</Div>
+	);
+};
 
 NftCollection.getInitialProps = async (context: NextPageContext) => {
 	const { contractAddress, tokenId } = context.query;
 	const res = await apiHelperWithJwtFromContext(context, apis.nftProfile.contractAddressAndTokenId(contractAddress, tokenId), "GET");
 	return {
-		nftProfile: res.nft,
+		nft: res.nft,
 		holder: {
 			...res.holder,
 		},

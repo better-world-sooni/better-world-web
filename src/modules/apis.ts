@@ -53,7 +53,13 @@ const apis = {
   },
   nft_collection: {
     contractAddress: (contractAddress) => apiV1(`/nft_collection/${contractAddress}`)
-  }
+  },
+  post: {
+    _: () => apiV1(`/post`)
+  },
+  presignedUrl: {
+    _: () => apiV1(`/presigned_url`)
+  },
 }
 
 export default apis
