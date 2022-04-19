@@ -86,6 +86,7 @@ function About({ about }) {
 	);
 }
 function NewProposal({ nftCollection, currentUser, currentNft }) {
+	console.log(currentUser);
 	const [title, setTitle] = useState("");
 	const [content, setContent] = useState("");
 	const [selectedFiles, setSelectedFiles] = useState([]);
@@ -146,7 +147,7 @@ function NewProposal({ nftCollection, currentUser, currentNft }) {
 								<Div imgTag src={currentUser.main_nft.nft_metadatum.image_uri} h30 w30 roundedFull></Div>
 							</Col>
 							<Col auto pl0>
-								{nftCollection.name} by {truncateKlaytnAddress(currentUser.username)}
+								{/* {nftCollection.name} by {truncateKlaytnAddress(currentUser.username)} */}
 							</Col>
 							<Col auto></Col>
 							<Col />
@@ -226,7 +227,7 @@ function NewProposal({ nftCollection, currentUser, currentNft }) {
 		</Div>
 	);
 }
-function NftCollection({ profile, user }) {
+function NftCollection({ profile, currentUser }) {
 	const mainNft = profile.main_nft ? profile.main_nft : profile.nfts[0];
 	const imageUri = mainNft?.nft_metadatum?.image_uri;
 	const [contentIndex, setContentIndex] = useState(0);
@@ -245,7 +246,7 @@ function NftCollection({ profile, user }) {
 	return (
 		<Div>
 			<Helmet bodyAttributes={{ style: "background-color : white;" }} />
-			<MainTopBar user={user} />
+			<MainTopBar user={currentUser} />
 			<Confetti />
 			<EmptyBlock h={20} />
 			<Div px30>
@@ -258,7 +259,7 @@ function NftCollection({ profile, user }) {
 								</Col>
 								<Col auto>
 									<Div fontWeight={500} textLg>
-										{truncateKlaytnAddress(user.username)}
+										{truncateKlaytnAddress(currentUser.username)}
 									</Div>
 								</Col>
 							</Row>

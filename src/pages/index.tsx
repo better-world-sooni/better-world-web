@@ -1,7 +1,7 @@
 import Div from "src/components/Div";
 import Helmet from "react-helmet";
 import Confetti from "src/components/modals/Confetti";
-import TopBar from "src/components/HomeTopBar";
+import HomeTopBar from "src/components/HomeTopBar";
 import EmptyBlock from "src/components/EmptyBlock";
 import Row from "src/components/Row";
 import Col from "src/components/Col";
@@ -12,7 +12,7 @@ export default function Home({ currentUser, currentNft }) {
 	return (
 		<Div>
 			<Helmet bodyAttributes={{ style: "background-color : white;" }} />
-			<TopBar user={currentUser} />
+			<HomeTopBar currentUser={currentUser} currentNft={currentNft} />
 			<Confetti />
 			<Div>
 				<EmptyBlock h={200} />

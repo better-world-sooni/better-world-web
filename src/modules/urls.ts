@@ -2,10 +2,8 @@ export const urls = {
     index: '/',
     home: '/home',
     feed: '/feed',
-    profile: {
-        klaytnAddress: (klaytnAddress) => {
-            return `/profile/${klaytnAddress}`
-        },
+    onboarding: {
+        klaytnAddress: (klaytnAddress) => `/onboarding/${klaytnAddress}`
     },
     nftProfile: {
         contractAddressAndTokenId: (contractAddress, tokenId) => {

@@ -16,35 +16,24 @@ import { IMAGES } from "src/modules/images";
 import { emailVerificationAction, signInAction } from "src/store/reducers/modalReducer";
 import { truncateKlaytnAddress } from "src/modules/constants";
 
-const HomeTopBar = ({ user }) => {
+const HomeTopBar = ({ currentUser, currentNft }) => {
 	const { locale } = useRouter();
 	const dispatch = useDispatch();
 	const isTablet = useIsTablet();
 	const onClickLogin = () => {
-		if (user) {
-			href(urls.profile.klaytnAddress(user.klaytn_account.address));
-		} else {
-			dispatch(signInAction({ enabled: true }));
+		if (currentUser) {
+			if (currentNft) {
+				href(urls.nftProfile.contractAddressAndTokenId(currentNft.contract_address, currentNft.token_id));
+				return;
+			}
+			href(urls.onboarding.klaytnAddress(currentUser.klaytn_account.address));
+			return;
 		}
-	};
-	const onClickEmailVerification = () => {
-		dispatch(emailVerificationAction({ enabled: true }));
+		dispatch(signInAction({ enabled: true }));
 	};
 
 	return (
 		<Div fixed bgWhite wFull z100 borderB1>
-			{/* <Div bgPrimaryLight>
-				<Row maxW={1100} mxAuto flex itemsCenter px30 py7>
-					<Col />
-					<Col auto textSm>
-						NFT 홀더신가요? 혹은 컬렉션 운영자? 보유/운영중인{" "}
-						<Div spanTag textPrimary>
-							Klaytn NFT 컬렉션을 손쉽게 등록해서 벳지를 얻어봐요!
-						</Div>
-					</Col>
-					<Col />
-				</Row>
-			</Div> */}
 			<Row maxW={1100} mxAuto flex itemsCenter px30 py10>
 				<Col auto px0 onClick={() => href(urls.home)}>
 					<Div imgTag src={IMAGES.betterWorldBlueLogo} h={50} w={50} style={{ objectFit: "cover" }} />
@@ -61,7 +50,6 @@ const HomeTopBar = ({ user }) => {
 				</Col>
 			</Row>
 			<SignInModal />
-			<EmailVerificationModal />
 			<KlipQRModal />
 		</Div>
 	);

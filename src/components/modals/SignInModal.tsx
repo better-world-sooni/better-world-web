@@ -18,6 +18,7 @@ import { apiHelper } from "src/modules/apiHelper";
 import apis from "src/modules/apis";
 import { loginAction } from "src/store/reducers/authReducer";
 import { signInAction } from "src/store/reducers/modalReducer";
+import { urls } from "src/modules/urls";
 
 export default function SignInModal() {
 	const dispatch = useDispatch();
@@ -32,7 +33,7 @@ export default function SignInModal() {
 	});
 	const [error, setError] = useState(null);
 	const closeModal = () => {
-		dispatch(signInAction({enabled: false}));
+		dispatch(signInAction({ enabled: false }));
 		setError(<Div spanTag>{modalsWording.signIn.encourageKlip[locale]}</Div>);
 		setQRCode({
 			enabled: false,
@@ -88,7 +89,15 @@ export default function SignInModal() {
 							address: selectedAddress,
 							signup_uuid: typeof nonceResponse.signup == "undefined" ? null : nonceResponse.signup.uuid,
 						});
-						dispatch(loginAction(verificationResponse));
+						const mainNft = verificationResponse.user.main_nft;
+						const redirect = mainNft
+							? urls.nftProfile.contractAddressAndTokenId(mainNft.contract_address, mainNft.token_id)
+							: urls.onboarding.klaytnAddress(verificationResponse.user.klaytn_account.address);
+						const loginParams = {
+							jwt: verificationResponse.jwt,
+							redirect,
+						};
+						dispatch(loginAction(loginParams));
 						closeModal();
 					}
 				}
