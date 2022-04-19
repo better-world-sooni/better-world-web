@@ -5,7 +5,7 @@ import Col from "src/components/Col";
 import Div from "src/components/Div";
 import { IMAGES } from "src/modules/images"
 
-const ChatRoomAvatars = ({
+const ChatRoomItemAvatars = ({
     firstUserAvatar = null,
     secondUserAvatar = null,
     thirdUserAvatar = null,
@@ -134,4 +134,4 @@ const ChatRoomAvatars = ({
     );
   };
   
-  export default React.memo(ChatRoomAvatars);
+  export default React.memo(ChatRoomItemAvatars);

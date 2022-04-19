@@ -1,24 +1,13 @@
 import Div from "src/components/Div";
-import Helmet from "react-helmet";
-import Confetti from "src/components/modals/Confetti";
 import Row from "src/components/Row";
 import Col from "src/components/Col";
-import Image from "next/image";
+import Helmet from "react-helmet";
+import Confetti from "src/components/modals/Confetti";
 import MainTopBar from "src/components/MainTopBar";
+import Image from "next/image";
 import { useEffect, useState, useCallback, useRef } from "react";
 import apis from "src/modules/apis";
 import { apiHelperWithToken } from "src/modules/apiHelper";
-import { RootState } from 'src/store/reducers/rootReducer';
-import { useSelector } from "react-redux";
-// import Box from '@mui/material/Box';
-// import List from '@mui/material/List';
-// import ListItem from '@mui/material/ListItem';
-// import ListItemButton from '@mui/material/ListItemButton';
-// import ListItemIcon from '@mui/material/ListItemIcon';
-// import ListItemText from '@mui/material/ListItemText';
-// import Divider from '@mui/material/Divider';
-// import InboxIcon from '@mui/icons-material/Inbox';
-// import DraftsIcon from '@mui/icons-material/Drafts';
 import { cable } from 'src/modules/cable';
 import { ChatChannel } from 'src/pages/chat/chatChannel';
 import ChatRoomItem from 'src/pages/chat/chatRoomItem';
@@ -43,7 +32,7 @@ export default function Chat({ nftCollection, proposals, about, user }) {
 	const receiveListFunRef = useRef(null);
 	const leaveRoomFunRef = useRef(null);
 
-	useEffect(() =>{
+	useEffect(() => {
 		const updateList = newMsg => {
 			let roomList = [...chatRooms];
 			const roomId = newMsg['room_id'];
