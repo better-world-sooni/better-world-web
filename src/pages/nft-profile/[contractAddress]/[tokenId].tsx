@@ -43,7 +43,7 @@ enum FeedState {
 	Editting,
 	Loading,
 }
-function NftCollection({ nft, holder, collection, posts, user }) {
+function NftCollection({ nft, holder, collection, posts, currentUser, currentNft }) {
 	// content types
 	const [contentIndex, setContentIndex] = useState(Content.Story);
 
@@ -107,7 +107,7 @@ function NftCollection({ nft, holder, collection, posts, user }) {
 	return (
 		<Div>
 			<Helmet bodyAttributes={{ style: "background-color : white;" }} />
-			<MainTopBar user={user} />
+			<MainTopBar user={currentUser} />
 			<Confetti />
 			<EmptyBlock h={20} />
 			<Div px30>
@@ -115,7 +115,7 @@ function NftCollection({ nft, holder, collection, posts, user }) {
 					<Row flex py20>
 						<Col auto>
 							<Div w300>
-								<NftCard nft={nft} holder={holder} user={user} />
+								<NftCard nft={nft} holder={holder} user={currentUser} />
 								<EmptyBlock h={20} />
 								<Div roundedXl px20 py20 border1 cursorPointer onClick={() => href(urls.nftCollection.contractAddress(collection.contract_address))}>
 									<Div fontWeight={500}>컬렉션</Div>
@@ -241,7 +241,7 @@ function NftCollection({ nft, holder, collection, posts, user }) {
 									{
 										[Content.Story]: <Story story={story} handleEditStory={handleEditStory} />,
 										[Content.Feed]: (
-											<Feed nft={nft} posts={posts} feedState={feedState} setFeedState={setFeedState} user={user} collection={collection} />
+											<Feed nft={nft} posts={posts} feedState={feedState} setFeedState={setFeedState} user={currentUser} collection={collection} />
 										),
 									}[contentIndex]
 								}

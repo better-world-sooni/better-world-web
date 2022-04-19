@@ -16,12 +16,11 @@ import { IMAGES } from "src/modules/images";
 import { getJwt } from 'src/modules/cookieHelper'
 import { Alert } from 'react-alert'
 
-export default function Chat({ nftCollection, proposals, about, user }) {
+export default function Chat({ nftCollection, proposals, about, currentUser, currentNft }) {
 
 	const jwt = getJwt();
-	const currentUser = user;
-	const userUuid = user.uuid;
-	const userAvatar = user.main_nft.nft_metadatum.image_uri;
+	const userUuid = currentUser.uuid;
+	const userAvatar = currentUser.main_nft.nft_metadatum.image_uri;
 	const [chatRooms, setChatRooms] = useState([]);
 	const [currentRoomId, setCurrentRoomId] = useState(null);
 	const [chatSocket, setChatSocket] = useState(null);
@@ -160,7 +159,7 @@ export default function Chat({ nftCollection, proposals, about, user }) {
 	return (
 		<Div>
 			<Helmet bodyAttributes={{ style: "background-color : white;" }} />
-			<MainTopBar user={user} />
+			<MainTopBar user={currentUser} />
 			<Confetti />
 			
 			<Row flex px30>

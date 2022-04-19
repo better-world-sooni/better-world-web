@@ -85,7 +85,7 @@ function About({ about }) {
 		</Div>
 	);
 }
-function NewProposal({ nftCollection, user }) {
+function NewProposal({ nftCollection, currentUser, currentNft }) {
 	const [title, setTitle] = useState("");
 	const [content, setContent] = useState("");
 	const [selectedFiles, setSelectedFiles] = useState([]);
@@ -143,10 +143,10 @@ function NewProposal({ nftCollection, user }) {
 					<Div roundedXl border1 py20 px20>
 						<Row flex itemsCenter>
 							<Col auto>
-								<Div imgTag src={user.main_nft.nft_metadatum.image_uri} h30 w30 roundedFull></Div>
+								<Div imgTag src={currentUser.main_nft.nft_metadatum.image_uri} h30 w30 roundedFull></Div>
 							</Col>
 							<Col auto pl0>
-								{nftCollection.name} by {truncateKlaytnAddress(user.username)}
+								{nftCollection.name} by {truncateKlaytnAddress(currentUser.username)}
 							</Col>
 							<Col auto></Col>
 							<Col />

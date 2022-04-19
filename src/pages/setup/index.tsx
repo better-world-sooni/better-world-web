@@ -14,7 +14,7 @@ import { apiHelperWithToken } from "src/modules/apiHelper";
 import { BadgeCheckIcon } from "@heroicons/react/solid";
 import NftCollectionProfile from "src/components/common/NftCollectionProfile";
 
-export default function Home({ user }) {
+export default function Home({ currentUser, currentNft }) {
 	const [contract, setContract] = useState("");
 	const [error, setError] = useState({
 		value: false,
@@ -118,7 +118,7 @@ export default function Home({ user }) {
 	return (
 		<Div>
 			<Helmet bodyAttributes={{ style: "background-color : white;" }} />
-			<MainTopBar user={user} />
+			<MainTopBar user={currentUser} />
 			<Confetti />
 			<EmptyBlock h={40} />
 			<Div px30>

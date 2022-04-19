@@ -34,8 +34,8 @@ const redirectRoot = (ctx) => {
 MyApp.getInitialProps = async ({ Component, ctx }): Promise<AppInitialProps> => {
 	const { jwt } = cookies(ctx);
 	const requiresLogin = ctx.pathname != "/" && ctx.pathname != "/[lang]" && !ctx.pathname.startsWith("/[lang]/portal");
-	let user = null;
-	let nft = null;
+	let currentUser = null;
+	let currentNft = null;
 	if (requiresLogin) {
 		if (jwt) {
 			const authResponse = await apiHelperWithJwtFromContext(ctx, apis.auth.user._(), "GET");
@@ -43,8 +43,8 @@ MyApp.getInitialProps = async ({ Component, ctx }): Promise<AppInitialProps> => 
 				redirectRoot(ctx);
 			} else {
 				setJwt(authResponse.jwt);
-				user = authResponse.user;
-				nft = authResponse.user;
+				currentUser = authResponse.user;
+				currentNft = authResponse.user;
 			}
 		} else {
 			redirectRoot(ctx);
@@ -53,18 +53,18 @@ MyApp.getInitialProps = async ({ Component, ctx }): Promise<AppInitialProps> => 
 		const authResponse = await apiHelperWithJwtFromContext(ctx, apis.auth.user._(), "GET");
 		if (authResponse.success) {
 			setJwt(authResponse.jwt);
-			user = authResponse.user;
-			nft = authResponse.user;
+			currentUser = authResponse.user;
+			currentNft = authResponse.user;
 		}
 	}
 	if (Component.getInitialProps) {
 		const componentAsyncProps = await Component.getInitialProps(ctx);
-		return { pageProps: { ...componentAsyncProps, user } };
+		return { pageProps: { ...componentAsyncProps, currentUser, currentNft } };
 	}
 	return {
 		pageProps: {
-			user,
-			nft,
+			currentUser,
+			currentNft,
 		},
 	};
 };

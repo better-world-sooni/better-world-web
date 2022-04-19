@@ -8,11 +8,11 @@ import Col from "src/components/Col";
 import { IMAGES } from "src/modules/images";
 import { truncateKlaytnAddress } from "src/modules/constants";
 
-export default function Home({ user }) {
+export default function Home({ currentUser, currentNft }) {
 	return (
 		<Div>
 			<Helmet bodyAttributes={{ style: "background-color : white;" }} />
-			<TopBar user={user} />
+			<TopBar user={currentUser} />
 			<Confetti />
 			<Div>
 				<EmptyBlock h={200} />

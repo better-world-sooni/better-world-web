@@ -208,8 +208,7 @@ function About({ about }) {
 // 		</Div>
 // 	);
 // }
-function NftCollection({ nftCollection, posts, about, user }) {
-	console.log(user);
+function NftCollection({ nftCollection, posts, about, currentUser, currentNft }) {
 	const [contentIndex, setContentIndex] = useState(0);
 	const handleClickFeed = () => {
 		setContentIndex(0);
@@ -226,7 +225,7 @@ function NftCollection({ nftCollection, posts, about, user }) {
 	return (
 		<Div>
 			<Helmet bodyAttributes={{ style: "background-color : white;" }} />
-			<MainTopBar user={user} />
+			<MainTopBar user={currentUser} />
 			<Confetti />
 			<EmptyBlock h={20} />
 			<Div px30>
