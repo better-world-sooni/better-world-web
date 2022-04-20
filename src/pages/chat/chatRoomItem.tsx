@@ -12,12 +12,12 @@ export default function ChatRoomItem({
     title,
     createdAt,
     lastMessage,
-    numUsers,
+    numNfts,
     unreadMessageCount,
-    firstUserAvatar = null,
-    secondUserAvatar = null,
-    thirdUserAvatar = null,
-    fourthUserAvatar = null,
+    firstNftAvatar = null,
+    secondNftAvatar = null,
+    thirdNftAvatar = null,
+    fourthNftAvatar = null,
 }) {
 
 
@@ -40,10 +40,10 @@ export default function ChatRoomItem({
         <Row px20 py10 flex bgWhite onClick={()=>onclick(chatRoomId)}>
             <Col auto mr10 relative>
                 <ChatRoomItemAvatars
-                firstUserAvatar={firstUserAvatar}
-                secondUserAvatar={secondUserAvatar}
-                thirdUserAvatar={thirdUserAvatar}
-                fourthUserAvatar={fourthUserAvatar}
+                firstNftAvatar={firstNftAvatar}
+                secondNftAvatar={secondNftAvatar}
+                thirdNftAvatar={thirdNftAvatar}
+                fourthNftAvatar={fourthNftAvatar}
                 />
             </Col>
             <Col justifyCenter>
@@ -53,8 +53,11 @@ export default function ChatRoomItem({
                             {title}
                         </Div>
                     </Col>
-                    <Col auto fontSize={15}>
+                    <Col auto fontSize={5}>
                         <Div>{category}</Div>
+                    </Col>
+                    <Col auto fontSize={5}>
+                        <Div>{numNfts}</Div>
                     </Col>
                     <Col justifyCenter itemsEnd>
                         <Div fontSize={13}>

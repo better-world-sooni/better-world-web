@@ -2,26 +2,27 @@ import Div from "src/components/Div";
 import Row from "src/components/Row";
 import Col from "src/components/Col";
 import Image from "next/image";
+import { IMAGES } from "src/modules/images"
 
-const Messages = ({messages, currentUser}) => {
+const Messages = ({messages, currentNftId}) => {
     return(
         <Div overflowHidden overflowAuto>
             {messages.map((message, index) => {
-                const author = message.user_uuid;
-                const isSameUser = messages[index + 1]?.user_uuid === author;
-                const isMyMessage = author === currentUser.uuid;
+                const author = message.nft;
+                const isSameNft = messages[index + 1]?.nft === author;
+                const isMyMessage = author === currentNftId;
                 const text = message.text;
                 const time = message.created_at;
-                const avatar = message.avatar;
+                // const avatar = message.avatar;
 
                 return(
                     <Div key={index} >
                         <Row {...(isMyMessage && {flexRowReverse: true})}>
                             <Col auto>
-                                {!isSameUser && 
+                                {!isSameNft && 
                                     <Image
                                     alt="back"
-                                    src={avatar}
+                                    src={IMAGES.characters.default}
                                     height={25}
                                     width={25}
                                     />

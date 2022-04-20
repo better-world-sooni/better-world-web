@@ -19,23 +19,25 @@ import { Alert } from 'react-alert'
 export default function Chat({ nftCollection, proposals, about, currentUser, currentNft }) {
 
 	const jwt = getJwt();
-	const userUuid = currentUser.uuid;
-	const userAvatar = currentUser.main_nft.nft_metadatum.image_uri;
+	const currentNftId = {"token_id": currentNft.token_id, "contract_address": currentNft.contract_address}
 	const [chatRooms, setChatRooms] = useState([]);
 	const [currentRoomId, setCurrentRoomId] = useState(null);
 	const [chatSocket, setChatSocket] = useState(null);
-	const [enterUsers, setEnterUsers] = useState([]);
+	const [enterNfts, setEnterNfts] = useState([]);
 	const [messages, setMessages] = useState([]);
-	const enterUserFunRef = useRef(null);
+	const enterNftFunRef = useRef(null);
 	const receiveMessageFunRef = useRef(null);
 	const receiveListFunRef = useRef(null);
 	const leaveRoomFunRef = useRef(null);
 
 	useEffect(() => {
-		const updateList = newMsg => {
+		console.log("nfts: ", enterNfts);
+	}, [enterNfts])
+
+	useEffect(() => {
+		const updateList = (newMsg, roomId) => {
 			let roomList = [...chatRooms];
-			const roomId = newMsg['room_id'];
-			const index = roomList.findIndex(x=>x.room_info.id === roomId);
+			const index = roomList.findIndex(x=>x.room_info._id.$oid === roomId);
 			roomList.splice(0, 0, roomList.splice(index, 1)[0]);
 			roomList[0].last_message = newMsg['text'];
 			if(roomId != currentRoomId) {
@@ -51,13 +53,13 @@ export default function Chat({ nftCollection, proposals, about, currentUser, cur
 
 	useEffect(() => {
 		console.log("roomId change", currentRoomId)
-		const enterUser = res => {
+		const enterNft = res => {
 			if(currentRoomId === res['room']) {
-				const newUsers = res['new_users'];
+				const newNfts = res['new_nfts'];
 				const newMsgs = res["update_msgs"];
-				console.log(currentRoomId, "newUser:", newUsers);
+				console.log(currentRoomId, "newNft:", newNfts);
 				console.log(currentRoomId, "newMsgs:", newMsgs);
-				setEnterUsers(newUsers);
+				setEnterNfts(newNfts);
 				setMessages(newMsgs)
 			}
 		}
@@ -66,16 +68,16 @@ export default function Chat({ nftCollection, proposals, about, currentUser, cur
 				console.log("message receive", res['data']);
 				setMessages((m) => [res['data'], ...m]);
 			}
-			setChatRooms([...receiveListFunRef.current(res['data'])])
+			setChatRooms([...receiveListFunRef.current(res['data'], res['room'])])
 		}
 		const leaveRoom = res => {
 			if(currentRoomId === res['room']) {
-				if(userUuid != res['leave_user']){
-					setEnterUsers([...res['new_users']]);
+				if(currentNftId != res['leave_nft']){
+					setEnterNfts([...res['new_nfts']]);
 				}
 			}
 		}
-		enterUserFunRef.current = enterUser;
+		enterNftFunRef.current = enterNft;
 		receiveMessageFunRef.current = receiveMessage;
 		leaveRoomFunRef.current = leaveRoom;
 	}, [currentRoomId])
@@ -84,15 +86,15 @@ export default function Chat({ nftCollection, proposals, about, currentUser, cur
 	useEffect(() => {
 		let channel;
 		const wsConnect = async () => {
-			channel = new ChatChannel({userUuid: userUuid});
-			await cable(jwt).subscribe(channel);
-			setChatSocket(channel);     
 			const res = await apiHelperWithToken(apis.chat.chatRoom.main());
 			if (res?.chat_rooms) {
 				setChatRooms(res.chat_rooms);
 			}
+			channel = new ChatChannel(currentNftId);
+			await cable(jwt).subscribe(channel);
+			setChatSocket(channel);     
 			channel.on('enter', res => {
-				enterUserFunRef.current(res);
+				enterNftFunRef.current(res);
 			});
 			channel.on('message', res => {
 				receiveMessageFunRef.current(res);
@@ -114,7 +116,7 @@ export default function Chat({ nftCollection, proposals, about, currentUser, cur
 
 	const refreshUnreadCount = useCallback((roomId) => {
 		let roomList = [...chatRooms];
-		const index = roomList.findIndex(x=>x.room_info.id === roomId);
+		const index = roomList.findIndex(x=>x.room_info._id.$oid === roomId);
 		roomList[index].unread_count = 0;
 		return roomList;
 	}, [chatRooms]);
@@ -135,17 +137,15 @@ export default function Chat({ nftCollection, proposals, about, currentUser, cur
 		console.log("close");
 		let _ = await chatSocket.leave(currentRoomId);
 		setCurrentRoomId(null);
-		setEnterUsers([]);
+		setEnterNfts([]);
 		setMessages([]);
 	}
 
 	const sendMessage = async(text) => {
 		const msg = {
-			room_id: currentRoomId,
-			user_uuid: userUuid,
-			avatar: userAvatar,
 			text: text,
-			read_user_ids: enterUsers,
+			nft: currentNftId,
+			read_nft_ids: enterNfts,
 		};
 		console.log("send", msg);
 		if(chatSocket) {
@@ -169,17 +169,17 @@ export default function Chat({ nftCollection, proposals, about, currentUser, cur
 					</Div>
 					<Div>
 						{chatRooms.length && chatRooms.map((room, index) => {
-							const chatRoomId = room.room_info.id;
+							const chatRoomId = room.room_info._id.$oid;
 							const category = room.room_info.category;
 							const createdAt = room.room_info.created_at;
-							const title = room.room_info.name;
-							const numUsers = room.num_users;
+							const title = room.room_info.roomname;
+							const numNfts = room.num_nfts;
 							const unreadMessageCount = room.unread_count;
 							const lastMessage = room.last_message;
-							const firstUserAvatar=room.profile_imgs[0];
-							const secondUserAvatar=room.profile_imgs[1];
-							const thirdUserAvatar=room.profile_imgs[2];
-							const fourthUserAvatar=room.profile_imgs[3];
+							const firstNftAvatar=room.profile_imgs[0];
+							const secondNftAvatar=room.profile_imgs[1];
+							const thirdNftAvatar=room.profile_imgs[2];
+							const fourthNftAvatar=room.profile_imgs[3];
 							return (
 								<ChatRoomItem 
 									key={index}
@@ -188,13 +188,13 @@ export default function Chat({ nftCollection, proposals, about, currentUser, cur
 									category={category}
 									createdAt={createdAt}
 									title={title}
-									numUsers = {numUsers}
+									numNfts = {numNfts}
 									unreadMessageCount={unreadMessageCount}
 									lastMessage={lastMessage}
-									firstUserAvatar={firstUserAvatar}
-									secondUserAvatar={secondUserAvatar}
-									thirdUserAvatar={thirdUserAvatar}
-									fourthUserAvatar={fourthUserAvatar}
+									firstNftAvatar={firstNftAvatar}
+									secondNftAvatar={secondNftAvatar}
+									thirdNftAvatar={thirdNftAvatar}
+									fourthNftAvatar={fourthNftAvatar}
 								/>
 							);
 						})}
@@ -204,7 +204,7 @@ export default function Chat({ nftCollection, proposals, about, currentUser, cur
 					{currentRoomId ? 
 					<ChatRoom
 						currentRoomId={currentRoomId}
-						currentUser={currentUser}
+						currentNftId={currentNftId}
 						messages={messages}
 						closeOnClick={closeRoom}
 						sendOnClick={sendMessage}

@@ -8,7 +8,7 @@ import Messages from "src/pages/chat/messages";
 
 export default function ChatRoom({
     currentRoomId,
-    currentUser,
+    currentNftId,
     messages,
     closeOnClick,
     sendOnClick
@@ -47,7 +47,7 @@ export default function ChatRoom({
             <Row flex>
                     <Messages
                         messages={messages}
-                        currentUser={currentUser}
+                        currentNftId={currentNftId}
                     /> 
             </Row>
             <Div flex flexCol roundedMd border1 borderBlack >
