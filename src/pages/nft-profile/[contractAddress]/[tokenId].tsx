@@ -105,141 +105,158 @@ function NftCollection({ nft, collection, posts, currentUser, currentNft }) {
 			<Confetti />
 			<EmptyBlock h={20} />
 			<Div px30>
-				<Div mxAuto maxW={1100} px10>
-					<Row flex py20>
-						<Col auto>
-							<Div w300>
-								<NftCard nft={nft} currentNft={currentNft} />
-								<EmptyBlock h={20} />
-								<Div roundedXl px20 py20 border1 cursorPointer onClick={() => href(urls.nftCollection.contractAddress(collection.contract_address))}>
-									<Div fontWeight={500}>컬렉션</Div>
-									<Row itemsCenter flex mt10>
-										<Col auto pr0>
-											<Div imgTag src={collection.image_uri} h40 w40 roundedFull></Div>
-										</Col>
-										<Col>
-											<Div>{collection.name}</Div>
-										</Col>
-									</Row>
-								</Div>
-							</Div>
+				<Div mxAuto maxW={700}>
+					<Row>
+						<Col>
+							<NftCard nft={nft} currentNft={currentNft} />
 						</Col>
 						<Col>
-							<Row>
-								<Col auto px5>
-									<Div h50 roundedFull px20 flex itemsCenter justifyCenter border1 cursorPointer onClick={() => setContentIndex(Content.Feed)}>
-										<Div textCenter>Feed</Div>
-									</Div>
-								</Col>
-								<Col auto px5>
-									<Div h50 roundedFull px20 flex itemsCenter justifyCenter border1 cursorPointer onClick={() => setContentIndex(Content.Capsules)}>
-										<Div textCenter>Capsules</Div>
-									</Div>
-								</Col>
-								<Col auto pr5>
-									<Div h50 roundedFull px20 flex itemsCenter justifyCenter border1 cursorPointer onClick={() => setContentIndex(Content.Story)}>
-										<Div textCenter>Story</Div>
-									</Div>
-								</Col>
-								<Col></Col>
-								<Col auto>
-									{
-										{
-											[Content.Story]: (
-												<Div>
-													{
-														{
-															[StoryState.Stale]: (
-																<Div h50 roundedFull px20 flex itemsCenter justifyCenter border1 cursorPointer onClick={handleClickEditStory}>
-																	<PencilIcon height={20} width={20} scale={1} strokeWidth={0.5} />
-																</Div>
-															),
-															[StoryState.Editting]: (
-																<Div
-																	h50
-																	roundedFull
-																	px20
-																	flex
-																	itemsCenter
-																	justifyCenter
-																	border1
-																	cursorPointer
-																	textGray200={!isValidStory}
-																	onClick={handleClickSaveStory}
-																>
-																	<CheckCircleIcon height={20} width={20} scale={1} strokeWidth={0.5} />
-																</Div>
-															),
-															[StoryState.Loading]: (
-																<Div h50 roundedFull px20 flex itemsCenter justifyCenter border1>
-																	<Div clx={"animate-spin"}>
-																		<RefreshIcon height={20} width={20} scale={1} strokeWidth={0.5} className={"-scale-x-100"} />
-																	</Div>
-																</Div>
-															),
-														}[story.state]
-													}
-												</Div>
-											),
-											[Content.Feed]: (
-												<Div>
-													{
-														{
-															[FeedState.Stale]: (
-																<Div
-																	h50
-																	roundedFull
-																	px20
-																	flex
-																	itemsCenter
-																	justifyCenter
-																	border1
-																	cursorPointer
-																	onClick={() => setFeedState(FeedState.Editting)}
-																>
-																	<PlusIcon height={20} width={20} scale={1} strokeWidth={0.5} />
-																</Div>
-															),
-															[FeedState.Editting]: (
-																<Div
-																	h50
-																	roundedFull
-																	px20
-																	flex
-																	itemsCenter
-																	justifyCenter
-																	border1
-																	cursorPointer
-																	onClick={() => setFeedState(FeedState.Stale)}
-																>
-																	<XIcon height={20} width={20} scale={1} strokeWidth={0.5} />
-																</Div>
-															),
-															[FeedState.Loading]: (
-																<Div h50 roundedFull px20 flex itemsCenter justifyCenter border1>
-																	<Div clx={"animate-spin"}>
-																		<RefreshIcon height={20} width={20} scale={1} strokeWidth={0.5} className={"-scale-x-100"} />
-																	</Div>
-																</Div>
-															),
-														}[feedState]
-													}
-												</Div>
-											),
-										}[contentIndex]
-									}
-								</Col>
-							</Row>
-							<Div>
-								{
-									{
-										[Content.Story]: <Story story={story} handleEditStory={handleEditStory} />,
-										[Content.Feed]: <Feed currentNft={currentNft} posts={posts} feedState={feedState} setFeedState={setFeedState} />,
-									}[contentIndex]
-								}
+							<Div
+								roundedXl
+								px20
+								py20
+								border1
+								cursorPointer
+								onClick={() => href(urls.nftCollection.contractAddress(collection.contract_address))}
+								mb20
+							>
+								<Div fontWeight={500}>컬렉션</Div>
+								<Row itemsCenter flex mt10>
+									<Col auto pr0>
+										<Div imgTag src={collection.image_uri} h40 w40 roundedFull></Div>
+									</Col>
+									<Col>
+										<Div>{collection.name}</Div>
+									</Col>
+								</Row>
+							</Div>
+							<Div roundedXl px20 py20 border1 cursorPointer onClick={() => href(urls.nftCollection.contractAddress(collection.contract_address))}>
+								<Div fontWeight={500}>스토리</Div>
+								<Row itemsCenter flex mt10>
+									<Col auto pr0>
+										<Div imgTag src={collection.image_uri} h40 w40 roundedFull></Div>
+									</Col>
+									<Col>
+										<Div>{collection.name}</Div>
+									</Col>
+								</Row>
 							</Div>
 						</Col>
 					</Row>
+
+					<Row>
+						<Col auto px5>
+							<Div h50 roundedFull px20 flex itemsCenter justifyCenter border1 cursorPointer onClick={() => setContentIndex(Content.Feed)}>
+								<Div textCenter>Feed</Div>
+							</Div>
+						</Col>
+						<Col auto px5>
+							<Div h50 roundedFull px20 flex itemsCenter justifyCenter border1 cursorPointer onClick={() => setContentIndex(Content.Capsules)}>
+								<Div textCenter>Capsules</Div>
+							</Div>
+						</Col>
+						<Col auto pr5>
+							<Div h50 roundedFull px20 flex itemsCenter justifyCenter border1 cursorPointer onClick={() => setContentIndex(Content.Story)}>
+								<Div textCenter>Story</Div>
+							</Div>
+						</Col>
+						<Col></Col>
+						<Col auto>
+							{
+								{
+									[Content.Story]: (
+										<Div>
+											{
+												{
+													[StoryState.Stale]: (
+														<Div h50 roundedFull px20 flex itemsCenter justifyCenter border1 cursorPointer onClick={handleClickEditStory}>
+															<PencilIcon height={20} width={20} scale={1} strokeWidth={0.5} />
+														</Div>
+													),
+													[StoryState.Editting]: (
+														<Div
+															h50
+															roundedFull
+															px20
+															flex
+															itemsCenter
+															justifyCenter
+															border1
+															cursorPointer
+															textGray200={!isValidStory}
+															onClick={handleClickSaveStory}
+														>
+															<CheckCircleIcon height={20} width={20} scale={1} strokeWidth={0.5} />
+														</Div>
+													),
+													[StoryState.Loading]: (
+														<Div h50 roundedFull px20 flex itemsCenter justifyCenter border1>
+															<Div clx={"animate-spin"}>
+																<RefreshIcon height={20} width={20} scale={1} strokeWidth={0.5} className={"-scale-x-100"} />
+															</Div>
+														</Div>
+													),
+												}[story.state]
+											}
+										</Div>
+									),
+									[Content.Feed]: (
+										<Div>
+											{
+												{
+													[FeedState.Stale]: (
+														<Div
+															h50
+															roundedFull
+															px20
+															flex
+															itemsCenter
+															justifyCenter
+															border1
+															cursorPointer
+															onClick={() => setFeedState(FeedState.Editting)}
+														>
+															<PlusIcon height={20} width={20} scale={1} strokeWidth={0.5} />
+														</Div>
+													),
+													[FeedState.Editting]: (
+														<Div
+															h50
+															roundedFull
+															px20
+															flex
+															itemsCenter
+															justifyCenter
+															border1
+															cursorPointer
+															onClick={() => setFeedState(FeedState.Stale)}
+														>
+															<XIcon height={20} width={20} scale={1} strokeWidth={0.5} />
+														</Div>
+													),
+													[FeedState.Loading]: (
+														<Div h50 roundedFull px20 flex itemsCenter justifyCenter border1>
+															<Div clx={"animate-spin"}>
+																<RefreshIcon height={20} width={20} scale={1} strokeWidth={0.5} className={"-scale-x-100"} />
+															</Div>
+														</Div>
+													),
+												}[feedState]
+											}
+										</Div>
+									),
+								}[contentIndex]
+							}
+						</Col>
+					</Row>
+					<Div>
+						{
+							{
+								[Content.Story]: <Story story={story} handleEditStory={handleEditStory} />,
+								[Content.Feed]: <Feed currentNft={currentNft} posts={posts} feedState={feedState} setFeedState={setFeedState} />,
+							}[contentIndex]
+						}
+					</Div>
 				</Div>
 			</Div>
 		</Div>
@@ -617,12 +634,10 @@ function NewProposal({ currentNft, feedState, setFeedState }) {
 }
 
 const Post = ({ post, currentNft, preview = false }) => {
-	console.log(post);
-	const placeholder = "댓글을 적어주세요";
+	const [comments, setComments] = useState(post.comments);
 	const [expandImageModal, setExpandImageModal] = useState(false);
-	const [liked, setLiked] = useState(post.likes && post.likes.length > 0);
-	const [comment, setComment] = useState("");
-	const textRef = useRef(null);
+	const [liked, setLiked] = useState(post.is_liked);
+
 	const handleClickImage = () => {
 		setExpandImageModal(true);
 	};
@@ -634,16 +649,10 @@ const Post = ({ post, currentNft, preview = false }) => {
 		const verb = liked ? "DELETE" : "POST";
 		apiHelperWithToken(apis.like.post(post.id), verb);
 	};
-	const handleCommentChange = ({ target: { value } }) => {
-		setComment(value);
+	const handleNewCommentSuccess = (comment) => {
+		setComments([...comments, comment]);
 	};
-	const handlePostComment = async () => {
-		const res = await apiHelperWithToken(apis.comment.post(post.id), "POST", {
-			content: comment,
-		});
-		console.log(res);
-		setComment("");
-	};
+
 	return (
 		<Div roundedXl border1 pt20 pb10 px20>
 			<Row flex itemsCenter>
@@ -701,42 +710,90 @@ const Post = ({ post, currentNft, preview = false }) => {
 					</Col>
 				</Row>
 			)}
-			{post.comments.length > 0 &&
-				post.comments.map((comment) => {
-					return (
-						<Row gapX={0} mt10 key={comment.id}>
-							<Col flex itemsCenter justifyCenter py10 auto pr0>
-								<Div imgTag src={comment.nft_metadatum.image_uri} roundedFull h35 w35 overflowHidden></Div>
-							</Col>
-							<Col flex itemsCenter justifyCenter py10 cursorPointer></Col>
-							<Col flex itemsCenter justifyCenter py10 auto pl5 pr20 onClick={handlePostComment} cursorPointer>
-								게시
-							</Col>
-						</Row>
-					);
-				})}
-			<Row gapX={0} mt10>
-				<Col flex itemsCenter justifyCenter py10 auto pr0>
-					<Div imgTag src={currentNft.nft_metadatum.image_uri} roundedFull h35 w35 overflowHidden></Div>
-				</Col>
-				<Col flex itemsCenter justifyCenter py10 cursorPointer>
-					<Div wFull roundedXl bgGray200 px15 pt5>
-						<TextareaAutosize
-							onChange={handleCommentChange}
-							placeholder={placeholder}
-							style={{ boxShadow: "none", border: "none", resize: "none", width: "100%", padding: 0, background: "transparent" }}
-						/>
-					</Div>
-				</Col>
-				<Col flex itemsCenter justifyCenter py10 auto pl5 pr20 onClick={handlePostComment} cursorPointer>
-					게시
-				</Col>
-			</Row>
+			{comments.map((comment) => {
+				return <Comment key={comment.id} comment={comment} />;
+			})}
+			<NewComment currentNft={currentNft} postId={post.id} onSuccess={handleNewCommentSuccess} />
 			{post.image_uris.length > 0 && <ImageModal open={expandImageModal} handleCloseModal={handleCloseModal} imgSrcArr={post.image_uris} />}
 		</Div>
 	);
 };
 
+const Comment = ({ comment }) => {
+	console.log(comment);
+	const [liked, setLiked] = useState(comment.is_liked);
+	const handleClickLike = () => {
+		setLiked(!liked);
+		const verb = liked ? "DELETE" : "POST";
+		apiHelperWithToken(apis.like.comment(comment.id), verb);
+	};
+	return (
+		<Row gapX={0} mt10>
+			<Col flex itemsCenter justifyCenter py10 auto pr0>
+				<Div imgTag src={comment.nft.nft_metadatum.image_uri} roundedFull h35 w35 overflowHidden></Div>
+			</Col>
+			<Col flex itemsCenter justifyCenter py10 cursorPointer auto>
+				{comment.nft.nft_profile.name || comment.nft.nft_metadatum.name}
+			</Col>
+			<Col flex itemsCenter py10 cursorPointer>
+				{comment.content}
+			</Col>
+			<Col flex itemsCenter justifyCenter py10 auto pl5 pr20 cursorPointer onClick={handleClickLike}>
+				{liked ? <HeartIconSolid height={25} width={25} fill={COLORS.DANGER} /> : <HeartIcon height={25} width={25} />}
+			</Col>
+		</Row>
+	);
+};
+
+const NewComment = ({ currentNft, postId, onSuccess }) => {
+	const placeholder = "댓글을 적어주세요";
+	const [newComment, setNewComment] = useState("");
+	const [loading, setLoading] = useState(false);
+	const handleCommentChange = ({ target: { value } }) => {
+		setNewComment(value);
+	};
+	const handlePostComment = async () => {
+		if (!loading) {
+			setLoading(true);
+			const res = await apiHelperWithToken(apis.comment.post(postId), "POST", {
+				content: newComment,
+			});
+			if (res.success) {
+				onSuccess(res.comment);
+				setNewComment("");
+			}
+			setLoading(false);
+		}
+	};
+	return (
+		<Row gapX={0} mt10>
+			<Col flex itemsCenter justifyCenter py10 auto pr0>
+				<Div imgTag src={currentNft.nft_metadatum.image_uri} roundedFull h35 w35 overflowHidden></Div>
+			</Col>
+			<Col flex itemsCenter justifyCenter py10 cursorPointer>
+				<Div wFull roundedXl bgGray200 px15 pt5>
+					<TextareaAutosize
+						onChange={handleCommentChange}
+						placeholder={placeholder}
+						style={{ boxShadow: "none", border: "none", resize: "none", width: "100%", padding: 0, background: "transparent" }}
+					/>
+				</Div>
+			</Col>
+			<Col flex itemsCenter justifyCenter py10 auto pl5 pr20 onClick={handlePostComment} cursorPointer>
+				{loading ? <LoadingIcon /> : "게시"}
+			</Col>
+		</Row>
+	);
+};
+
+const LoadingIcon = () => {
+	return (
+		<Div clx={"animate-spin"}>
+			<RefreshIcon height={30} width={30} strokeWidth={0.5} className={"-scale-x-100"} />
+		</Div>
+	);
+};
+ 
 NftCollection.getInitialProps = async (context: NextPageContext) => {
 	const { contractAddress, tokenId } = context.query;
 	const res = await apiHelperWithJwtFromContext(context, apis.nftProfile.contractAddressAndTokenId(contractAddress, tokenId), "GET");

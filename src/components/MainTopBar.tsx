@@ -60,11 +60,11 @@ const MainTopBar = ({ currentUser, currentNft }) => {
 						Chat
 					</Col>
 					{currentNft ? (
-						<Col auto pt5 pb5 px20>
+						<Col auto pt5 pb5 pl20>
 							<Div cursorPointer onClick={onClickProfile} imgTag src={currentNft.nft_metadatum.image_uri} h36 w36 roundedFull></Div>
 						</Col>
 					) : (
-						<Col auto rounded3xl px20 pt5 cursorPointer border1 pb8 onClick={onClickLogin} clx={"animate-bounce"}>
+						<Col auto rounded3xl pl20 pt5 cursorPointer border1 pb8 onClick={onClickLogin} clx={"animate-bounce"}>
 							연결
 						</Col>
 					)}
