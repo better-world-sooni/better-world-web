@@ -17,7 +17,7 @@ import { IMAGES } from "src/modules/images";
 import EmptyBlock from "./EmptyBlock";
 import { truncateKlaytnAddress } from "src/modules/constants";
 
-const MainTopBar = ({ user }) => {
+const MainTopBar = ({ currentUser, currentNft }) => {
 	const { locale } = useRouter();
 	const dispatch = useDispatch();
 	const isTablet = useIsTablet();
@@ -28,8 +28,10 @@ const MainTopBar = ({ user }) => {
 		dispatch(emailVerificationAction({ enabled: true }));
 	};
 	const onClickProfile = () => {
-		// href(urls.profile.klaytnAddress(user.klaytn_account.address));
-	}
+		if (currentNft) {
+			href(urls.nftProfile.contractAddressAndTokenId(currentNft.contract_address, currentNft.token_id));
+		}
+	};
 	const onClickChat = () => {
 		href(urls.chat);
 	};
@@ -57,9 +59,9 @@ const MainTopBar = ({ user }) => {
 					<Col auto rounded3xl px20 pt5 cursorPointer border1 pb8 onClick={onClickChat}>
 						Chat
 					</Col>
-					{user ? (
-						<Col auto rounded3xl px20 pt5 cursorPointer border1 pb8 onClick={onClickProfile}>
-							{truncateKlaytnAddress(user.klaytn_account.address)}
+					{currentNft ? (
+						<Col auto pt5 pb5 px20>
+							<Div cursorPointer onClick={onClickProfile} imgTag src={currentNft.nft_metadatum.image_uri} h36 w36 roundedFull></Div>
 						</Col>
 					) : (
 						<Col auto rounded3xl px20 pt5 cursorPointer border1 pb8 onClick={onClickLogin} clx={"animate-bounce"}>

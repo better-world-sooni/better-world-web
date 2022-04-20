@@ -11,7 +11,7 @@ import cookies from "next-cookies";
 import "styles/tailwind.css";
 
 function MyApp({ Component, pageProps }: AppProps) {
-	const [prevPage, setPrevPage] = useSessionStorage("prevPage", null);
+	const [_, setPrevPage] = useSessionStorage("prevPage", null);
 	const router = useRouter();
 	useEffect(() => {
 		return () => {

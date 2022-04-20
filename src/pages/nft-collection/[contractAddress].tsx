@@ -225,7 +225,7 @@ function NftCollection({ nftCollection, posts, about, currentUser, currentNft })
 	return (
 		<Div>
 			<Helmet bodyAttributes={{ style: "background-color : white;" }} />
-			<MainTopBar user={currentUser} />
+			<MainTopBar currentUser={currentUser} currentNft={currentNft} />
 			<Confetti />
 			<EmptyBlock h={20} />
 			<Div px30>

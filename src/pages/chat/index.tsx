@@ -159,59 +159,60 @@ export default function Chat({ nftCollection, proposals, about, currentUser, cur
 	return (
 		<Div>
 			<Helmet bodyAttributes={{ style: "background-color : white;" }} />
-			<MainTopBar user={currentUser} />
+			<MainTopBar currentUser={currentUser} currentNft={currentNft} />
 			<Confetti />
-			
+
 			<Row flex px30>
-				<Col style={{flex:3}} itemsCenter>
+				<Col style={{ flex: 3 }} itemsCenter>
 					<Div flex1 borderBlack borderB2>
-						<input placeholder="Search..."/>
+						<input placeholder="Search..." />
 					</Div>
 					<Div>
-						{chatRooms.length && chatRooms.map((room, index) => {
-							const chatRoomId = room.room_info.id;
-							const category = room.room_info.category;
-							const createdAt = room.room_info.created_at;
-							const title = room.room_info.name;
-							const numUsers = room.num_users;
-							const unreadMessageCount = room.unread_count;
-							const lastMessage = room.last_message;
-							const firstUserAvatar=room.profile_imgs[0];
-							const secondUserAvatar=room.profile_imgs[1];
-							const thirdUserAvatar=room.profile_imgs[2];
-							const fourthUserAvatar=room.profile_imgs[3];
-							return (
-								<ChatRoomItem 
-									key={index}
-									onclick={openRoom}
-									chatRoomId={chatRoomId}
-									category={category}
-									createdAt={createdAt}
-									title={title}
-									numUsers = {numUsers}
-									unreadMessageCount={unreadMessageCount}
-									lastMessage={lastMessage}
-									firstUserAvatar={firstUserAvatar}
-									secondUserAvatar={secondUserAvatar}
-									thirdUserAvatar={thirdUserAvatar}
-									fourthUserAvatar={fourthUserAvatar}
-								/>
-							);
-						})}
+						{chatRooms.length &&
+							chatRooms.map((room, index) => {
+								const chatRoomId = room.room_info.id;
+								const category = room.room_info.category;
+								const createdAt = room.room_info.created_at;
+								const title = room.room_info.name;
+								const numUsers = room.num_users;
+								const unreadMessageCount = room.unread_count;
+								const lastMessage = room.last_message;
+								const firstUserAvatar = room.profile_imgs[0];
+								const secondUserAvatar = room.profile_imgs[1];
+								const thirdUserAvatar = room.profile_imgs[2];
+								const fourthUserAvatar = room.profile_imgs[3];
+								return (
+									<ChatRoomItem
+										key={index}
+										onclick={openRoom}
+										chatRoomId={chatRoomId}
+										category={category}
+										createdAt={createdAt}
+										title={title}
+										numUsers={numUsers}
+										unreadMessageCount={unreadMessageCount}
+										lastMessage={lastMessage}
+										firstUserAvatar={firstUserAvatar}
+										secondUserAvatar={secondUserAvatar}
+										thirdUserAvatar={thirdUserAvatar}
+										fourthUserAvatar={fourthUserAvatar}
+									/>
+								);
+							})}
 					</Div>
 				</Col>
-				<Col style={{flex:7}} justifyCenter itemsCenter hScreen>
-					{currentRoomId ? 
-					<ChatRoom
-						currentRoomId={currentRoomId}
-						currentUser={currentUser}
-						messages={messages}
-						closeOnClick={closeRoom}
-						sendOnClick={sendMessage}
-					/>
-					: 
-					<Image src={IMAGES.betterWorldBWLogo} height={50} width={50} alt="avatarOne"/>
-					}
+				<Col style={{ flex: 7 }} justifyCenter itemsCenter hScreen>
+					{currentRoomId ? (
+						<ChatRoom
+							currentRoomId={currentRoomId}
+							currentUser={currentUser}
+							messages={messages}
+							closeOnClick={closeRoom}
+							sendOnClick={sendMessage}
+						/>
+					) : (
+						<Image src={IMAGES.betterWorldBWLogo} height={50} width={50} alt="avatarOne" />
+					)}
 				</Col>
 			</Row>
 		</Div>

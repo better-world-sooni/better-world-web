@@ -5,13 +5,14 @@ import EmptyBlock from "src/components/EmptyBlock";
 import Row from "src/components/Row";
 import Col from "src/components/Col";
 import { IMAGES } from "src/modules/images";
-import { truncateKlaytnAddress } from "src/modules/constants";
+import { COLORS, truncateKlaytnAddress } from "src/modules/constants";
 import MainTopBar from "src/components/MainTopBar";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { sha3_256 } from "js-sha3";
 import apis from "src/modules/apis";
 import { apiHelperWithJwtFromContext, apiHelperWithToken } from "src/modules/apiHelper";
-import { BellIcon, ChatAltIcon, CheckCircleIcon, HeartIcon, PencilIcon, PlusIcon, RefreshIcon, XCircleIcon, XIcon } from "@heroicons/react/outline";
+import { ChatAltIcon, CheckCircleIcon, HeartIcon, PencilIcon, PlusIcon, RefreshIcon, XIcon } from "@heroicons/react/outline";
+import { HeartIcon as HeartIconSolid, ChatAltIcon as ChatAltIconSolid } from "@heroicons/react/solid";
 import { NextPageContext } from "next";
 import remarkGfm from "remark-gfm";
 import ReactMarkdown from "react-markdown";
@@ -20,6 +21,7 @@ import ImageModal from "src/components/modals/ImageModal";
 import { href } from "src/modules/routeHelper";
 import { urls } from "src/modules/urls";
 import { createPresignedUrl, fileChecksum, uploadToPresignedUrl } from "src/modules/fileHelper";
+import TextareaAutosize from "react-textarea-autosize";
 
 enum Content {
 	Story,
@@ -41,9 +43,9 @@ enum FeedState {
 	Editting,
 	Loading,
 }
-function NftCollection({ nft, holder, collection, posts, currentUser, currentNft }) {
+function NftCollection({ nft, collection, posts, currentUser, currentNft }) {
 	// content types
-	const [contentIndex, setContentIndex] = useState(Content.Story);
+	const [contentIndex, setContentIndex] = useState(Content.Feed);
 
 	// story state
 	const [story, setStory] = useState({
@@ -78,12 +80,6 @@ function NftCollection({ nft, holder, collection, posts, currentUser, currentNft
 					value: story.edittingValue,
 				});
 				if (res.success) {
-					console.log({
-						value: res.nft.nft_profile.story,
-						edittingValue: res.nft.nft_profile.story,
-						state: StoryState.Stale,
-						error: "",
-					});
 					setStory({
 						value: res.nft.nft_profile.story,
 						edittingValue: res.nft.nft_profile.story,
@@ -105,7 +101,7 @@ function NftCollection({ nft, holder, collection, posts, currentUser, currentNft
 	return (
 		<Div>
 			<Helmet bodyAttributes={{ style: "background-color : white;" }} />
-			<MainTopBar user={currentUser} />
+			<MainTopBar currentUser={currentUser} currentNft={currentNft} />
 			<Confetti />
 			<EmptyBlock h={20} />
 			<Div px30>
@@ -113,7 +109,7 @@ function NftCollection({ nft, holder, collection, posts, currentUser, currentNft
 					<Row flex py20>
 						<Col auto>
 							<Div w300>
-								<NftCard nft={nft} holder={holder} user={currentUser} />
+								<NftCard nft={nft} currentNft={currentNft} />
 								<EmptyBlock h={20} />
 								<Div roundedXl px20 py20 border1 cursorPointer onClick={() => href(urls.nftCollection.contractAddress(collection.contract_address))}>
 									<Div fontWeight={500}>컬렉션</Div>
@@ -238,9 +234,7 @@ function NftCollection({ nft, holder, collection, posts, currentUser, currentNft
 								{
 									{
 										[Content.Story]: <Story story={story} handleEditStory={handleEditStory} />,
-										[Content.Feed]: (
-											<Feed nft={nft} posts={posts} feedState={feedState} setFeedState={setFeedState} user={currentUser} collection={collection} />
-										),
+										[Content.Feed]: <Feed currentNft={currentNft} posts={posts} feedState={feedState} setFeedState={setFeedState} />,
 									}[contentIndex]
 								}
 							</Div>
@@ -252,7 +246,7 @@ function NftCollection({ nft, holder, collection, posts, currentUser, currentNft
 	);
 }
 
-function NftCard({ nft, holder, user }) {
+function NftCard({ nft, currentNft }) {
 	const initialName = nft?.nft_profile?.name || nft.nft_metadatum?.name;
 	const [name, setName] = useState({
 		value: initialName,
@@ -327,7 +321,7 @@ function NftCard({ nft, holder, user }) {
 						}[name.state]
 					}
 				</Col>
-				{holder?.uuid == user.uuid && (
+				{currentNft.token_id == nft.token_id && currentNft.contract_address == nft.contract_address && (
 					<Col auto>
 						<Div>
 							{
@@ -396,13 +390,13 @@ function Story({ story, handleEditStory }) {
 		</Div>
 	);
 }
-function Feed({ nft, feedState, setFeedState, posts, user, collection }) {
+function Feed({ currentNft, feedState, setFeedState, posts }) {
 	if (FeedState.Stale == feedState) {
-		return <Posts posts={posts} />;
+		return <Posts posts={posts} currentNft={currentNft} />;
 	}
-	return <NewProposal nft={nft} feedState={feedState} setFeedState={setFeedState} user={user} collection={collection} />;
+	return <NewProposal currentNft={currentNft} feedState={feedState} setFeedState={setFeedState} />;
 }
-function Posts({ posts }) {
+function Posts({ posts, currentNft }) {
 	if (posts.length == 0) {
 		return (
 			<Div textCenter py30>
@@ -415,14 +409,14 @@ function Posts({ posts }) {
 			{posts.map((post, index) => {
 				return (
 					<Div key={index} mb20>
-						<Post post={post} />
+						<Post post={post} currentNft={currentNft} />
 					</Div>
 				);
 			})}
 		</Div>
 	);
 }
-function NewProposal({ nft, feedState, setFeedState, user, collection }) {
+function NewProposal({ currentNft, feedState, setFeedState }) {
 	const [title, setTitle] = useState("");
 	const [content, setContent] = useState("");
 	const [error, setError] = useState("");
@@ -487,8 +481,8 @@ function NewProposal({ nft, feedState, setFeedState, user, collection }) {
 		const res = await apiHelperWithToken(apis.post._(), "POST", {
 			title,
 			content,
-			contract_address: nft.contract_address,
-			token_id: nft.token_id,
+			contract_address: currentNft.contract_address,
+			token_id: currentNft.token_id,
 			images: signedIdArray,
 		});
 		if (!res) {
@@ -546,9 +540,10 @@ function NewProposal({ nft, feedState, setFeedState, user, collection }) {
 					post={{
 						title,
 						content,
-						nft,
+						nft: currentNft,
 						image_uris: selectedFiles.map((selectedFile) => selectedFile.url),
 					}}
+					currentNft={currentNft}
 				/>
 			) : (
 				<>
@@ -621,8 +616,13 @@ function NewProposal({ nft, feedState, setFeedState, user, collection }) {
 	);
 }
 
-const Post = ({ post, preview = false }) => {
+const Post = ({ post, currentNft, preview = false }) => {
+	console.log(post);
+	const placeholder = "댓글을 적어주세요";
 	const [expandImageModal, setExpandImageModal] = useState(false);
+	const [liked, setLiked] = useState(post.likes && post.likes.length > 0);
+	const [comment, setComment] = useState("");
+	const textRef = useRef(null);
 	const handleClickImage = () => {
 		setExpandImageModal(true);
 	};
@@ -630,7 +630,19 @@ const Post = ({ post, preview = false }) => {
 		setExpandImageModal(false);
 	};
 	const handleClickLike = () => {
-		setExpandImageModal(false);
+		setLiked(!liked);
+		const verb = liked ? "DELETE" : "POST";
+		apiHelperWithToken(apis.like.post(post.id), verb);
+	};
+	const handleCommentChange = ({ target: { value } }) => {
+		setComment(value);
+	};
+	const handlePostComment = async () => {
+		const res = await apiHelperWithToken(apis.comment.post(post.id), "POST", {
+			content: comment,
+		});
+		console.log(res);
+		setComment("");
 	};
 	return (
 		<Div roundedXl border1 pt20 pb10 px20>
@@ -664,7 +676,7 @@ const Post = ({ post, preview = false }) => {
 				)}
 			</Div>
 			{preview && (
-				<Row borderT1 pt10 mt20 gapX={0}>
+				<Row borderT1 borderB1 mt20 gapX={0}>
 					<Col flex itemsCenter justifyCenter borderR1 py10>
 						<Div>
 							<HeartIcon height={20} width={20} />
@@ -678,19 +690,48 @@ const Post = ({ post, preview = false }) => {
 				</Row>
 			)}
 			{!preview && (
-				<Row borderT1 pt10 mt20 gapX={0}>
-					<Col flex itemsCenter justifyCenter borderR1 py10>
-						<Div>
-							<HeartIcon height={20} width={20} />
-						</Div>
+				<Row borderT1 borderB1 mt20 gapX={0}>
+					<Col flex itemsCenter justifyCenter borderR1 py10 cursorPointer onClick={handleClickLike}>
+						<Div>{liked ? <HeartIconSolid height={25} width={25} fill={COLORS.DANGER} /> : <HeartIcon height={25} width={25} />}</Div>
 					</Col>
-					<Col flex itemsCenter justifyCenter py10>
+					<Col flex itemsCenter justifyCenter py10 cursorPointer>
 						<Div strokeWidth={0.5}>
-							<ChatAltIcon height={20} width={20} />
+							<ChatAltIcon height={25} width={25} />
 						</Div>
 					</Col>
 				</Row>
 			)}
+			{post.comments.length > 0 &&
+				post.comments.map((comment) => {
+					return (
+						<Row gapX={0} mt10 key={comment.id}>
+							<Col flex itemsCenter justifyCenter py10 auto pr0>
+								<Div imgTag src={comment.nft_metadatum.image_uri} roundedFull h35 w35 overflowHidden></Div>
+							</Col>
+							<Col flex itemsCenter justifyCenter py10 cursorPointer></Col>
+							<Col flex itemsCenter justifyCenter py10 auto pl5 pr20 onClick={handlePostComment} cursorPointer>
+								게시
+							</Col>
+						</Row>
+					);
+				})}
+			<Row gapX={0} mt10>
+				<Col flex itemsCenter justifyCenter py10 auto pr0>
+					<Div imgTag src={currentNft.nft_metadatum.image_uri} roundedFull h35 w35 overflowHidden></Div>
+				</Col>
+				<Col flex itemsCenter justifyCenter py10 cursorPointer>
+					<Div wFull roundedXl bgGray200 px15 pt5>
+						<TextareaAutosize
+							onChange={handleCommentChange}
+							placeholder={placeholder}
+							style={{ boxShadow: "none", border: "none", resize: "none", width: "100%", padding: 0, background: "transparent" }}
+						/>
+					</Div>
+				</Col>
+				<Col flex itemsCenter justifyCenter py10 auto pl5 pr20 onClick={handlePostComment} cursorPointer>
+					게시
+				</Col>
+			</Row>
 			{post.image_uris.length > 0 && <ImageModal open={expandImageModal} handleCloseModal={handleCloseModal} imgSrcArr={post.image_uris} />}
 		</Div>
 	);
@@ -701,9 +742,6 @@ NftCollection.getInitialProps = async (context: NextPageContext) => {
 	const res = await apiHelperWithJwtFromContext(context, apis.nftProfile.contractAddressAndTokenId(contractAddress, tokenId), "GET");
 	return {
 		nft: res.nft,
-		holder: {
-			...res.holder,
-		},
 		posts: res.posts,
 		collection: res.collection,
 	};
