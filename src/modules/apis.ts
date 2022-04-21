@@ -63,7 +63,7 @@ const apis = {
   },
   comment: {
     post: (postId) => apiV1(`/comment/post/${postId}`),
-    comment: (commentId) => apiV1(`/comment/post/${commentId}`)
+    comment: (commentId) => apiV1(`/comment/comment/${commentId}`)
   },
   like: {
     post: (postId) => apiV1(`/like/post/${postId}`),
