@@ -6,20 +6,20 @@ import ChatRoomItemAvatars from "src/pages/chat/chatRoomItemAvatars"
 import { kmoment } from "src/modules/constants";
 
 export default function ChatRoomItem({
-    chatRoomId,
     onclick,
-    category,
-    title,
-    createdAt,
-    lastMessage,
-    numNfts,
-    unreadMessageCount,
-    firstNftAvatar = null,
-    secondNftAvatar = null,
-    thirdNftAvatar = null,
-    fourthNftAvatar = null,
+    room
 }) {
-
+    const chatRoomId = room.room_info._id.$oid;
+    const category = room.room_info.category;
+    const createdAt = room.room_info.created_at;
+    const title = room.room_info.roomname;
+    const numNfts = room.num_nfts;
+    const unreadMessageCount = room.unread_count;
+    const lastMessage = room.last_message;
+    const firstNftAvatar=room.profile_imgs[0];
+    const secondNftAvatar=room.profile_imgs[1];
+    const thirdNftAvatar=room.profile_imgs[2];
+    const fourthNftAvatar=room.profile_imgs[3];
 
     const createdAtText = useCallback(createdAt => {
         if (createdAt) {
@@ -37,7 +37,7 @@ export default function ChatRoomItem({
       }, []);
 
     return(
-        <Row px20 py10 flex bgWhite onClick={()=>onclick(chatRoomId)}>
+        <Row px20 py10 flex bgWhite onClick={()=>onclick(chatRoomId, numNfts)}>
             <Col auto mr10 relative>
                 <ChatRoomItemAvatars
                 firstNftAvatar={firstNftAvatar}

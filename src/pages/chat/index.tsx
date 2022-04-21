@@ -20,11 +20,13 @@ export default function Chat({ nftCollection, proposals, about, currentUser, cur
 
 	const jwt = getJwt();
 	const currentNftId = {"token_id": currentNft.token_id, "contract_address": currentNft.contract_address}
+	const currentAvatar = currentNft.nft_metadatum.image_uri;
 	const [chatRooms, setChatRooms] = useState([]);
 	const [currentRoomId, setCurrentRoomId] = useState(null);
 	const [chatSocket, setChatSocket] = useState(null);
 	const [enterNfts, setEnterNfts] = useState([]);
 	const [messages, setMessages] = useState([]);
+	const [currentRoomNfts, setCurrentRoomNfts] = useState(null);
 	const enterNftFunRef = useRef(null);
 	const receiveMessageFunRef = useRef(null);
 	const receiveListFunRef = useRef(null);
@@ -66,14 +68,16 @@ export default function Chat({ nftCollection, proposals, about, currentUser, cur
 		const receiveMessage = res => {
 			if(currentRoomId === res['room']) {
 				console.log("message receive", res['data']);
-				setMessages((m) => [res['data'], ...m]);
+				setMessages((m) => [...m, res['data']]);
 			}
 			setChatRooms([...receiveListFunRef.current(res['data'], res['room'])])
 		}
 		const leaveRoom = res => {
 			if(currentRoomId === res['room']) {
 				if(currentNftId != res['leave_nft']){
-					setEnterNfts([...res['new_nfts']]);
+					const newNfts = res['new_nfts'];
+					console.log(newNfts);
+					setEnterNfts(newNfts);
 				}
 			}
 		}
@@ -100,6 +104,7 @@ export default function Chat({ nftCollection, proposals, about, currentUser, cur
 				receiveMessageFunRef.current(res);
 			});
 			channel.on('leave', res => {
+				console.log(res)
 				leaveRoomFunRef.current(res);
 			})
 			channel.on('close', () => console.log('Disconnected from chat'));
@@ -121,7 +126,7 @@ export default function Chat({ nftCollection, proposals, about, currentUser, cur
 		return roomList;
 	}, [chatRooms]);
 
-	const openRoom = async (openRoomId) => {
+	const openRoom = async (openRoomId, numNfts) => {
 		console.log(currentRoomId);
 		if(currentRoomId != openRoomId) {
 			if(currentRoomId != null) {
@@ -131,6 +136,7 @@ export default function Chat({ nftCollection, proposals, about, currentUser, cur
 			let _ = await chatSocket.enter(openRoomId);
 			setCurrentRoomId(openRoomId);
 			setChatRooms(refreshUnreadCount(openRoomId));
+			setCurrentRoomNfts(numNfts);
 		}
 	}
 	const closeRoom = async () => {
@@ -139,15 +145,19 @@ export default function Chat({ nftCollection, proposals, about, currentUser, cur
 		setCurrentRoomId(null);
 		setEnterNfts([]);
 		setMessages([]);
+		setCurrentRoomNfts(null);
 	}
 
 	const sendMessage = async(text) => {
+		const Timestamp = new Date();
 		const msg = {
 			text: text,
 			nft: currentNftId,
+			avatar: currentAvatar,
 			read_nft_ids: enterNfts,
+			created_at: Timestamp,
+			updated_at: Timestamp
 		};
-		console.log("send", msg);
 		if(chatSocket) {
 			const _ = await chatSocket.send(msg, currentRoomId);
 		} else {
@@ -169,32 +179,11 @@ export default function Chat({ nftCollection, proposals, about, currentUser, cur
 					</Div>
 					<Div>
 						{chatRooms.length && chatRooms.map((room, index) => {
-							const chatRoomId = room.room_info._id.$oid;
-							const category = room.room_info.category;
-							const createdAt = room.room_info.created_at;
-							const title = room.room_info.roomname;
-							const numNfts = room.num_nfts;
-							const unreadMessageCount = room.unread_count;
-							const lastMessage = room.last_message;
-							const firstNftAvatar=room.profile_imgs[0];
-							const secondNftAvatar=room.profile_imgs[1];
-							const thirdNftAvatar=room.profile_imgs[2];
-							const fourthNftAvatar=room.profile_imgs[3];
 							return (
 								<ChatRoomItem 
 									key={index}
 									onclick={openRoom}
-									chatRoomId={chatRoomId}
-									category={category}
-									createdAt={createdAt}
-									title={title}
-									numNfts = {numNfts}
-									unreadMessageCount={unreadMessageCount}
-									lastMessage={lastMessage}
-									firstNftAvatar={firstNftAvatar}
-									secondNftAvatar={secondNftAvatar}
-									thirdNftAvatar={thirdNftAvatar}
-									fourthNftAvatar={fourthNftAvatar}
+									room={room}
 								/>
 							);
 						})}
@@ -206,6 +195,7 @@ export default function Chat({ nftCollection, proposals, about, currentUser, cur
 						currentRoomId={currentRoomId}
 						currentNftId={currentNftId}
 						messages={messages}
+						numNfts={currentRoomNfts}
 						closeOnClick={closeRoom}
 						sendOnClick={sendMessage}
 					/>

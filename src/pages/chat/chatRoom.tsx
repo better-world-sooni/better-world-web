@@ -10,6 +10,7 @@ export default function ChatRoom({
     currentRoomId,
     currentNftId,
     messages,
+    numNfts,
     closeOnClick,
     sendOnClick
 }) {
@@ -48,6 +49,7 @@ export default function ChatRoom({
                     <Messages
                         messages={messages}
                         currentNftId={currentNftId}
+                        numNfts={numNfts}
                     /> 
             </Row>
             <Div flex flexCol roundedMd border1 borderBlack >
