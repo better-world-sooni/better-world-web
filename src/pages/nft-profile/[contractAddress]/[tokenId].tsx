@@ -34,7 +34,7 @@ enum FeedState {
 	Editting,
 	Loading,
 }
-function NftCollection({
+function NftProfile({
 	follower_count,
 	following_count,
 	is_following,
@@ -77,7 +77,7 @@ function NftCollection({
 						</Div>
 						<Div style={{ flex: 4 }}>
 							<Name
-								nftProfileName={nft_profile.name}
+								nftProfileName={nft_profile?.name}
 								nftMetadatumName={nft_metadatum.name}
 								currentNft={currentNft}
 								contractAddress={contract_address}
@@ -128,7 +128,7 @@ function NftCollection({
 				</Div>
 			</Div>
 			<Div mxAuto maxW={700} bgWhite>
-				<Posts posts={posts} />
+				<Posts posts={posts} currentNftImage={currentNft.nft_metadatum.image_uri} />
 			</Div>
 		</Div>
 	);
@@ -189,7 +189,7 @@ function Name({ nftProfileName, nftMetadatumName, contractAddress, tokenId, curr
 	return (
 		<Div>
 			<Div itemsCenter flex flexRow>
-				<Div auto flex1>
+				<Div flex1>
 					{
 						{
 							[NameState.Stale]: (
@@ -328,7 +328,9 @@ function Story({ initialStory, contractAddress, tokenId, mine }) {
 					{
 						[StoryState.Stale]: (
 							<Div textGray400={!story.value} textBase>
-								<ReactMarkdown children={story.value ? TruncatedText({ text: story.value, maxLength: 50 }) as string : "스토리가 아직 작성되지 않았습니다."}></ReactMarkdown>
+								<ReactMarkdown
+									children={story.value ? (TruncatedText({ text: story.value, maxLength: 50 }) as string) : "스토리가 아직 작성되지 않았습니다."}
+								></ReactMarkdown>
 							</Div>
 						),
 						[StoryState.Editting]: (
@@ -354,7 +356,7 @@ function Story({ initialStory, contractAddress, tokenId, mine }) {
 		</Div>
 	);
 }
-function Posts({ posts }) {
+function Posts({ posts, currentNftImage }) {
 	if (posts.length == 0) {
 		return (
 			<Div textCenter py30>
@@ -367,7 +369,7 @@ function Posts({ posts }) {
 			{posts.map((post, index) => {
 				return (
 					<Div key={index} mb10>
-						<Post post={post} />
+						<Post post={post} currentNftImage={currentNftImage} />
 					</Div>
 				);
 			})}
@@ -375,10 +377,10 @@ function Posts({ posts }) {
 	);
 }
 
-NftCollection.getInitialProps = async (context: NextPageContext) => {
+NftProfile.getInitialProps = async (context: NextPageContext) => {
 	const { contractAddress, tokenId } = context.query;
 	const res = await apiHelperWithJwtFromContext(context, apis.nftProfile.contractAddressAndTokenId(contractAddress, tokenId), "GET");
 	return res.nft;
 };
 
-export default NftCollection;
+export default NftProfile;

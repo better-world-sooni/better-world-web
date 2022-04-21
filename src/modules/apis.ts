@@ -71,7 +71,10 @@ const apis = {
   },
   post: {
     _: () => apiV1(`/post`),
-    postId: (postId) => apiV1(`/post/${postId}`)
+    postId: {
+      _: (postId) => apiV1(`/post/${postId}`),
+      comment: (postId) => apiV1(`/post/${postId}/comment`)
+    }
   },
   presignedUrl: {
     _: () => apiV1(`/presigned_url`)

@@ -14,7 +14,7 @@ function Index({ post, currentUser, currentNft }) {
 			<MainTopBar currentUser={currentUser} currentNft={currentNft} />
 			<Confetti />
 			<Div mxAuto maxW={700} bgWhite>
-				<Post post={post} full={true} />
+				<Post post={post} full={true} currentNftImage={currentNft.nft_metadatum.image_uri} />
 			</Div>
 		</Div>
 	);
@@ -22,7 +22,7 @@ function Index({ post, currentUser, currentNft }) {
 
 Index.getInitialProps = async (context: NextPageContext) => {
 	const { postId } = context.query;
-	const res = await apiHelperWithJwtFromContext(context, apis.post.postId(postId), "GET");
+	const res = await apiHelperWithJwtFromContext(context, apis.post.postId._(postId), "GET");
 	return res;
 };
 

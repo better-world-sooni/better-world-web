@@ -748,55 +748,6 @@ const Comment = ({ comment }) => {
 	);
 };
 
-const NewComment = ({ currentNft, postId, onSuccess }) => {
-	const placeholder = "댓글을 적어주세요";
-	const [newComment, setNewComment] = useState("");
-	const [loading, setLoading] = useState(false);
-	const handleCommentChange = ({ target: { value } }) => {
-		setNewComment(value);
-	};
-	const handlePostComment = async () => {
-		if (!loading) {
-			setLoading(true);
-			const res = await apiHelperWithToken(apis.comment.post(postId), "POST", {
-				content: newComment,
-			});
-			if (res.success) {
-				onSuccess(res.comment);
-				setNewComment("");
-			}
-			setLoading(false);
-		}
-	};
-	return (
-		<Row gapX={0} mt10>
-			<Col flex itemsCenter justifyCenter py10 auto pr0>
-				<Div imgTag src={currentNft.nft_metadatum.image_uri} roundedFull h35 w35 overflowHidden></Div>
-			</Col>
-			<Col flex itemsCenter justifyCenter py10 cursorPointer>
-				<Div wFull roundedXl bgGray200 px15 pt5>
-					<TextareaAutosize
-						onChange={handleCommentChange}
-						placeholder={placeholder}
-						style={{ boxShadow: "none", border: "none", resize: "none", width: "100%", padding: 0, background: "transparent" }}
-					/>
-				</Div>
-			</Col>
-			<Col flex itemsCenter justifyCenter py10 auto pl5 pr20 onClick={handlePostComment} cursorPointer>
-				{loading ? <LoadingIcon /> : "게시"}
-			</Col>
-		</Row>
-	);
-};
-
-const LoadingIcon = () => {
-	return (
-		<Div clx={"animate-spin"}>
-			<RefreshIcon height={30} width={30} strokeWidth={0.5} className={"-scale-x-100"} />
-		</Div>
-	);
-};
-
 NftCollection.getInitialProps = async (context: NextPageContext) => {
 	const { contractAddress, tokenId } = context.query;
 	const res = await apiHelperWithJwtFromContext(context, apis.nftProfile.contractAddressAndTokenId(contractAddress, tokenId), "GET");
