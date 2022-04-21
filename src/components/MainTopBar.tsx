@@ -1,4 +1,4 @@
-import { GlobeAltIcon, SearchCircleIcon } from "@heroicons/react/outline";
+import { ChatIcon, GlobeAltIcon, SearchCircleIcon } from "@heroicons/react/outline";
 import { useDispatch, useSelector } from "react-redux";
 import useIsTablet from "src/hooks/useIsTablet";
 import { emailVerificationAction, signInAction } from "src/store/reducers/modalReducer";
@@ -17,7 +17,7 @@ import { IMAGES } from "src/modules/images";
 import EmptyBlock from "./EmptyBlock";
 import { truncateKlaytnAddress } from "src/modules/constants";
 
-const MainTopBar = ({ user }) => {
+const MainTopBar = ({ currentUser, currentNft }) => {
 	const { locale } = useRouter();
 	const dispatch = useDispatch();
 	const isTablet = useIsTablet();
@@ -28,41 +28,42 @@ const MainTopBar = ({ user }) => {
 		dispatch(emailVerificationAction({ enabled: true }));
 	};
 	const onClickProfile = () => {
-		// href(urls.profile.klaytnAddress(user.klaytn_account.address));
-	}
+		if (currentNft) {
+			href(urls.nftProfile.contractAddressAndTokenId(currentNft.contract_address, currentNft.token_id));
+		}
+	};
 	const onClickChat = () => {
 		href(urls.chat);
 	};
 
 	return (
 		<>
-			<Div fixed bgWhite wFull borderB1 px30 z1>
-				<Row maxW={1100} mxAuto flex itemsCenter py10 gapX={10}>
-					<Col auto px0 onClick={() => href(urls.home)}>
+			<Div fixed bgWhite wFull borderB1 px20 z1>
+				<Row maxW={700} mxAuto flex itemsCenter py5>
+					<Col flex itemsStart px0 onClick={() => href(urls.index)} cursorPointer>
 						<Div imgTag src={IMAGES.betterWorldBlueLogo} h={50} w={50} style={{ objectFit: "cover" }} />
 					</Col>
-					<Col textLg textPrimary auto px0 onClick={() => href(urls.index)} cursorPointer>
+					{/* <Col textLg textPrimary textLeft px0 onClick={() => href(urls.index)} cursorPointer>
 						BetterWorld{" "}
 						<Div spanTag fontSemibold textPrimary pl2>
 							αlpha
 						</Div>
-					</Col>
-					<Col></Col>
-					<Col auto rounded3xl px20 pt5 cursorPointer border1 pb8 onClick={onClickLogin}>
+					</Col> */}
+					<Col auto pt5 cursorPointer pb8 onClick={onClickLogin}>
 						Feed
 					</Col>
-					<Col auto rounded3xl px20 pt5 cursorPointer border1 pb8 onClick={onClickLogin}>
+					<Col auto pt5 cursorPointer pb8 onClick={onClickLogin}>
 						Capsules
 					</Col>
-					<Col auto rounded3xl px20 pt5 cursorPointer border1 pb8 onClick={onClickChat}>
-						Chat
+					<Col auto pt5 cursorPointer pb8 onClick={onClickChat}>
+						<ChatIcon height={20} width={20} scale={1} strokeWidth={0.5} />
 					</Col>
-					{user ? (
-						<Col auto rounded3xl px20 pt5 cursorPointer border1 pb8 onClick={onClickProfile}>
-							{truncateKlaytnAddress(user.klaytn_account.address)}
+					{currentNft ? (
+						<Col auto pt5 pb5>
+							<Div cursorPointer onClick={onClickProfile} imgTag src={currentNft.nft_metadatum.image_uri} h36 w36 roundedFull></Div>
 						</Col>
 					) : (
-						<Col auto rounded3xl px20 pt5 cursorPointer border1 pb8 onClick={onClickLogin} clx={"animate-bounce"}>
+						<Col auto rounded3xl pl20 pt5 cursorPointer border1 pb8 onClick={onClickLogin} clx={"animate-bounce"}>
 							연결
 						</Col>
 					)}
@@ -71,7 +72,7 @@ const MainTopBar = ({ user }) => {
 				<EmailVerificationModal />
 				<KlipQRModal />
 			</Div>
-			<EmptyBlock h={80} />
+			<EmptyBlock h={70} />
 		</>
 	);
 };

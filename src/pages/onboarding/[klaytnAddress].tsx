@@ -16,6 +16,37 @@ import OnboardingTopBar from "src/components/OnboardingTopBar";
 import { useDispatch } from "react-redux";
 import { changeNftAction } from "src/store/reducers/authReducer";
 
+function Index({ profile, currentUser }) {
+	return (
+		<Div>
+			<Helmet bodyAttributes={{ style: "background-color : white;" }} />
+			<OnboardingTopBar />
+			<EmptyBlock h={100} />
+			<Div px30>
+				<Div mxAuto maxW={1100} px30 text2xl textCenter fontSemibold>
+					<Div spanTag textPrimary>
+						BetterWorld
+					</Div>
+					에 오신 것을 환영합니다.
+					<br />
+					<Div spanTag textPrimary>
+						αlpha
+					</Div>
+					에서는 곰즈들에게 생명을 불어 넣을 것입니다.
+				</Div>
+				<EmptyBlock h={30} />
+				<Div textCenter maxW={800} px30 mxAuto textLg>
+					새로운 로그인 시에 깨울 곰즈를 선택하세요.
+				</Div>
+				<EmptyBlock h={30} />
+				<Div mxAuto maxW={1100}>
+					<Nfts nfts={profile.nfts} />
+				</Div>
+			</Div>
+		</Div>
+	);
+}
+
 function Nfts({ nfts }) {
 	const dispatch = useDispatch();
 	const patchAndGotoNft = async (contract_address, token_id) => {
@@ -52,36 +83,6 @@ function Nfts({ nfts }) {
 					</Div>
 				);
 			})}
-		</Div>
-	);
-}
-function Index({ profile, currentUser }) {
-	return (
-		<Div>
-			<Helmet bodyAttributes={{ style: "background-color : white;" }} />
-			<OnboardingTopBar />
-			<EmptyBlock h={100} />
-			<Div px30>
-				<Div mxAuto maxW={1100} px30 text2xl textCenter fontSemibold>
-					<Div spanTag textPrimary>
-						BetterWorld
-					</Div>
-					에 오신 것을 환영합니다.
-					<br />
-					<Div spanTag textPrimary>
-						αlpha
-					</Div>
-					에서는 곰즈들에게 생명을 불어 넣을 것입니다.
-				</Div>
-				<EmptyBlock h={30} />
-				<Div textCenter maxW={800} px30 mxAuto textLg>
-					새로운 로그인 시에 깨울 곰즈를 선택하세요.
-				</Div>
-				<EmptyBlock h={30} />
-				<Div mxAuto maxW={1100}>
-					<Nfts nfts={profile.nfts} />
-				</Div>
-			</Div>
 		</Div>
 	);
 }

@@ -2,6 +2,9 @@ export const urls = {
     index: '/',
     home: '/home',
     feed: '/feed',
+    post: {
+        postId: (postId) => `/post/${postId}`
+    },
     onboarding: {
         klaytnAddress: (klaytnAddress) => `/onboarding/${klaytnAddress}`
     },

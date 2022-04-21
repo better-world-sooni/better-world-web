@@ -1,6 +1,7 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+@import "react-slideshow-image/dist/styles.css";
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;400;500;700;900&display=swap');
 @font-face {
   font-family: "MOONGET";
@@ -105,6 +106,14 @@
     height: 100%;
     position: absolute;
   }
-  .grid-center-item {
-    grid-column: 1 / -1;
+  .slideshow-indicator-custom:before {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    content: '';
+    background: #000;
+    text-align: center
   }

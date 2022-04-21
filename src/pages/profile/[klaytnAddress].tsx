@@ -227,7 +227,7 @@ function NewProposal({ nftCollection, currentUser, currentNft }) {
 		</Div>
 	);
 }
-function NftCollection({ profile, currentUser }) {
+function NftCollection({ profile, currentUser, currentNft }) {
 	const mainNft = profile.main_nft ? profile.main_nft : profile.nfts[0];
 	const imageUri = mainNft?.nft_metadatum?.image_uri;
 	const [contentIndex, setContentIndex] = useState(0);
@@ -246,7 +246,7 @@ function NftCollection({ profile, currentUser }) {
 	return (
 		<Div>
 			<Helmet bodyAttributes={{ style: "background-color : white;" }} />
-			<MainTopBar user={currentUser} />
+			<MainTopBar currentUser={currentUser} currentNft={currentNft} />
 			<Confetti />
 			<EmptyBlock h={20} />
 			<Div px30>

@@ -52,6 +52,9 @@ const apis = {
   nft: {
     contractAddressAndTokenId: (contractAddress, tokenId) => apiV1(`/nft/${contractAddress}/${tokenId}`)
   },
+  follow: {
+    contractAddressAndTokenId: (contractAddress, tokenId) => apiV1(`/follow/${contractAddress}/${tokenId}`)
+  },
   nftProfile: {
     contractAddressAndTokenId: (contractAddress, tokenId) => apiV1(`/nft_profile/${contractAddress}/${tokenId}`)
   },
@@ -59,15 +62,16 @@ const apis = {
     contractAddress: (contractAddress) => apiV1(`/nft_collection/${contractAddress}`)
   },
   comment: {
-    post: (postId) => apiV1(`/post/${postId}`),
-    comment: (commentId) => apiV1(`/post/${commentId}`)
+    post: (postId) => apiV1(`/comment/post/${postId}`),
+    comment: (commentId) => apiV1(`/comment/post/${commentId}`)
   },
   like: {
-    post: (postId) => apiV1(`/post/${postId}`),
-    comment: (commentId) => apiV1(`/post/${commentId}`)
+    post: (postId) => apiV1(`/like/post/${postId}`),
+    comment: (commentId) => apiV1(`/like/comment/${commentId}`)
   },
   post: {
-    _: () => apiV1(`/post`)
+    _: () => apiV1(`/post`),
+    postId: (postId) => apiV1(`/post/${postId}`)
   },
   presignedUrl: {
     _: () => apiV1(`/presigned_url`)

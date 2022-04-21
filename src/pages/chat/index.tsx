@@ -169,13 +169,13 @@ export default function Chat({ nftCollection, proposals, about, currentUser, cur
 	return (
 		<Div>
 			<Helmet bodyAttributes={{ style: "background-color : white;" }} />
-			<MainTopBar user={currentUser} />
+			<MainTopBar currentUser={currentUser} currentNft={currentNft} />
 			<Confetti />
-			
+
 			<Row flex px30>
-				<Col style={{flex:3}} itemsCenter>
+				<Col style={{ flex: 3 }} itemsCenter>
 					<Div flex1 borderBlack borderB2>
-						<input placeholder="Search..."/>
+						<input placeholder="Search..." />
 					</Div>
 					<Div>
 						{chatRooms.length && chatRooms.map((room, index) => {

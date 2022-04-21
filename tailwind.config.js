@@ -2310,9 +2310,9 @@ module.exports = {
     }),
     plugin(function({ addBase, theme }) {
       addBase({
-        'h1': { fontSize: 25 },
-        'h2': { fontSize: 20 },
-        'h3': { fontSize: 15 },
+        'h1': { fontSize: 20 },
+        'h2': { fontSize: 18 },
+        'h3': { fontSize: 16 },
       })
     }),
   ],
