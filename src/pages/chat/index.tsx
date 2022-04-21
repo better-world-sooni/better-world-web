@@ -17,7 +17,7 @@ import { getJwt } from 'src/modules/cookieHelper'
 import { Alert } from 'react-alert'
 
 export default function Chat({ nftCollection, proposals, about, currentUser, currentNft }) {
-
+	console.log("chat start")
 	const jwt = getJwt();
 	const currentNftId = {"token_id": currentNft.token_id, "contract_address": currentNft.contract_address}
 	const currentAvatar = currentNft.nft_metadatum.image_uri;

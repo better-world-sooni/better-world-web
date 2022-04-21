@@ -77,7 +77,7 @@ function NftCollection({
 						</Div>
 						<Div style={{ flex: 4 }}>
 							<Name
-								nftProfileName={nft_profile.name}
+								nftProfileName={nft_profile?.name}
 								nftMetadatumName={nft_metadatum.name}
 								currentNft={currentNft}
 								contractAddress={contract_address}

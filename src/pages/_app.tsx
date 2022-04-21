@@ -5,7 +5,7 @@ import useSessionStorage from "src/hooks/useSessionStrage";
 import { apiHelperWithJwtFromContext } from "src/modules/apiHelper";
 import apis from "src/modules/apis";
 import { Locale } from "src/modules/constants";
-import { setJwt } from "src/modules/cookieHelper";
+import { setJwt, getJwt } from "src/modules/cookieHelper";
 import { wrapper } from "src/store/store";
 import cookies from "next-cookies";
 import "styles/tailwind.css";
@@ -32,7 +32,7 @@ const redirectRoot = (ctx) => {
 };
 
 MyApp.getInitialProps = async ({ Component, ctx }): Promise<AppInitialProps> => {
-	const { jwt } = cookies(ctx);
+	const jwt = cookies(ctx)?.jwt || ctx.req?.headers.webviewcookie;
 	const requiresLogin = ctx.pathname != "/" && ctx.pathname != "/[lang]" && !ctx.pathname.startsWith("/[lang]/portal");
 	let currentUser = null;
 	let currentNft = null;
@@ -55,6 +55,7 @@ MyApp.getInitialProps = async ({ Component, ctx }): Promise<AppInitialProps> => 
 			setJwt(authResponse.jwt);
 			currentUser = authResponse.user;
 			currentNft = authResponse.current_nft;
+			console.log(currentUser, currentNft);
 		}
 	}
 	if (Component.getInitialProps) {
