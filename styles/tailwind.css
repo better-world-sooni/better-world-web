@@ -106,3 +106,14 @@
     height: 100%;
     position: absolute;
   }
+  .slideshow-indicator-custom:before {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    content: '';
+    background: #000;
+    text-align: center
+  }
