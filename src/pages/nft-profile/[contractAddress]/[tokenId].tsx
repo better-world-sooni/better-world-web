@@ -22,6 +22,7 @@ import { href } from "src/modules/routeHelper";
 import { urls } from "src/modules/urls";
 import { createPresignedUrl, fileChecksum, uploadToPresignedUrl } from "src/modules/fileHelper";
 import TextareaAutosize from "react-textarea-autosize";
+import { Slide } from "react-slideshow-image";
 
 enum Content {
 	Story,
@@ -43,228 +44,112 @@ enum FeedState {
 	Editting,
 	Loading,
 }
-function NftCollection({ nft, collection, posts, currentUser, currentNft }) {
-	// content types
-	const [contentIndex, setContentIndex] = useState(Content.Feed);
-
-	// story state
-	const [story, setStory] = useState({
-		value: nft?.nft_profile?.story,
-		edittingValue: nft?.nft_profile?.story,
-		state: StoryState.Stale,
-		error: "",
-	});
-	const isValidStory = story.error == "" && story.edittingValue != "";
-	const handleClickEditStory = () => {
-		setStory({ ...story, state: StoryState.Editting });
-	};
-	const handleEditStory = ({ target: { value } }) => {
-		const error = getStoryError(value);
-		setStory({ ...story, edittingValue: value, error });
-	};
-	const getStoryError = (value) => {
-		if (value == "") {
-			return "스토리는 한 글자 이상이어야 합니다.";
-		}
-		if (new Blob([value]).size > 60000) {
-			return "스토리는 60KB 이하여야합니다.";
-		}
-		return "";
-	};
-	const handleClickSaveStory = async () => {
-		if (isValidStory) {
-			setStory({ ...story, state: StoryState.Loading });
-			try {
-				const res = await apiHelperWithToken(apis.nftProfile.contractAddressAndTokenId(nft.contract_address, nft.token_id), "PUT", {
-					property: "story",
-					value: story.edittingValue,
-				});
-				if (res.success) {
-					setStory({
-						value: res.nft.nft_profile.story,
-						edittingValue: res.nft.nft_profile.story,
-						state: StoryState.Stale,
-						error: "",
-					});
-					return;
-				}
-				throw new Error();
-			} catch {
-				setStory({ ...story, error: "스토리를 저장하지 못하였습니다." });
-			}
-		}
-	};
+function NftCollection({
+	follower_count,
+	following_count,
+	is_following,
+	nft_profile,
+	nft_metadatum,
+	contract_address,
+	token_id,
+	collection,
+	posts,
+	currentUser,
+	currentNft,
+}) {
+	const mine = contract_address == currentNft.contract_address && token_id == currentNft.token_id;
 
 	// feed state
+
 	const [feedState, setFeedState] = useState(FeedState.Stale);
+	const [following, setFollowing] = useState(is_following);
+	const followerOffset = is_following == following ? 0 : !following ? -1 : 1;
+	const handleClickFollow = async () => {
+		const res = await apiHelperWithToken(apis.follow.contractAddressAndTokenId(contract_address, token_id), "POST");
+		if (res.success) {
+			setFollowing(!following);
+		}
+	};
+	const handleClickUnfollow = async () => {
+		const res = await apiHelperWithToken(apis.follow.contractAddressAndTokenId(contract_address, token_id), "DELETE");
+		if (res.success) {
+			setFollowing(!following);
+		}
+	};
 
 	return (
 		<Div>
-			<Helmet bodyAttributes={{ style: "background-color : white;" }} />
+			<Helmet bodyAttributes={{ style: "background-color : rgb(250, 250, 250);" }} />
 			<MainTopBar currentUser={currentUser} currentNft={currentNft} />
 			<Confetti />
-			<EmptyBlock h={20} />
-			<Div px30>
-				<Div mxAuto maxW={700}>
-					<Row>
-						<Col>
-							<NftCard nft={nft} currentNft={currentNft} />
-						</Col>
-						<Col>
-							<Div
-								roundedXl
-								px20
-								py20
-								border1
-								cursorPointer
-								onClick={() => href(urls.nftCollection.contractAddress(collection.contract_address))}
-								mb20
-							>
-								<Div fontWeight={500}>컬렉션</Div>
-								<Row itemsCenter flex mt10>
-									<Col auto pr0>
-										<Div imgTag src={collection.image_uri} h40 w40 roundedFull></Div>
-									</Col>
-									<Col>
-										<Div>{collection.name}</Div>
-									</Col>
-								</Row>
+			<Div mxAuto maxW={700} px15 bgWhite rounded>
+				<Div>
+					<EmptyBlock h={20} />
+					<Div flex flexRow gapX={20}>
+						<Div style={{ flex: 2 }}>
+							<Div imgTag src={nft_metadatum?.image_uri} bgGray200 hAuto rounded></Div>
+						</Div>
+						<Div style={{ flex: 4 }}>
+							<Name
+								nftProfileName={nft_profile.name}
+								nftMetadatumName={nft_metadatum.name}
+								currentNft={currentNft}
+								contractAddress={contract_address}
+								tokenId={token_id}
+								mine={mine}
+							/>
+							<EmptyBlock h={2} />
+							<Div textGray600 cursorPointer onClick={() => href(urls.nftCollection.contractAddress(collection.contract_address))}>
+								<Div>{nft_metadatum.name}</Div>
 							</Div>
-							<Div roundedXl px20 py20 border1 cursorPointer onClick={() => href(urls.nftCollection.contractAddress(collection.contract_address))}>
-								<Div fontWeight={500}>스토리</Div>
-								<Row itemsCenter flex mt10>
-									<Col auto pr0>
-										<Div imgTag src={collection.image_uri} h40 w40 roundedFull></Div>
-									</Col>
-									<Col>
-										<Div>{collection.name}</Div>
-									</Col>
-								</Row>
-							</Div>
-						</Col>
-					</Row>
-
-					<Row>
-						<Col auto px5>
-							<Div h50 roundedFull px20 flex itemsCenter justifyCenter border1 cursorPointer onClick={() => setContentIndex(Content.Feed)}>
-								<Div textCenter>Feed</Div>
-							</Div>
-						</Col>
-						<Col auto px5>
-							<Div h50 roundedFull px20 flex itemsCenter justifyCenter border1 cursorPointer onClick={() => setContentIndex(Content.Capsules)}>
-								<Div textCenter>Capsules</Div>
-							</Div>
-						</Col>
-						<Col auto pr5>
-							<Div h50 roundedFull px20 flex itemsCenter justifyCenter border1 cursorPointer onClick={() => setContentIndex(Content.Story)}>
-								<Div textCenter>Story</Div>
-							</Div>
-						</Col>
-						<Col></Col>
-						<Col auto>
-							{
-								{
-									[Content.Story]: (
-										<Div>
-											{
-												{
-													[StoryState.Stale]: (
-														<Div h50 roundedFull px20 flex itemsCenter justifyCenter border1 cursorPointer onClick={handleClickEditStory}>
-															<PencilIcon height={20} width={20} scale={1} strokeWidth={0.5} />
-														</Div>
-													),
-													[StoryState.Editting]: (
-														<Div
-															h50
-															roundedFull
-															px20
-															flex
-															itemsCenter
-															justifyCenter
-															border1
-															cursorPointer
-															textGray200={!isValidStory}
-															onClick={handleClickSaveStory}
-														>
-															<CheckCircleIcon height={20} width={20} scale={1} strokeWidth={0.5} />
-														</Div>
-													),
-													[StoryState.Loading]: (
-														<Div h50 roundedFull px20 flex itemsCenter justifyCenter border1>
-															<Div clx={"animate-spin"}>
-																<RefreshIcon height={20} width={20} scale={1} strokeWidth={0.5} className={"-scale-x-100"} />
-															</Div>
-														</Div>
-													),
-												}[story.state]
-											}
-										</Div>
-									),
-									[Content.Feed]: (
-										<Div>
-											{
-												{
-													[FeedState.Stale]: (
-														<Div
-															h50
-															roundedFull
-															px20
-															flex
-															itemsCenter
-															justifyCenter
-															border1
-															cursorPointer
-															onClick={() => setFeedState(FeedState.Editting)}
-														>
-															<PlusIcon height={20} width={20} scale={1} strokeWidth={0.5} />
-														</Div>
-													),
-													[FeedState.Editting]: (
-														<Div
-															h50
-															roundedFull
-															px20
-															flex
-															itemsCenter
-															justifyCenter
-															border1
-															cursorPointer
-															onClick={() => setFeedState(FeedState.Stale)}
-														>
-															<XIcon height={20} width={20} scale={1} strokeWidth={0.5} />
-														</Div>
-													),
-													[FeedState.Loading]: (
-														<Div h50 roundedFull px20 flex itemsCenter justifyCenter border1>
-															<Div clx={"animate-spin"}>
-																<RefreshIcon height={20} width={20} scale={1} strokeWidth={0.5} className={"-scale-x-100"} />
-															</Div>
-														</Div>
-													),
-												}[feedState]
-											}
-										</Div>
-									),
-								}[contentIndex]
-							}
-						</Col>
-					</Row>
-					<Div>
-						{
-							{
-								[Content.Story]: <Story story={story} handleEditStory={handleEditStory} />,
-								[Content.Feed]: <Feed currentNft={currentNft} posts={posts} feedState={feedState} setFeedState={setFeedState} />,
-							}[contentIndex]
-						}
+							<EmptyBlock h={2} />
+							<Row>
+								<Col auto>
+									<Div spanTag textBase fontWeight={500}>
+										{follower_count + followerOffset}
+									</Div>{" "}
+									<Div spanTag textBase>
+										팔로워
+									</Div>
+								</Col>
+								<Col auto>
+									<Div spanTag textBase fontWeight={500}>
+										{following_count}
+									</Div>{" "}
+									<Div spanTag textBase>
+										팔로잉
+									</Div>
+								</Col>
+							</Row>
+						</Div>
 					</Div>
+					<Div my10 cursorPointer>
+						{mine ? (
+							<Div flex1 flex justifyCenter px20 py5 rounded border1 onClick={handleClickUnfollow}>
+								<Div textBase>새로운 게시물</Div>
+							</Div>
+						) : following ? (
+							<Div flex1 flex justifyCenter px20 py5 rounded border1 onClick={handleClickUnfollow}>
+								<Div textBase>언팔로우</Div>
+							</Div>
+						) : (
+							<Div flex1 flex justifyCenter px20 py5 rounded border1 onClick={handleClickFollow}>
+								<Div textBase>팔로우</Div>
+							</Div>
+						)}
+					</Div>
+					<Story initialStory={nft_profile?.story} contractAddress={contract_address} tokenId={token_id} mine={mine} />
 				</Div>
+			</Div>
+			<Div mxAuto maxW={700} bgWhite>
+				<Posts currentNft={currentNft} posts={posts} />
 			</Div>
 		</Div>
 	);
 }
 
-function NftCard({ nft, currentNft }) {
-	const initialName = nft?.nft_profile?.name || nft.nft_metadatum?.name;
+function Name({ nftProfileName, nftMetadatumName, contractAddress, tokenId, currentNft, mine }) {
+	const initialName = nftProfileName || nftMetadatumName;
 	const [name, setName] = useState({
 		value: initialName,
 		edittingValue: initialName,
@@ -283,7 +168,7 @@ function NftCard({ nft, currentNft }) {
 		if (isValidName) {
 			setName({ ...name, state: NameState.Loading });
 			try {
-				const res = await apiHelperWithToken(apis.nftProfile.contractAddressAndTokenId(nft.contract_address, nft.token_id), "PUT", {
+				const res = await apiHelperWithToken(apis.nftProfile.contractAddressAndTokenId(contractAddress, tokenId), "PUT", {
 					property: "name",
 					value: name.edittingValue,
 				});
@@ -316,20 +201,23 @@ function NftCard({ nft, currentNft }) {
 	};
 
 	return (
-		<Div border1 roundedXl overflowHidden pb20>
-			<Div imgTag src={nft.nft_metadatum?.image_uri} bgGray200 hAuto></Div>
-			<Row itemsCenter mt20 px20>
-				<Col>
+		<Div>
+			<Div itemsCenter flex flexRow>
+				<Div auto flex1>
 					{
 						{
-							[NameState.Stale]: <Div fontWeight={500}>{name.value}</Div>,
+							[NameState.Stale]: (
+								<Div fontWeight={500} textXl>
+									{name.value}
+								</Div>
+							),
 							[NameState.Editting]: (
-								<Div fontWeight={500}>
+								<Div fontWeight={500} textXl>
 									<input
 										placeholder={name.value}
 										value={name.edittingValue}
 										className={"px-5 w-full focus:outline-none focus:border-gray-400 bg-gray-200 rounded"}
-										style={{ height: 30 }}
+										style={{ height: 40 }}
 										onChange={handleEditName}
 									></input>
 								</Div>
@@ -337,33 +225,31 @@ function NftCard({ nft, currentNft }) {
 							[NameState.Loading]: <Div fontWeight={500}>{name.value}</Div>,
 						}[name.state]
 					}
-				</Col>
-				{currentNft.token_id == nft.token_id && currentNft.contract_address == nft.contract_address && (
-					<Col auto>
-						<Div>
+				</Div>
+				{mine && (
+					<Div pl5>
+						{
 							{
-								{
-									[NameState.Stale]: (
-										<Div cursorPointer onClick={handleClickEditName}>
-											<PencilIcon height={20} width={20} scale={1} strokeWidth={0.5} />
-										</Div>
-									),
-									[NameState.Editting]: (
-										<Div cursorPointer textGray200={!isValidName} onClick={handleClickSaveName}>
-											<CheckCircleIcon height={20} width={20} scale={1} strokeWidth={0.5} />
-										</Div>
-									),
-									[NameState.Loading]: (
-										<Div clx={"animate-spin"}>
-											<RefreshIcon height={20} width={20} scale={1} strokeWidth={0.5} className={"-scale-x-100"} />
-										</Div>
-									),
-								}[name.state]
-							}
-						</Div>
-					</Col>
+								[NameState.Stale]: (
+									<Div cursorPointer onClick={handleClickEditName}>
+										<PencilIcon height={20} width={20} scale={1} strokeWidth={0.5} />
+									</Div>
+								),
+								[NameState.Editting]: (
+									<Div cursorPointer textGray200={!isValidName} onClick={handleClickSaveName}>
+										<CheckCircleIcon height={20} width={20} scale={1} strokeWidth={0.5} />
+									</Div>
+								),
+								[NameState.Loading]: (
+									<Div clx={"animate-spin"}>
+										<RefreshIcon height={20} width={20} scale={1} strokeWidth={0.5} className={"-scale-x-100"} />
+									</Div>
+								),
+							}[name.state]
+						}
+					</Div>
 				)}
-			</Row>
+			</Div>
 			{name.state == NameState.Editting && (
 				<Div textDanger textSm fontNormal px20 mt5>
 					{name.error}
@@ -373,14 +259,89 @@ function NftCard({ nft, currentNft }) {
 	);
 }
 
-function Story({ story, handleEditStory }) {
+function Story({ initialStory, contractAddress, tokenId, mine }) {
+	// story state
+	const [story, setStory] = useState({
+		value: initialStory,
+		edittingValue: initialStory,
+		state: StoryState.Stale,
+		error: "",
+	});
+	const isValidStory = story.error == "" && story.edittingValue != "";
+	const handleClickEditStory = () => {
+		setStory({ ...story, state: StoryState.Editting });
+	};
+	const handleEditStory = ({ target: { value } }) => {
+		const error = getStoryError(value);
+		setStory({ ...story, edittingValue: value, error });
+	};
+	const getStoryError = (value) => {
+		if (value == "") {
+			return "스토리는 한 글자 이상이어야 합니다.";
+		}
+		if (new Blob([value]).size > 60000) {
+			return "스토리는 60KB 이하여야합니다.";
+		}
+		return "";
+	};
+	const handleClickSaveStory = async () => {
+		if (isValidStory) {
+			setStory({ ...story, state: StoryState.Loading });
+			try {
+				const res = await apiHelperWithToken(apis.nftProfile.contractAddressAndTokenId(contractAddress, tokenId), "PUT", {
+					property: "story",
+					value: story.edittingValue,
+				});
+				if (res.success) {
+					setStory({
+						value: res.nft.nft_profile.story,
+						edittingValue: res.nft.nft_profile.story,
+						state: StoryState.Stale,
+						error: "",
+					});
+					return;
+				}
+				throw new Error();
+			} catch {
+				setStory({ ...story, error: "스토리를 저장하지 못하였습니다." });
+			}
+		}
+	};
 	return (
-		<Div mxAuto maxW={1100} flex flexRow my20>
-			<Div roundedXl border1 px20 py20 wFull>
+		<Div mxAuto py20>
+			<Div itemsCenter flex flexRow>
+				<Div flex1 textLg fontWeight={500}>
+					스토리
+				</Div>
+				{mine && (
+					<Div pl5>
+						{
+							{
+								[StoryState.Stale]: (
+									<Div cursorPointer onClick={handleClickEditStory}>
+										<PencilIcon height={20} width={20} scale={1} strokeWidth={0.5} />
+									</Div>
+								),
+								[StoryState.Editting]: (
+									<Div cursorPointer textGray200={!isValidStory} onClick={handleClickSaveStory}>
+										<CheckCircleIcon height={20} width={20} scale={1} strokeWidth={0.5} />
+									</Div>
+								),
+								[StoryState.Loading]: (
+									<Div clx={"animate-spin"}>
+										<RefreshIcon height={20} width={20} scale={1} strokeWidth={0.5} className={"-scale-x-100"} />
+									</Div>
+								),
+							}[story.state]
+						}
+					</Div>
+				)}
+			</Div>
+			<Div textGray400={!story.value}>
 				{
 					{
 						[StoryState.Stale]: (
-							<Div textGray400={!story.value}>
+							<Div textGray400={!story.value} textBase>
 								<ReactMarkdown children={story.value || "스토리가 아직 작성되지 않았습니다."}></ReactMarkdown>
 							</Div>
 						),
@@ -391,13 +352,13 @@ function Story({ story, handleEditStory }) {
 									value={story.edittingValue}
 									className={"border-gray-200 box-shadow-none w-full focus:border-gray-400"}
 									style={{ boxShadow: "none", border: "none" }}
-									rows={10}
 									onChange={handleEditStory}
+									rows={10}
 								></textarea>
 							</Div>
 						),
 						[StoryState.Loading]: (
-							<Div textGray400={!story.value}>
+							<Div textGray400={!story.value} textBase>
 								<ReactMarkdown children={story.value || "스토리가 아직 작성되지 않았습니다."}></ReactMarkdown>
 							</Div>
 						),
@@ -407,6 +368,7 @@ function Story({ story, handleEditStory }) {
 		</Div>
 	);
 }
+
 function Feed({ currentNft, feedState, setFeedState, posts }) {
 	if (FeedState.Stale == feedState) {
 		return <Posts posts={posts} currentNft={currentNft} />;
@@ -425,7 +387,7 @@ function Posts({ posts, currentNft }) {
 		<Div py20>
 			{posts.map((post, index) => {
 				return (
-					<Div key={index} mb20>
+					<Div key={index} mb10>
 						<Post post={post} currentNft={currentNft} />
 					</Div>
 				);
@@ -633,11 +595,11 @@ function NewProposal({ currentNft, feedState, setFeedState }) {
 	);
 }
 
-const Post = ({ post, currentNft, preview = false }) => {
+const Post = ({ post, currentNft }) => {
 	const [comments, setComments] = useState(post.comments);
 	const [expandImageModal, setExpandImageModal] = useState(false);
 	const [liked, setLiked] = useState(post.is_liked);
-
+	const likeOffset = post.is_liked == liked ? 0 : !liked ? -1 : 1;
 	const handleClickImage = () => {
 		setExpandImageModal(true);
 	};
@@ -654,67 +616,85 @@ const Post = ({ post, currentNft, preview = false }) => {
 	};
 
 	return (
-		<Div roundedXl border1 pt20 pb10 px20>
-			<Row flex itemsCenter>
-				<Col auto>
-					<Div imgTag src={post.nft.nft_metadatum.image_uri} h30 w30 roundedFull></Div>
-				</Col>
-				<Col auto pl0>
-					{truncateKlaytnAddress(post.nft.nft_profile?.name || post.nft.nft_metadatum.name)}
-				</Col>
-				<Col auto></Col>
-				<Col />
-			</Row>
-			{post.title && (
-				<Div textXl fontWeight={500} pt20>
-					{post.title}
-				</Div>
-			)}
-			{post.content && (
-				<Div pt10>
-					<ReactMarkdown children={post.content}></ReactMarkdown>
-				</Div>
-			)}
-			<Div wFull hAuto flex flexRow itemsCenter overflowXScroll gapX={20} pt20 onClick={handleClickImage}>
-				{post.image_uris.length == 1 ? (
-					<Div imgTag mxAuto src={post.image_uris[0]} w300 h300 roundedXl objectCover />
-				) : (
-					post.image_uris.map((image_uri, index) => {
-						return <Div key={index} imgTag src={image_uri} w300 h300 roundedXl objectCover />;
-					})
+		<Div borderT1 pt30 pb10>
+			<Div px15>
+				<Row flex itemsCenter pb10>
+					<Col auto>
+						<Div imgTag src={post.nft.nft_metadatum.image_uri} h30 w30 rounded></Div>
+					</Col>
+					<Col auto pl0>
+						{truncateKlaytnAddress(post.nft.nft_profile?.name || post.nft.nft_metadatum.name)}
+					</Col>
+					<Col auto></Col>
+					<Col />
+				</Row>
+				{post.title && (
+					<Div textXl fontWeight={500} mt10>
+						{post.title}
+					</Div>
+				)}
+				{post.content && (
+					<Div mt10 textBase>
+						<ReactMarkdown children={post.content}></ReactMarkdown>
+					</Div>
 				)}
 			</Div>
-			{preview && (
-				<Row borderT1 borderB1 mt20 gapX={0}>
-					<Col flex itemsCenter justifyCenter borderR1 py10>
-						<Div>
-							<HeartIcon height={20} width={20} />
-						</Div>
-					</Col>
-					<Col flex itemsCenter justifyCenter py10>
-						<Div strokeWidth={0.5}>
-							<ChatAltIcon height={20} width={20} />
-						</Div>
-					</Col>
-				</Row>
+			{post.image_uris.length > 0 && (
+				<Div wFull h400 clx={"slide-container"} mt10>
+					<Slide transitionDuration={200} autoplay={false}>
+						{post.image_uris.map((image_uri, index) => {
+							return (
+								<div key={index}>
+									<div
+										style={{
+											backgroundImage: `url(${image_uri})`,
+											backgroundSize: "cover",
+											backgroundPositionX: "center",
+											backgroundPositionY: "center",
+											border: "none",
+											height: 400,
+										}}
+									></div>
+								</div>
+							);
+						})}
+					</Slide>
+				</Div>
 			)}
-			{!preview && (
-				<Row borderT1 borderB1 mt20 gapX={0}>
-					<Col flex itemsCenter justifyCenter borderR1 py10 cursorPointer onClick={handleClickLike}>
-						<Div>{liked ? <HeartIconSolid height={25} width={25} fill={COLORS.DANGER} /> : <HeartIcon height={25} width={25} />}</Div>
+			<Div px15>
+				<Row mt20 gapX={0} py10>
+					<Col flex itemsCenter justifyCenter cursorPointer onClick={handleClickLike} auto pr0>
+						<Div mr5>{liked ? <HeartIconSolid height={25} width={25} fill={COLORS.DANGER} /> : <HeartIcon height={25} width={25} />}</Div>
+						<Div textSm>{`${post.likes_count + likeOffset} likes`}</Div>
 					</Col>
-					<Col flex itemsCenter justifyCenter py10 cursorPointer>
-						<Div strokeWidth={0.5}>
-							<ChatAltIcon height={25} width={25} />
+					<Col flex itemsCenter justifyStart auto>
+						<Div w={(comments.length - 1) * 15 + 24} relative h24 mr5>
+							{comments.map((comment, index) => {
+								return (
+									<Div
+										key={comment.id}
+										imgTag
+										src={comment.nft.nft_metadatum.image_uri}
+										roundedFull
+										h24
+										w24
+										absolute
+										top0
+										left={index * 15}
+										border2
+										borderWhite
+									></Div>
+								);
+							})}
 						</Div>
+						<Div textSm>{`${post.comments_count} replies`}</Div>
 					</Col>
+					<Col></Col>
 				</Row>
-			)}
-			{comments.map((comment) => {
-				return <Comment key={comment.id} comment={comment} />;
-			})}
-			<NewComment currentNft={currentNft} postId={post.id} onSuccess={handleNewCommentSuccess} />
-			{post.image_uris.length > 0 && <ImageModal open={expandImageModal} handleCloseModal={handleCloseModal} imgSrcArr={post.image_uris} />}
+				{comments[0] && <Comment comment={comments[0]} />}
+				{/* <NewComment currentNft={currentNft} postId={post.id} onSuccess={handleNewCommentSuccess} /> */}
+				{post.image_uris.length > 0 && <ImageModal open={expandImageModal} handleCloseModal={handleCloseModal} imgSrcArr={post.image_uris} />}
+			</Div>
 		</Div>
 	);
 };
@@ -728,11 +708,11 @@ const Comment = ({ comment }) => {
 		apiHelperWithToken(apis.like.comment(comment.id), verb);
 	};
 	return (
-		<Row gapX={0} mt10>
+		<Row gapX={0} mt10 textBase>
 			<Col flex itemsCenter justifyCenter py10 auto pr0>
-				<Div imgTag src={comment.nft.nft_metadatum.image_uri} roundedFull h35 w35 overflowHidden></Div>
+				<Div imgTag src={comment.nft.nft_metadatum.image_uri} rounded h30 w30 overflowHidden></Div>
 			</Col>
-			<Col flex itemsCenter justifyCenter py10 cursorPointer auto>
+			<Col flex itemsCenter justifyCenter py10 cursorPointer auto fontWeight={500}>
 				{comment.nft.nft_profile.name || comment.nft.nft_metadatum.name}
 			</Col>
 			<Col flex itemsCenter py10 cursorPointer>
@@ -793,15 +773,11 @@ const LoadingIcon = () => {
 		</Div>
 	);
 };
- 
+
 NftCollection.getInitialProps = async (context: NextPageContext) => {
 	const { contractAddress, tokenId } = context.query;
 	const res = await apiHelperWithJwtFromContext(context, apis.nftProfile.contractAddressAndTokenId(contractAddress, tokenId), "GET");
-	return {
-		nft: res.nft,
-		posts: res.posts,
-		collection: res.collection,
-	};
+	return res.nft;
 };
 
 export default NftCollection;

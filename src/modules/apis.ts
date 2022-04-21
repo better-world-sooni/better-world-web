@@ -52,6 +52,9 @@ const apis = {
   nft: {
     contractAddressAndTokenId: (contractAddress, tokenId) => apiV1(`/nft/${contractAddress}/${tokenId}`)
   },
+  follow: {
+    contractAddressAndTokenId: (contractAddress, tokenId) => apiV1(`/follow/${contractAddress}/${tokenId}`)
+  },
   nftProfile: {
     contractAddressAndTokenId: (contractAddress, tokenId) => apiV1(`/nft_profile/${contractAddress}/${tokenId}`)
   },
