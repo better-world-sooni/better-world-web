@@ -3,6 +3,7 @@ export const urls = {
     home: '/home',
     feed: '/feed',
     post: {
+        index: () => `/post`,
         postId: (postId, section = "#") => `/post/${postId}${section}`
     },
     onboarding: {

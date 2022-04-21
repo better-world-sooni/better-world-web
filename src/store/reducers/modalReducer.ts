@@ -20,12 +20,14 @@ export const CONFETTI = 'modal/LOGIN' as const
 export const SIGN_IN = 'modal/SIGNIN' as const
 export const EMAIL_VERIFICATION = 'modal/EMAIL_VERIFICATION' as const
 export const KLIP_QR_ACTION = 'modal/KLIP_QR_ACTION' as const
+export const SWITCH_AVATAR_MODAL = 'modal/SWITCH_AVATAR_MODAL' as const
 
 // action function
 export const confettiAction = ({enabled}) => ({ type: CONFETTI, enabled })
 export const signInAction = ({enabled}) => ({ type: SIGN_IN, enabled })
 export const emailVerificationAction = ({enabled}) => ({ type: EMAIL_VERIFICATION, enabled })
 export const klipQRAction = ({enabled, qrImage, requestKey}) => ({ type: KLIP_QR_ACTION, enabled, qrImage, requestKey })
+export const switchAvatarModalAction = ({enabled, qrImage, requestKey}) => ({ type: SWITCH_AVATAR_MODAL, enabled, qrImage, requestKey })
 
 const f = (action, func) => func(action)
 

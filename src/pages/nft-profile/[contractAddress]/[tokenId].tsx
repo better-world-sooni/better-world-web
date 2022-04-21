@@ -50,6 +50,9 @@ function NftProfile({
 	const mine = contract_address == currentNft.contract_address && token_id == currentNft.token_id;
 	const [following, setFollowing] = useState(is_following);
 	const followerOffset = is_following == following ? 0 : !following ? -1 : 1;
+	const handleClickNewPost = () => {
+		href(urls.post.index());
+	};
 	const handleClickFollow = async () => {
 		const res = await apiHelperWithToken(apis.follow.contractAddressAndTokenId(contract_address, token_id), "POST");
 		if (res.success) {
@@ -111,7 +114,7 @@ function NftProfile({
 					</Div>
 					<Div my10 cursorPointer>
 						{mine ? (
-							<Div flex1 flex justifyCenter px20 py5 rounded border1 onClick={handleClickUnfollow}>
+							<Div flex1 flex justifyCenter px20 py5 rounded border1 onClick={handleClickNewPost}>
 								<Div textBase>게시물 작성</Div>
 							</Div>
 						) : following ? (

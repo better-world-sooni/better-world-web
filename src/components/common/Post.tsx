@@ -40,6 +40,7 @@ export default function Post({ post, full = false, currentNftImage }) {
 			const newRepliedComment = { ...repliedComment, comments: commentsOfRepliedComment };
 			const newCachedComments = cachedComments.slice(0, updatedCommentIndex).concat(newRepliedComment, cachedComments.slice(updatedCommentIndex + 1));
 			setCachedComments(newCachedComments);
+			setReplyComment(null);
 			return;
 		}
 		setCachedComments([...cachedComments, newComment]);
@@ -111,8 +112,8 @@ export default function Post({ post, full = false, currentNftImage }) {
 						</Slide>
 					</Div>
 				)}
-				<Div px15>
-					<Row mt20 gapX={0} pt10>
+				<Div px15 mb5={displayNewComment}>
+					<Row mt20 gapX={0} pt10 mb5={cachedComments[0]}>
 						<Col flex itemsCenter justifyCenter cursorPointer onClick={handleClickLike} auto pr0>
 							<Div mr5>{liked ? <HeartIconSolid height={25} width={25} fill={COLORS.DANGER} /> : <HeartIcon height={25} width={25} />}</Div>
 							<Div textSm>{`${post.likes_count + likeOffset} likes`}</Div>

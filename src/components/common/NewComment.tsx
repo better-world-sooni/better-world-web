@@ -37,7 +37,7 @@ export default function NewComment({ currentNftImage, postId, onSuccess, full = 
 			setLoading(false);
 		}
 	};
-	const fullConditionalProps = full ? { sticky: true, bottom0: true, bgWhite: true, py10: true } : {};
+	const fullConditionalProps = full ? { sticky: true, bottom0: true, bgWhite: true, pt10: true } : { pb5: 5 };
 	return (
 		<Div {...fullConditionalProps}>
 			{replyComment && (
@@ -51,7 +51,7 @@ export default function NewComment({ currentNftImage, postId, onSuccess, full = 
 					</Div>
 				</Div>
 			)}
-			<Row gapX={0} mx0>
+			<Row gapX={0} px15={!full} mx0={full}>
 				<Col flex itemsCenter justifyCenter auto pr0>
 					<Div imgTag src={currentNftImage} rounded h25 w25 overflowHidden></Div>
 				</Col>
