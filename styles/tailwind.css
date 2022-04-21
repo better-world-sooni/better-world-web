@@ -105,3 +105,6 @@
     height: 100%;
     position: absolute;
   }
+  .grid-center-item {
+    grid-column: 1 / -1;
+  }

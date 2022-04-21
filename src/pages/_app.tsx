@@ -44,7 +44,7 @@ MyApp.getInitialProps = async ({ Component, ctx }): Promise<AppInitialProps> => 
 			} else {
 				setJwt(authResponse.jwt);
 				currentUser = authResponse.user;
-				currentNft = authResponse.user;
+				currentNft = authResponse.current_nft;
 			}
 		} else {
 			redirectRoot(ctx);
@@ -54,7 +54,7 @@ MyApp.getInitialProps = async ({ Component, ctx }): Promise<AppInitialProps> => 
 		if (authResponse.success) {
 			setJwt(authResponse.jwt);
 			currentUser = authResponse.user;
-			currentNft = authResponse.user;
+			currentNft = authResponse.current_nft;
 		}
 	}
 	if (Component.getInitialProps) {

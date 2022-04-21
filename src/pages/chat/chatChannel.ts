@@ -1,14 +1,16 @@
 import { Channel, ChannelEvents } from '@anycable/core'
 
-type UserUuid = {
-  userUuid: string
+type nftId = {
+  token_id: number,
+  contract_address: string
 }
+
 
 type RoomId = {
   roomId: string | number
 }
 
-type Params = RoomId | UserUuid
+type Params = RoomId | nftId
 
 type EnteringMessage = {
   type: 'enter'

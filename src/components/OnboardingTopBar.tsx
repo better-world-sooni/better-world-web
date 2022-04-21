@@ -17,23 +17,7 @@ import { IMAGES } from "src/modules/images";
 import EmptyBlock from "./EmptyBlock";
 import { truncateKlaytnAddress } from "src/modules/constants";
 
-const MainTopBar = ({ user }) => {
-	const { locale } = useRouter();
-	const dispatch = useDispatch();
-	const isTablet = useIsTablet();
-	const onClickLogin = () => {
-		dispatch(signInAction({ enabled: true }));
-	};
-	const onClickEmailVerification = () => {
-		dispatch(emailVerificationAction({ enabled: true }));
-	};
-	const onClickProfile = () => {
-		// href(urls.profile.klaytnAddress(user.klaytn_account.address));
-	}
-	const onClickChat = () => {
-		href(urls.chat);
-	};
-
+const OnboardingTopBar = () => {
 	return (
 		<>
 			<Div fixed bgWhite wFull borderB1 px30 z1>
@@ -48,32 +32,11 @@ const MainTopBar = ({ user }) => {
 						</Div>
 					</Col>
 					<Col></Col>
-					<Col auto rounded3xl px20 pt5 cursorPointer border1 pb8 onClick={onClickLogin}>
-						Feed
-					</Col>
-					<Col auto rounded3xl px20 pt5 cursorPointer border1 pb8 onClick={onClickLogin}>
-						Capsules
-					</Col>
-					<Col auto rounded3xl px20 pt5 cursorPointer border1 pb8 onClick={onClickChat}>
-						Chat
-					</Col>
-					{user ? (
-						<Col auto rounded3xl px20 pt5 cursorPointer border1 pb8 onClick={onClickProfile}>
-							{truncateKlaytnAddress(user.klaytn_account.address)}
-						</Col>
-					) : (
-						<Col auto rounded3xl px20 pt5 cursorPointer border1 pb8 onClick={onClickLogin} clx={"animate-bounce"}>
-							연결
-						</Col>
-					)}
 				</Row>
-				<SignInModal />
-				<EmailVerificationModal />
-				<KlipQRModal />
 			</Div>
 			<EmptyBlock h={80} />
 		</>
 	);
 };
 
-export default MainTopBar;
+export default OnboardingTopBar;

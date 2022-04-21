@@ -11,8 +11,6 @@ import { useEffect, useState } from "react";
 import { sha3_256 } from "js-sha3";
 import apis from "src/modules/apis";
 import { apiHelperWithJwtFromContext, apiHelperWithToken } from "src/modules/apiHelper";
-import { BadgeCheckIcon } from "@heroicons/react/solid";
-import NftCollectionProfile from "src/components/common/NftCollectionProfile";
 import { BellIcon, ChatAltIcon, CheckCircleIcon, HeartIcon, PencilIcon, PlusIcon, RefreshIcon, XCircleIcon, XIcon } from "@heroicons/react/outline";
 import { NextPageContext } from "next";
 import remarkGfm from "remark-gfm";
