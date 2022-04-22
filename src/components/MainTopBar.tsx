@@ -1,7 +1,7 @@
 import { ChatIcon, GlobeAltIcon, KeyIcon, LockClosedIcon, SearchCircleIcon, SparklesIcon, UserCircleIcon } from "@heroicons/react/outline";
 import { useDispatch, useSelector } from "react-redux";
 import useIsTablet from "src/hooks/useIsTablet";
-import { emailVerificationAction, signInAction } from "src/store/reducers/modalReducer";
+import { emailVerificationAction, signInAction, switchAvatarModalAction } from "src/store/reducers/modalReducer";
 import { RootState } from "src/store/reducers/rootReducer";
 import Link from "next/link";
 import Col from "./Col";
@@ -18,6 +18,7 @@ import EmptyBlock from "./EmptyBlock";
 import { truncateKlaytnAddress } from "src/modules/constants";
 import { Fragment } from "react";
 import { Menu, Transition } from "@headlessui/react";
+import SwitchAvatarModal from "./modals/SwitchAvatarModal";
 
 const MainTopBar = ({ currentUser, currentNft }) => {
 	const { locale } = useRouter();
@@ -53,6 +54,7 @@ const MainTopBar = ({ currentUser, currentNft }) => {
 						</Col>
 					)}
 				</Row>
+				<SwitchAvatarModal />
 				<SignInModal />
 				<EmailVerificationModal />
 				<KlipQRModal />
@@ -62,16 +64,21 @@ const MainTopBar = ({ currentUser, currentNft }) => {
 	);
 };
 
-function classNames(...classes) {
-	return classes.filter(Boolean).join(" ");
-}
-
 function ProfileDropdown({ currentNft, currentUser }) {
-	console.log(currentUser);
-	const onClickProfile = () => {
+	const dispatch = useDispatch();
+	const handleClickProfile = () => {
 		if (currentNft) {
 			href(urls.nftProfile.contractAddressAndTokenId(currentNft.contract_address, currentNft.token_id));
 		}
+	};
+	const handleClickSwitchAccount = () => {
+		dispatch(
+			switchAvatarModalAction({
+				enabled: true,
+				currentNft,
+				currentUser,
+			}),
+		);
 	};
 	return (
 		<Menu as="div">
@@ -91,7 +98,7 @@ function ProfileDropdown({ currentNft, currentUser }) {
 					<Div w200 textBase>
 						<Menu.Item>
 							{({ active }) => (
-								<Div onClick={onClickProfile} py10 px10 flex flexRow itemsCenter clx={`${active ? "bg-gray-100 text-black" : "text-gray-800"}`}>
+								<Div onClick={handleClickProfile} py10 px10 flex flexRow itemsCenter clx={`${active ? "bg-gray-100 text-black" : "text-gray-800"}`}>
 									<Div mr10>
 										<UserCircleIcon height={20} width={20} />
 									</Div>{" "}
@@ -101,7 +108,15 @@ function ProfileDropdown({ currentNft, currentUser }) {
 						</Menu.Item>
 						<Menu.Item>
 							{({ active }) => (
-								<Div py10 px10 flex flexRow itemsCenter clx={`${active ? "bg-gray-100 text-black" : "text-gray-800"}`}>
+								<Div
+									onClick={handleClickSwitchAccount}
+									py10
+									px10
+									flex
+									flexRow
+									itemsCenter
+									clx={`${active ? "bg-gray-100 text-black" : "text-gray-800"}`}
+								>
 									<Div mr10>
 										<SparklesIcon height={20} width={20} />
 									</Div>{" "}
@@ -109,7 +124,7 @@ function ProfileDropdown({ currentNft, currentUser }) {
 								</Div>
 							)}
 						</Menu.Item>
-						<Menu.Item>
+						{/* <Menu.Item>
 							{({ active }) => (
 								<Div py10 px10 flex flexRow itemsCenter clx={`${active ? "bg-gray-100 text-black" : "text-gray-800"}`}>
 									<Div mr10>
@@ -118,7 +133,7 @@ function ProfileDropdown({ currentNft, currentUser }) {
 									<Div>Root Holder</Div>
 								</Div>
 							)}
-						</Menu.Item>
+						</Menu.Item> */}
 						<Menu.Item>
 							{({ active }) => (
 								<Div borderT1 py10 px10 flex flexRow itemsCenter clx={`${active ? "bg-gray-100 text-black" : "text-gray-800"}`}>

@@ -12,6 +12,11 @@ const initialState = {
   },
   confetti: {
     enabled: false,
+  },
+  switchAvatarModal: {
+    enabled: false,
+    currentNft: null,
+    currentUser: null,
   }
 }
 
@@ -27,7 +32,7 @@ export const confettiAction = ({enabled}) => ({ type: CONFETTI, enabled })
 export const signInAction = ({enabled}) => ({ type: SIGN_IN, enabled })
 export const emailVerificationAction = ({enabled}) => ({ type: EMAIL_VERIFICATION, enabled })
 export const klipQRAction = ({enabled, qrImage, requestKey}) => ({ type: KLIP_QR_ACTION, enabled, qrImage, requestKey })
-export const switchAvatarModalAction = ({enabled, qrImage, requestKey}) => ({ type: SWITCH_AVATAR_MODAL, enabled, qrImage, requestKey })
+export const switchAvatarModalAction = ({enabled, currentNft, currentUser}) => ({ type: SWITCH_AVATAR_MODAL, enabled, currentNft, currentUser })
 
 const f = (action, func) => func(action)
 
@@ -68,6 +73,17 @@ export const modalReducer = (state = initialState, action) => {
             enabled,
             qrImage, 
             requestKey
+          }
+        }
+      })
+    case SWITCH_AVATAR_MODAL:
+      return f(action, ({ enabled, currentNft, currentUser }) => {
+        return {
+          ...state,
+          switchAvatarModal: {
+            enabled,
+            currentNft, 
+            currentUser
           }
         }
       })
