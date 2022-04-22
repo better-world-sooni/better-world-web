@@ -52,6 +52,7 @@
     "react-helmet": "^6.1.0",
     "react-markdown": "^8.0.2",
     "react-multi-carousel": "^2.6.5",
+    "react-query": "^3.37.0",
     "react-redux": "^7.2.6",
     "react-scrollmagic": "^2.3.0",
     "react-slideshow-image": "^3.7.3",

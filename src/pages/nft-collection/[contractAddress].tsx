@@ -7,7 +7,7 @@ import Col from "src/components/Col";
 import { IMAGES } from "src/modules/images";
 import { truncateKlaytnAddress } from "src/modules/constants";
 import MainTopBar from "src/components/MainTopBar";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { sha3_256 } from "js-sha3";
 import apis from "src/modules/apis";
 import { apiHelperWithJwtFromContext, apiHelperWithToken } from "src/modules/apiHelper";
@@ -19,6 +19,8 @@ import remarkGfm from "remark-gfm";
 import ReactMarkdown from "react-markdown";
 import { useSelector } from "react-redux";
 import ImageModal from "src/components/modals/ImageModal";
+import { QueryClientProvider, QueryClient } from 'react-query';
+import SearchNft from 'src/pages/nft-collection/searchNft'
 
 function Feed({ posts }) {
 	const length = posts.length;
@@ -210,6 +212,8 @@ function About({ about }) {
 // }
 function NftCollection({ nftCollection, posts, about, currentUser, currentNft }) {
 	const [contentIndex, setContentIndex] = useState(0);
+  
+
 	const handleClickFeed = () => {
 		setContentIndex(0);
 	};
@@ -259,6 +263,9 @@ function NftCollection({ nftCollection, posts, about, currentUser, currentNft })
 								<Div h50 roundedFull px20 flex itemsCenter justifyCenter border1 cursorPointer onClick={handleClickAbout}>
 									<Div textCenter>About</Div>
 								</Div>
+							</Col>
+							<Col>
+								<SearchNft/>
 							</Col>
 							<Col></Col>
 							<Col auto px5>

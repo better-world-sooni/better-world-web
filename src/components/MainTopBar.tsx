@@ -67,7 +67,7 @@ function classNames(...classes) {
 }
 
 function ProfileDropdown({ currentNft, currentUser }) {
-	console.log(currentUser);
+	console.log("check", currentUser);
 	const onClickProfile = () => {
 		if (currentNft) {
 			href(urls.nftProfile.contractAddressAndTokenId(currentNft.contract_address, currentNft.token_id));
