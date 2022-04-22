@@ -9,7 +9,7 @@ import Row from "../Row";
 import Col from "../Col";
 import { IMAGES } from "src/modules/images";
 import { modalsWording } from "src/wording/modals";
-import { HOME_URL, KAIKAS, KLIP, PLATFORM } from "src/modules/constants";
+import { COLORS, HOME_URL, KAIKAS, KLIP, PLATFORM } from "src/modules/constants";
 import { klipPrepareAuth, klipRequestQRUrl, klipResult } from "src/modules/klipApiHelper";
 import { generateQR } from "src/modules/generateQR";
 import RoundedButton from "../RoundedButton";
@@ -17,12 +17,12 @@ import { useRouter } from "next/router";
 import { apiHelper, apiHelperWithToken } from "src/modules/apiHelper";
 import apis from "src/modules/apis";
 import { changeNftAction, loginAction } from "src/store/reducers/authReducer";
-import { signInAction, switchAvatarModalAction } from "src/store/reducers/modalReducer";
+import { signInAction, switchAccountModalAction } from "src/store/reducers/modalReducer";
 import { urls } from "src/modules/urls";
 import { CheckCircleIcon } from "@heroicons/react/solid";
 import Spinner from "../common/Spinner";
 
-export default function SwitchAvatarModal() {
+export default function SwitchAcountModal() {
 	const dispatch = useDispatch();
 	const { locale } = useRouter();
 	const { enabled, currentNft, currentUser } = useSelector((state: RootState) => ({
@@ -30,7 +30,7 @@ export default function SwitchAvatarModal() {
 	}));
 	const [error, setError] = useState(null);
 	const closeModal = () => {
-		dispatch(switchAvatarModalAction({ enabled: false, currentNft: null, currentUser: null }));
+		dispatch(switchAccountModalAction({ enabled: false, currentNft: null, currentUser: null }));
 		setError(<Div spanTag>{modalsWording.signIn.encourageKlip[locale]}</Div>);
 	};
 	const nonCurrentNfts =
@@ -43,8 +43,8 @@ export default function SwitchAvatarModal() {
 					<Row py10 flex itemsCenter borderB1>
 						<Col />
 						<Col auto>
-							<Div spanTag textLg fontSemibold>
-								Switch Avatar
+							<Div spanTag textLg fontWeight={500}>
+								계정 전환
 							</Div>
 						</Col>
 						<Col flex justifyEnd>
@@ -74,7 +74,7 @@ function AvatarAccount({ nft, current = false, onSuccess }) {
 		});
 		if (res.success) {
 			const redirect = urls.nftProfile.contractAddressAndTokenId(nft.contract_address, nft.token_id);
-			dispatch(changeNftAction({ contract_address: nft.contract_address, token_id: nft.token_id, redirect }));
+			dispatch(changeNftAction({ contract_address: nft.contract_address, token_id: nft.token_id }));
 			onSuccess();
 		} else {
 			alert("업데이트중 문제가 발생하였습니다.");
@@ -92,7 +92,13 @@ function AvatarAccount({ nft, current = false, onSuccess }) {
 			</Col>
 			<Col />
 			<Col auto>
-				{loading ? <Spinner clx={"h-20 w-20"} /> : current ? <CheckCircleIcon width={20} height={20} /> : <SparklesIcon width={20} height={20} />}
+				{loading ? (
+					<Spinner clx={"h-20 w-20"} fill={COLORS.PRIMARY} circleFill={COLORS.GRAY200} />
+				) : current ? (
+					<CheckCircleIcon width={20} height={20} fill={COLORS.SUCCESS} />
+				) : (
+					<SparklesIcon width={20} height={20} />
+				)}
 			</Col>
 		</Row>
 	);

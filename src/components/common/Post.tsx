@@ -7,7 +7,7 @@ import { Slide } from "react-slideshow-image";
 import Col from "../Col";
 import Div from "../Div";
 import Row from "../Row";
-import { ChevronLeftIcon, ChevronRightIcon, HeartIcon } from "@heroicons/react/outline";
+import { ChevronLeftIcon, ChevronRightIcon, DotsHorizontalIcon, HeartIcon } from "@heroicons/react/outline";
 import { HeartIcon as HeartIconSolid } from "@heroicons/react/solid";
 import Comment from "./Comment";
 import TruncatedText from "src/components/common/TruncatedText";
@@ -16,6 +16,7 @@ import { urls } from "src/modules/urls";
 import TruncatedMarkdown from "./TruncatedMarkdown";
 import NewComment from "./NewComment";
 import EmptyBlock from "../EmptyBlock";
+import { createdAtText } from "src/modules/timeHelper";
 
 export default function Post({ post, full = false, currentNftImage }) {
 	const [liked, setLiked] = useState(post.is_liked);
@@ -46,8 +47,8 @@ export default function Post({ post, full = false, currentNftImage }) {
 		setCachedComments([...cachedComments, newComment]);
 	};
 	useEffect(() => {
-			setLiked(post.is_liked);
-		}, [post.is_liked]);
+		setLiked(post.is_liked);
+	}, [post.is_liked]);
 
 	const displayNewComment = cachedComments.length == 0 || full;
 
@@ -60,10 +61,14 @@ export default function Post({ post, full = false, currentNftImage }) {
 							<Div imgTag src={post.nft.nft_metadatum.image_uri} h30 w30 rounded></Div>
 						</Col>
 						<Col auto pl0>
-							{truncateKlaytnAddress(post.nft.nft_profile?.name || post.nft.nft_metadatum.name)}
+							{truncateKlaytnAddress(post.nft.name || post.nft.nft_metadatum.name)}
 						</Col>
-						<Col auto></Col>
 						<Col />
+						<Col auto>
+							<Div textXs textGray400>
+								{createdAtText(post.updated_at)}
+							</Div>
+						</Col>
 					</Row>
 					{post.title && (
 						<Div textXl fontWeight={500} mt10>

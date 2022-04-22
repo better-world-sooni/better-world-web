@@ -43,7 +43,7 @@ export default function NewComment({ currentNftImage, postId, onSuccess, full = 
 			{replyComment && (
 				<Div flex flexRow itemsCenter py5 borderT1>
 					<Div textBase onClick={onClickExitReply} cursorPointer w40></Div>
-					<Div textBase flex1 textCenter>{`${replyComment.nft.nft_profile.name || replyComment.nft.nft_metadatum.name} 에게 답변`}</Div>
+					<Div textBase flex1 textCenter>{`${replyComment.nft.name || replyComment.nft.nft_metadatum.name} 에게 답변`}</Div>
 					<Div textBase onClick={onClickExitReply} cursorPointer w40>
 						<Div px10>
 							<XIcon height={20} width={20} />

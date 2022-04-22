@@ -1,214 +1,17 @@
 import Div from "src/components/Div";
-import Helmet from "react-helmet";
-import Confetti from "src/components/modals/Confetti";
-import EmptyBlock from "src/components/EmptyBlock";
 import Row from "src/components/Row";
 import Col from "src/components/Col";
-import { IMAGES } from "src/modules/images";
-import { truncateKlaytnAddress } from "src/modules/constants";
 import MainTopBar from "src/components/MainTopBar";
 import { useEffect, useState } from "react";
-import { sha3_256 } from "js-sha3";
 import apis from "src/modules/apis";
 import { apiHelperWithJwtFromContext, apiHelperWithToken } from "src/modules/apiHelper";
-import { BadgeCheckIcon } from "@heroicons/react/solid";
-import NftCollectionProfile from "src/components/common/NftCollectionProfile";
-import { BellIcon, XCircleIcon } from "@heroicons/react/outline";
+import { BellIcon, CheckCircleIcon, PencilIcon, TrashIcon, XCircleIcon } from "@heroicons/react/outline";
 import { NextPageContext } from "next";
-import remarkGfm from "remark-gfm";
-import ReactMarkdown from "react-markdown";
-import { useSelector } from "react-redux";
-import ImageModal from "src/components/modals/ImageModal";
+import { createPresignedUrl, fileChecksum, uploadToPresignedUrl } from "src/modules/fileHelper";
+import Spinner from "src/components/common/Spinner";
+import { COLORS } from "src/modules/constants";
 
-function Feed({ posts }) {
-	const length = posts.length;
-	if (length == 0) {
-		return (
-			<Div textCenter py30>
-				아직 업로드가 된 제안서가 없습니다. 처음이 되어 보세요!
-			</Div>
-		);
-	}
-	return (
-		<Div mxAuto maxW={1100} px10>
-			{posts.map((post, index) => {
-				return <Div key={index}>{post}</Div>;
-			})}
-		</Div>
-	);
-}
-
-function About({ about }) {
-	return (
-		<Div mxAuto maxW={1100} flex flexRow my20>
-			<Div w400 mr20 roundedXl border1 px20 py20>
-				<Div fontWeight={500} textLg>
-					About
-				</Div>
-				<Div my10>{about.about}</Div>
-				<Div fontWeight={500} textLg mt10>
-					Network
-				</Div>
-				<Div my10>{about.network}</Div>
-				<Div fontWeight={500} textLg mt10 textGray400={!about.website}>
-					Website
-				</Div>
-				<Div my10>{about.website}</Div>
-				<Div fontWeight={500} textLg mt10 textGray400={!about.github}>
-					Github
-				</Div>
-				<Div my10>{about.github}</Div>
-				<Div fontWeight={500} textLg mt10 textGray400={!about.opensea}>
-					Website
-				</Div>
-				<Div my10>{about.opensea}</Div>
-			</Div>
-			<Div flex1></Div>
-		</Div>
-	);
-}
-// function NewProposal({ nftCollection, user }) {
-// 	const [title, setTitle] = useState("");
-// 	const [content, setContent] = useState("");
-// 	const [selectedFiles, setSelectedFiles] = useState([]);
-// 	const [previewing, setPreviewing] = useState(false);
-// 	const [expandImageModal, setExpandImageModal] = useState(false);
-// 	const handleContentChange = ({ target: { value } }) => {
-// 		setContent(value);
-// 	};
-// 	const handleTitleChange = ({ target: { value } }) => {
-// 		setTitle(value);
-// 	};
-// 	const handleAddFiles = (e) => {
-// 		const targetFilesLength = e.target.files.length;
-// 		if (!e.target.files || targetFilesLength === 0) {
-// 			return;
-// 		}
-// 		if (selectedFiles.length + targetFilesLength > 10) {
-// 			alert("이미지는 10개 이상 선택하실 수 없습니다.");
-// 			return;
-// 		}
-// 		const additionalFiles = [];
-// 		for (let fileIndex = 0; fileIndex < targetFilesLength; fileIndex++) {
-// 			additionalFiles.push(addFile(e.target.files[fileIndex]));
-// 		}
-// 		setSelectedFiles([...selectedFiles, ...additionalFiles]);
-// 	};
-// 	const addFile = (file) => {
-// 		const url = URL.createObjectURL(file);
-// 		const fileObject = {
-// 			type: "image",
-// 			url,
-// 			file,
-// 		};
-// 		return fileObject;
-// 	};
-// 	const handleRemoveFile = (index) => {
-// 		const reducedArray = [...selectedFiles];
-// 		reducedArray.splice(index, 1);
-// 		setSelectedFiles(reducedArray);
-// 	};
-// 	const handleClickPreview = () => {
-// 		setPreviewing((prev) => !prev);
-// 	};
-// 	const handleClickImage = () => {
-// 		setExpandImageModal(true);
-// 	};
-// 	const handleCloseModal = () => {
-// 		setExpandImageModal(false);
-// 	};
-
-// 	return (
-// 		<Div mxAuto maxW={1100} my20>
-// 			<Div maxW={600} mxAuto>
-// 				{previewing ? (
-// 					<Div roundedXl border1 py20 px20>
-// 						<Row flex itemsCenter>
-// 							<Col auto>
-// 								<Div imgTag src={user.main_nft.nft_metadatum.image_uri} h30 w30 roundedFull></Div>
-// 							</Col>
-// 							<Col auto pl0>
-// 								{nftCollection.name} by {truncateKlaytnAddress(user.username)}
-// 							</Col>
-// 							<Col auto></Col>
-// 							<Col />
-// 						</Row>
-// 						<Div textXl fontWeight={500} pt20>
-// 							{title}
-// 						</Div>
-// 						<Div pt10>
-// 							<ReactMarkdown remarkPlugins={[]} children={content} className={"whitespace-pre-wrap"}></ReactMarkdown>
-// 						</Div>
-// 						<Div wFull hAuto flex flexRow itemsCenter overflowXScroll gapX={20} pt20 onClick={handleClickImage}>
-// 							{selectedFiles.map((file, index) => {
-// 								return <Div key={index} imgTag wFull hAuto src={file.url} w300 h300 roundedXl />;
-// 							})}
-// 						</Div>
-// 						<ImageModal
-// 							open={expandImageModal}
-// 							handleCloseModal={handleCloseModal}
-// 							imgSrcArr={selectedFiles.map((file) => {
-// 								return file.url;
-// 							})}
-// 						/>
-// 					</Div>
-// 				) : (
-// 					<>
-// 						<Div flex flexRow gapX={20}>
-// 							{selectedFiles.map((fileObject, index) => {
-// 								return (
-// 									<Div key={index} relative roundedXl overflowHidden cursorPointer onClick={() => handleRemoveFile(index)}>
-// 										<Div imgTag src={fileObject.url} w100 h100></Div>
-// 										<Div wFull hFull absolute z10 top0 flex itemsCenter justifyCenter clx={"opacity-0 bg-grayOpacity-100 hover:opacity-100"}>
-// 											<XCircleIcon height={30} width={30} />
-// 										</Div>
-// 									</Div>
-// 								);
-// 							})}
-// 						</Div>
-// 						<Div>
-// 							<Div
-// 								clx="file-input cursor-pointer rounded-full border-1 px-20 w-full focus:outline-none focus:border-gray-400 mt-20"
-// 								h50
-// 								relative
-// 								flex
-// 								itemsCenter
-// 								justifyCenter
-// 							>
-// 								이미지 업로드
-// 								<input type={"file"} onChange={handleAddFiles} multiple accept="image/png, image/gif, image/jpeg, video/mp4"></input>
-// 							</Div>
-// 						</Div>
-// 						<Div>
-// 							<input
-// 								placeholder="제목"
-// 								value={title}
-// 								className={"rounded-full border-1 px-20 w-full focus:outline-none focus:border-gray-400 mt-20"}
-// 								style={{ height: 50 }}
-// 								onChange={handleTitleChange}
-// 							></input>
-// 						</Div>
-// 						<EmptyBlock h={20} />
-// 						<Div>
-// 							<textarea
-// 								placeholder="마크다운을 사용하실수 있습니다."
-// 								rows={10}
-// 								value={content}
-// 								className={"rounded-xl border-1 border-gray-200 box-shadow-none py-20 px-20 w-full focus:border-gray-400"}
-// 								style={{ boxShadow: "none" }}
-// 								onChange={handleContentChange}
-// 							></textarea>
-// 						</Div>
-// 					</>
-// 				)}
-// 				<Div h50 my20 border1 roundedFull flex itemsCenter justifyCenter cursorPointer onClick={handleClickPreview}>
-// 					<Div spanTag>프리뷰</Div>
-// 				</Div>
-// 			</Div>
-// 		</Div>
-// 	);
-// }
-function NftCollection({ nftCollection, posts, about, currentUser, currentNft }) {
+function NftCollection({ nft_collection, posts, about, currentUser, currentNft }) {
 	const [contentIndex, setContentIndex] = useState(0);
 	const handleClickFeed = () => {
 		setContentIndex(0);
@@ -223,72 +26,352 @@ function NftCollection({ nftCollection, posts, about, currentUser, currentNft })
 		setContentIndex(3);
 	};
 	return (
-		<Div>
-			<Helmet bodyAttributes={{ style: "background-color : white;" }} />
+		<>
 			<MainTopBar currentUser={currentUser} currentNft={currentNft} />
-			<Confetti />
-			<EmptyBlock h={20} />
-			<Div px30>
-				{nftCollection && (
-					<Div mxAuto maxW={1100} px10>
-						<Row flex itemsCenter roundedXl border1 py20 px20>
-							<Col auto borderR1 pr20>
-								<Row flex itemsCenter>
-									<Col auto>
-										<Div imgTag src={nftCollection.image_uri} bgGray200 h50 w50 roundedFull></Div>
-									</Col>
-									<Col auto>
-										<Div fontWeight={500} textLg>
-											{nftCollection.name}
+			<Div mxAuto maxW={950}>
+				<Div relative h250>
+					<BackgroundImage imageUri={nft_collection.background_image_uri} contractAddress={nft_collection.contract_address} />
+					<Div h150></Div>
+					<Div maxW={650} mxAuto bgWhite px15 roundedLg>
+						<Row flex itemsEnd>
+							<Col auto>
+								<ProfileImage imageUri={nft_collection.image_uri} contractAddress={nft_collection.contract_address} />
+							</Col>
+							<Col>
+								<Div fontWeight={500} textXl>
+									{nft_collection.name}
+								</Div>
+								<Row gapX={10} mt10 textBase>
+									<Col pr0>
+										<Div roundedLg flex py5 px15 itemsCenter justifyCenter border1 onClick={handleClickProposal}>
+											<Div textCenter>팔로우</Div>
 										</Div>
-										<Div>{nftCollection.collection_member_count} 멤버</Div>
+									</Col>
+									<Col pl0>
+										<Div roundedLg flex py5 itemsCenter justifyCenter>
+											<Div textCenter textPrimary fontWeight={500}>
+												게시물 작성
+											</Div>
+										</Div>
 									</Col>
 								</Row>
 							</Col>
-							<Col auto pl20 pr5>
-								<Div h50 roundedFull px20 flex itemsCenter justifyCenter border1 cursorPointer onClick={handleClickFeed}>
-									<Div textCenter>Feed</Div>
+						</Row>
+						<Row flex itemsCenter px15 mt10 textBase borderT1>
+							<Col>
+								<Div h50 flex itemsCenter justifyCenter cursorPointer onClick={handleClickFeed}>
+									<Div textCenter>피드</Div>
 								</Div>
 							</Col>
-							<Col auto px5>
-								<Div h50 roundedFull px20 flex itemsCenter justifyCenter border1 cursorPointer onClick={handleClickCapsules}>
-									<Div textCenter>Capsules</Div>
+							<Col>
+								<Div h50 flex itemsCenter justifyCenter cursorPointer onClick={handleClickFeed}>
+									<Div textCenter>멤버</Div>
 								</Div>
 							</Col>
-							<Col auto px5>
-								<Div h50 roundedFull px20 flex itemsCenter justifyCenter border1 cursorPointer onClick={handleClickAbout}>
-									<Div textCenter>About</Div>
+							<Col>
+								<Div h50 flex itemsCenter justifyCenter cursorPointer onClick={handleClickFeed}>
+									<Div textCenter>소개</Div>
 								</Div>
 							</Col>
-							<Col></Col>
-							<Col auto px5>
-								<Div h50 roundedFull px20 flex itemsCenter justifyCenter border1 onClick={handleClickProposal}>
-									<Div textCenter>+ New Post</Div>
+						</Row>
+					</Div>
+				</Div>
+			</Div>
+			<Div></Div>
+		</>
+	);
+}
+
+function ProfileImage({ imageUri, contractAddress }) {
+	const [selectedFile, setSelectedFile] = useState(null);
+	const [loading, setLoading] = useState(false);
+	const handleAddFile = (e) => {
+		const targetFilesLength = e.target.files.length;
+		if (!e.target.files || targetFilesLength != 1) {
+			return;
+		}
+		setSelectedFile(createFileObject(e.target.files[0]));
+	};
+	const createFileObject = (file) => {
+		const url = URL.createObjectURL(file);
+		const fileObject = {
+			url,
+			file,
+			loading: false,
+		};
+		return fileObject;
+	};
+	const handleRemoveFile = () => {
+		URL.revokeObjectURL(selectedFile.url);
+		setSelectedFile(null);
+	};
+	const updateBackgroundImage = async () => {
+		if (loading) {
+			return;
+		}
+		setLoading(true);
+		const signedId = await uploadSelectedFile();
+		const res = await apiHelperWithToken(apis.nft_collection.contractAddress(contractAddress), "PUT", {
+			property: "image",
+			value: signedId,
+		});
+		if (!res.success) {
+			alert("배경 업데이트중 문제가 발생하였습니다.");
+			setLoading(false);
+			return;
+		}
+		location.reload();
+	};
+	const uploadSelectedFile = async () => {
+		try {
+			const signedId = await uploadFile();
+			return signedId;
+		} catch {
+			setSelectedFileLoading(false);
+			alert("이미지 업로드중 문제가 발생하였습니다.");
+			return null;
+		}
+	};
+	const uploadFile = async () => {
+		setSelectedFileLoading(true);
+		const res = await upload(selectedFile.file);
+		setSelectedFileLoading(false);
+		return res;
+	};
+	const setSelectedFileLoading = (bool) => {
+		const loadingFile = { ...selectedFile };
+		loadingFile.loading = bool;
+		setSelectedFile(loadingFile);
+	};
+	const upload = async (file) => {
+		const checksum = await fileChecksum(file);
+		const createPresignedUrlRes = await createPresignedUrl(file.name, file.type, file.size, checksum, "nft_collection");
+		const uploadToPresignedUrlRes = await uploadToPresignedUrl(createPresignedUrlRes.presigned_url_object, file);
+		if (!uploadToPresignedUrlRes) throw new Error();
+		return createPresignedUrlRes.presigned_url_object.blob_signed_id;
+	};
+	if (selectedFile) {
+		return (
+			<Div
+				h150
+				w150
+				bgGray100
+				flex
+				itemsEnd
+				roundedLg
+				justifyEnd
+				style={{
+					backgroundImage: `url(${selectedFile.url})`,
+					backgroundSize: "cover",
+					backgroundPositionX: "center",
+					backgroundPositionY: "center",
+					backgroundColor: "white",
+				}}
+			>
+				{selectedFile.loading ? (
+					<Div wFull hFull absolute z10 top0 flex itemsCenter justifyCenter clx={"bg-grayOpacity-100"}>
+						<Spinner clx={"w-40 h-40"} fill={COLORS.PRIMARY} circleFill={COLORS.GRAY200} />
+					</Div>
+				) : (
+					<Div my5 mx5>
+						<Row flex itemsCenter>
+							<Col flex itemsCenter justifyCenter onClick={handleRemoveFile} cursorPointer rounded pr0>
+								<Div bgWhite bgOpacity70 p5 rounded>
+									<TrashIcon height={20} width={20} />
 								</Div>
 							</Col>
-							<Col auto px5>
-								<Div h50 w50 roundedFull flex itemsCenter justifyCenter border1>
-									<BellIcon height={20} width={20} />
-								</Div>
-							</Col>
-							<Col auto px5>
-								<Div h50 roundedFull px20 flex itemsCenter justifyCenter border1>
-									<Div>{nftCollection.joined ? "참여중" : "참여"}</Div>
+							<Col flex itemsCenter justifyCenter onClick={updateBackgroundImage} cursorPointer>
+								<Div bgWhite bgOpacity70 p5 rounded>
+									<CheckCircleIcon height={20} width={20} />
 								</Div>
 							</Col>
 						</Row>
 					</Div>
 				)}
-				<Div mxAuto maxW={1100}>
-					{
-						[
-							// <Feed key={0} posts={posts} />,
-							// <Feed key={1} posts={posts} />,
-							<About key={2} about={about} />,
-							// <NewProposal key={2} nftCollection={nftCollection} user={user} />,
-						][contentIndex]
-					}
+			</Div>
+		);
+	}
+	if (imageUri) {
+		return (
+			<Div
+				h150
+				w150
+				bgGray100
+				flex
+				itemsEnd
+				roundedLg
+				justifyEnd
+				style={{
+					backgroundImage: `url(${imageUri})`,
+					backgroundSize: "cover",
+					backgroundPositionX: "center",
+					backgroundPositionY: "center",
+					backgroundColor: "white",
+				}}
+			>
+				<Div my5 mx5>
+					<Div clx="file-input" bgWhite bgOpacity70 p5 rounded cursorPointer>
+						<PencilIcon height={20} width={20} />
+						<input type={"file"} onChange={handleAddFile} accept="image/png, image/gif, image/jpeg" className={"cursor-pointer"}></input>
+					</Div>
 				</Div>
+			</Div>
+		);
+	}
+	return (
+		<Div h150 w150 bgGray100 flex itemsCenter justifyCenter roundedLg>
+			<Div clx="file-input" flex itemsCenter justifyCenter relative textBase wFull hFull>
+				이미지 추가
+				<input type={"file"} onChange={handleAddFile} accept="image/png, image/gif, image/jpeg" className={"cursor-pointer"}></input>
+			</Div>
+		</Div>
+	);
+}
+
+function BackgroundImage({ imageUri, contractAddress }) {
+	const [selectedFile, setSelectedFile] = useState(null);
+	const [loading, setLoading] = useState(false);
+	const handleAddFile = (e) => {
+		const targetFilesLength = e.target.files.length;
+		if (!e.target.files || targetFilesLength != 1) {
+			return;
+		}
+		setSelectedFile(createFileObject(e.target.files[0]));
+	};
+	const createFileObject = (file) => {
+		const url = URL.createObjectURL(file);
+		const fileObject = {
+			url,
+			file,
+			loading: false,
+		};
+		return fileObject;
+	};
+	const handleRemoveFile = () => {
+		URL.revokeObjectURL(selectedFile.url);
+		setSelectedFile(null);
+	};
+	const updateBackgroundImage = async () => {
+		if (loading) {
+			return;
+		}
+		setLoading(true);
+		const signedId = await uploadSelectedFile();
+		const res = await apiHelperWithToken(apis.nft_collection.contractAddress(contractAddress), "PUT", {
+			property: "background_image",
+			value: signedId,
+		});
+		if (!res.success) {
+			alert("배경 업데이트중 문제가 발생하였습니다.");
+			setLoading(false);
+			return;
+		}
+		location.reload();
+	};
+	const uploadSelectedFile = async () => {
+		try {
+			const signedId = await uploadFile();
+			return signedId;
+		} catch {
+			setSelectedFileLoading(false);
+			alert("이미지 업로드중 문제가 발생하였습니다.");
+			return null;
+		}
+	};
+	const uploadFile = async () => {
+		setSelectedFileLoading(true);
+		const res = await upload(selectedFile.file);
+		setSelectedFileLoading(false);
+		return res;
+	};
+	const setSelectedFileLoading = (bool) => {
+		const loadingFile = { ...selectedFile };
+		loadingFile.loading = bool;
+		setSelectedFile(loadingFile);
+	};
+	const upload = async (file) => {
+		const checksum = await fileChecksum(file);
+		const createPresignedUrlRes = await createPresignedUrl(file.name, file.type, file.size, checksum, "nft_collection");
+		const uploadToPresignedUrlRes = await uploadToPresignedUrl(createPresignedUrlRes.presigned_url_object, file);
+		if (!uploadToPresignedUrlRes) throw new Error();
+		return createPresignedUrlRes.presigned_url_object.blob_signed_id;
+	};
+	if (selectedFile) {
+		return (
+			<Div
+				rounded
+				h200
+				wFull
+				absolute
+				top0
+				flex
+				itemsEnd
+				justifyEnd
+				style={{
+					backgroundImage: `url(${selectedFile.url})`,
+					backgroundSize: "cover",
+					backgroundPositionX: "center",
+					backgroundPositionY: "center",
+					backgroundColor: "white",
+				}}
+			>
+				{selectedFile.loading ? (
+					<Div wFull hFull absolute z10 top0 flex itemsCenter justifyCenter clx={"bg-grayOpacity-100"}>
+						<Spinner clx={"w-40 h-40"} fill={COLORS.PRIMARY} circleFill={COLORS.GRAY200} />
+					</Div>
+				) : (
+					<Div my10 mx15>
+						<Row flex itemsCenter>
+							<Col flex itemsCenter justifyCenter onClick={handleRemoveFile} cursorPointer rounded pr0>
+								<Div bgWhite bgOpacity70 p5 rounded>
+									<TrashIcon height={20} width={20} />
+								</Div>
+							</Col>
+							<Col flex itemsCenter justifyCenter onClick={updateBackgroundImage} cursorPointer>
+								<Div bgWhite bgOpacity70 p5 rounded>
+									<CheckCircleIcon height={20} width={20} />
+								</Div>
+							</Col>
+						</Row>
+					</Div>
+				)}
+			</Div>
+		);
+	}
+	if (imageUri) {
+		return (
+			<Div
+				rounded
+				h200
+				wFull
+				bgGray200
+				absolute
+				top0
+				flex
+				itemsEnd
+				justifyEnd
+				style={{
+					backgroundImage: `url(${imageUri})`,
+					backgroundSize: "cover",
+					backgroundPositionX: "center",
+					backgroundPositionY: "center",
+					backgroundColor: "white",
+				}}
+			>
+				<Div my10 mx15 py5 px10>
+					<Div clx="file-input" bgWhite bgOpacity70 p5 rounded cursorPointer>
+						<PencilIcon height={20} width={20} />
+						<input type={"file"} onChange={handleAddFile} accept="image/png, image/gif, image/jpeg" className={"cursor-pointer"}></input>
+					</Div>
+				</Div>
+			</Div>
+		);
+	}
+	return (
+		<Div h200 wFull bgGray200 absolute top0 flex itemsCenter justifyCenter rounded>
+			<Div clx="file-input" flex itemsCenter justifyCenter relative textBase wFull h200>
+				이미지 추가
+				<input type={"file"} onChange={handleAddFile} accept="image/png, image/gif, image/jpeg" className={"cursor-pointer"}></input>
 			</Div>
 		</Div>
 	);
@@ -297,11 +380,7 @@ function NftCollection({ nftCollection, posts, about, currentUser, currentNft })
 NftCollection.getInitialProps = async (context: NextPageContext) => {
 	const { contractAddress } = context.query;
 	const res = await apiHelperWithJwtFromContext(context, apis.nft_collection.contractAddress(contractAddress), "GET");
-	return {
-		nftCollection: res.nft_collection,
-		posts: res.posts,
-		about: res.about,
-	};
+	return res;
 };
 
 export default NftCollection;

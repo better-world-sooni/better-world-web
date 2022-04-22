@@ -50,13 +50,11 @@ const apis = {
     klaytnAddress: (klaytnAddress) => apiV1(`/profile/${klaytnAddress}`)
   },
   nft: {
-    contractAddressAndTokenId: (contractAddress, tokenId) => apiV1(`/nft/${contractAddress}/${tokenId}`)
+    contractAddressAndTokenId: (contractAddress, tokenId) => apiV1(`/nft/${contractAddress}/${tokenId}`),
+    _: () => apiV1(`/nft`)
   },
   follow: {
     contractAddressAndTokenId: (contractAddress, tokenId) => apiV1(`/follow/${contractAddress}/${tokenId}`)
-  },
-  nftProfile: {
-    contractAddressAndTokenId: (contractAddress, tokenId) => apiV1(`/nft_profile/${contractAddress}/${tokenId}`)
   },
   nft_collection: {
     contractAddress: (contractAddress) => apiV1(`/nft_collection/${contractAddress}`)

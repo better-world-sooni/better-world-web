@@ -1,7 +1,7 @@
 import { ChatIcon, GlobeAltIcon, KeyIcon, LockClosedIcon, SearchCircleIcon, SparklesIcon, UserCircleIcon } from "@heroicons/react/outline";
 import { useDispatch, useSelector } from "react-redux";
 import useIsTablet from "src/hooks/useIsTablet";
-import { emailVerificationAction, signInAction, switchAvatarModalAction } from "src/store/reducers/modalReducer";
+import { emailVerificationAction, signInAction, switchAccountModalAction } from "src/store/reducers/modalReducer";
 import { RootState } from "src/store/reducers/rootReducer";
 import Link from "next/link";
 import Col from "./Col";
@@ -18,7 +18,9 @@ import EmptyBlock from "./EmptyBlock";
 import { truncateKlaytnAddress } from "src/modules/constants";
 import { Fragment } from "react";
 import { Menu, Transition } from "@headlessui/react";
-import SwitchAvatarModal from "./modals/SwitchAvatarModal";
+import SwitchAvatarModal from "./modals/SwitchAccountModal";
+import Helmet from "react-helmet";
+import Confetti from "./modals/Confetti";
 
 const MainTopBar = ({ currentUser, currentNft }) => {
 	const { locale } = useRouter();
@@ -36,8 +38,9 @@ const MainTopBar = ({ currentUser, currentNft }) => {
 
 	return (
 		<>
-			<Div fixed bgWhite wFull borderB1 px15 z100>
-				<Row maxW={700} mxAuto flex itemsCenter py5>
+			<Helmet bodyAttributes={{ style: "background-color : rgb(245, 245, 245);" }} />
+			<Div fixed bgWhite wFull z100>
+				<Row maxW={isTablet ? 600 : 950} mxAuto flex itemsCenter py5>
 					<Col auto onClick={() => href(urls.index)} cursorPointer>
 						<Div imgTag src={IMAGES.betterWorldBlueLogo} h={50} w={50} style={{ objectFit: "cover" }} />
 					</Col>
@@ -58,6 +61,7 @@ const MainTopBar = ({ currentUser, currentNft }) => {
 				<SignInModal />
 				<EmailVerificationModal />
 				<KlipQRModal />
+				<Confetti />
 			</Div>
 			<EmptyBlock h={70} />
 		</>
@@ -74,7 +78,7 @@ function ProfileDropdown({ currentNft, currentUser }) {
 	};
 	const handleClickSwitchAccount = () => {
 		dispatch(
-			switchAvatarModalAction({
+			switchAccountModalAction({
 				enabled: true,
 				currentNft,
 				currentUser,
@@ -103,7 +107,7 @@ function ProfileDropdown({ currentNft, currentUser }) {
 									<Div mr10>
 										<UserCircleIcon height={20} width={20} />
 									</Div>{" "}
-									<Div>Profile</Div>
+									<Div>프로필</Div>
 								</Div>
 							)}
 						</Menu.Item>
@@ -121,7 +125,7 @@ function ProfileDropdown({ currentNft, currentUser }) {
 									<Div mr10>
 										<SparklesIcon height={20} width={20} />
 									</Div>{" "}
-									<Div>Switch Avatar</Div>
+									<Div>계정 전환</Div>
 								</Div>
 							)}
 						</Menu.Item>
@@ -141,7 +145,7 @@ function ProfileDropdown({ currentNft, currentUser }) {
 									<Div mr10>
 										<LockClosedIcon height={20} width={20} />
 									</Div>{" "}
-									<Div>Log out</Div>
+									<Div>로그아웃</Div>
 								</Div>
 							)}
 						</Menu.Item>

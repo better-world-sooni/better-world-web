@@ -18,6 +18,8 @@ import { href } from "src/modules/routeHelper";
 import { urls } from "src/modules/urls";
 import Post from "src/components/common/Post";
 import TruncatedText from "src/components/common/TruncatedText";
+import useIsTablet from "src/hooks/useIsTablet";
+import Spinner from "src/components/common/Spinner";
 
 enum NameState {
 	Stale,
@@ -29,24 +31,69 @@ enum StoryState {
 	Editting,
 	Loading,
 }
-enum FeedState {
-	Stale,
-	Editting,
-	Loading,
+function Nft(props) {
+	const isTablet = useIsTablet();
+	return (
+		<>
+			<MainTopBar currentUser={props.currentUser} currentNft={props.currentNft} />
+			<Div flex justifyCenter gapX={15}>
+				{!isTablet && <NftCollection collection={props.collection} />}
+				<NftProfile {...props} />
+			</Div>
+		</>
+	);
 }
+function NftCollection({ collection }) {
+	return (
+		<Div relative>
+			<Div>
+				<Div maxW={300} px15 roundedLg bgWhite py20>
+					<Div textLg fontWeight={500}>
+						컬렉션
+					</Div>
+					<Div mt10 imgTag src={collection.image_uri} roundedLg></Div>
+					<Div fontWeight={500} textXl mt10>
+						{collection.name} ({collection.symbol})
+					</Div>
+					<Div textBase>{collection.about}</Div>
+					<Row mt10 flex itemsEnd pt10 borderT1>
+						<Col textCenter>
+							<Div aTag href={collection.website} cursorPointer textGray200={!collection.website}>
+								Website
+							</Div>
+						</Col>
+						<Col textCenter>
+							<Div aTag href={collection.opensea} cursorPointer textGray200={!collection.opensea}>
+								Opensea
+							</Div>
+						</Col>
+						<Col textCenter>
+							<Div aTag href={collection.github} cursorPointer textGray200={!collection.github}>
+								Github
+							</Div>
+						</Col>
+					</Row>
+				</Div>
+				<Div></Div>
+			</Div>
+		</Div>
+	);
+}
+
 function NftProfile({
 	follower_count,
 	following_count,
 	is_following,
-	nft_profile,
+	name,
+	story,
 	nft_metadatum,
 	contract_address,
 	token_id,
 	collection,
 	posts,
-	currentUser,
 	currentNft,
 }) {
+	const isTablet = useIsTablet();
 	const mine = contract_address == currentNft.contract_address && token_id == currentNft.token_id;
 	const [following, setFollowing] = useState(is_following);
 	const followerOffset = is_following == following ? 0 : !following ? -1 : 1;
@@ -67,28 +114,19 @@ function NftProfile({
 	};
 	useEffect(() => {
 		setFollowing(is_following);
-	}, [is_following]);
+	}, [is_following, token_id, contract_address]);
 
 	return (
-		<Div>
-			<Helmet bodyAttributes={{ style: "background-color : rgb(250, 250, 250);" }} />
-			<MainTopBar currentUser={currentUser} currentNft={currentNft} />
-			<Confetti />
-			<Div mxAuto maxW={700} px15 bgWhite rounded>
+		<Div bgWhite roundedLg={!isTablet} overflowHidden>
+			<Div maxW={650} px15>
 				<Div>
 					<EmptyBlock h={20} />
 					<Div flex flexRow gapX={20}>
 						<Div style={{ flex: 2 }}>
-							<Div imgTag src={nft_metadatum?.image_uri} bgGray200 hAuto rounded></Div>
+							<Div imgTag src={nft_metadatum?.image_uri} bgGray200 hAuto roundedLg></Div>
 						</Div>
 						<Div style={{ flex: 4 }}>
-							<Name
-								nftProfileName={nft_profile?.name}
-								nftMetadatumName={nft_metadatum.name}
-								contractAddress={contract_address}
-								tokenId={token_id}
-								mine={mine}
-							/>
+							<Name nftName={name} nftMetadatumName={nft_metadatum.name} mine={mine} />
 							<EmptyBlock h={2} />
 							<Div textGray600 cursorPointer onClick={() => href(urls.nftCollection.contractAddress(collection.contract_address))}>
 								<Div>{nft_metadatum.name}</Div>
@@ -116,31 +154,31 @@ function NftProfile({
 					</Div>
 					<Div my10 cursorPointer>
 						{mine ? (
-							<Div flex1 flex justifyCenter px20 py5 rounded border1 onClick={handleClickNewPost}>
+							<Div flex1 flex justifyCenter px20 py5 roundedLg border1 onClick={handleClickNewPost}>
 								<Div textBase>게시물 작성</Div>
 							</Div>
 						) : following ? (
-							<Div flex1 flex justifyCenter px20 py5 rounded border1 onClick={handleClickUnfollow}>
+							<Div flex1 flex justifyCenter px20 py5 roundedLg border1 onClick={handleClickUnfollow}>
 								<Div textBase>언팔로우</Div>
 							</Div>
 						) : (
-							<Div flex1 flex justifyCenter px20 py5 rounded border1 onClick={handleClickFollow}>
+							<Div flex1 flex justifyCenter px20 py5 roundedLg border1 onClick={handleClickFollow}>
 								<Div textBase>팔로우</Div>
 							</Div>
 						)}
 					</Div>
-					<Story initialStory={nft_profile?.story} contractAddress={contract_address} tokenId={token_id} mine={mine} />
+					<Story initialStory={story} mine={mine} />
 				</Div>
 			</Div>
-			<Div mxAuto maxW={700} bgWhite>
+			<Div maxW={650} bgWhite>
 				<Posts posts={posts} currentNftImage={currentNft.nft_metadatum.image_uri} />
 			</Div>
 		</Div>
 	);
 }
 
-function Name({ nftProfileName, nftMetadatumName, contractAddress, tokenId, mine }) {
-	const initialName = nftProfileName || nftMetadatumName;
+function Name({ nftName, nftMetadatumName, mine }) {
+	const initialName = nftName || nftMetadatumName;
 	const [name, setName] = useState({
 		value: initialName,
 		edittingValue: initialName,
@@ -159,14 +197,14 @@ function Name({ nftProfileName, nftMetadatumName, contractAddress, tokenId, mine
 		if (isValidName) {
 			setName({ ...name, state: NameState.Loading });
 			try {
-				const res = await apiHelperWithToken(apis.nftProfile.contractAddressAndTokenId(contractAddress, tokenId), "PUT", {
+				const res = await apiHelperWithToken(apis.nft._(), "PUT", {
 					property: "name",
 					value: name.edittingValue,
 				});
 				if (res.success) {
 					setName({
-						value: res.nft.nft_profile.name,
-						edittingValue: res.nft.nft_profile.name,
+						value: res.nft.name,
+						edittingValue: res.nft.name,
 						state: NameState.Stale,
 						error: "",
 					});
@@ -216,7 +254,7 @@ function Name({ nftProfileName, nftMetadatumName, contractAddress, tokenId, mine
 									<input
 										placeholder={name.value}
 										value={name.edittingValue}
-										className={"px-5 w-full focus:outline-none focus:border-gray-400 bg-gray-200 rounded"}
+										className={"px-5 w-full focus:outline-none focus:border-gray-400 bg-gray-200 rounded-lg"}
 										style={{ height: 40 }}
 										onChange={handleEditName}
 									></input>
@@ -240,11 +278,7 @@ function Name({ nftProfileName, nftMetadatumName, contractAddress, tokenId, mine
 										<CheckCircleIcon height={20} width={20} scale={1} strokeWidth={0.5} />
 									</Div>
 								),
-								[NameState.Loading]: (
-									<Div clx={"animate-spin"}>
-										<RefreshIcon height={20} width={20} scale={1} strokeWidth={0.5} className={"-scale-x-100"} />
-									</Div>
-								),
+								[NameState.Loading]: <Spinner clx={"h-20 w-20"} fill={COLORS.PRIMARY} circleFill={COLORS.GRAY200} />,
 							}[name.state]
 						}
 					</Div>
@@ -259,11 +293,11 @@ function Name({ nftProfileName, nftMetadatumName, contractAddress, tokenId, mine
 	);
 }
 
-function Story({ initialStory, contractAddress, tokenId, mine }) {
+function Story({ initialStory, mine }) {
 	// story state
 	const [story, setStory] = useState({
-		value: initialStory,
-		edittingValue: initialStory,
+		value: initialStory || "",
+		edittingValue: initialStory || "",
 		state: StoryState.Stale,
 		error: "",
 	});
@@ -288,14 +322,14 @@ function Story({ initialStory, contractAddress, tokenId, mine }) {
 		if (isValidStory) {
 			setStory({ ...story, state: StoryState.Loading });
 			try {
-				const res = await apiHelperWithToken(apis.nftProfile.contractAddressAndTokenId(contractAddress, tokenId), "PUT", {
+				const res = await apiHelperWithToken(apis.nft._(), "PUT", {
 					property: "story",
 					value: story.edittingValue,
 				});
 				if (res.success) {
 					setStory({
-						value: res.nft.nft_profile.story,
-						edittingValue: res.nft.nft_profile.story,
+						value: res.nft.story,
+						edittingValue: res.nft.story,
 						state: StoryState.Stale,
 						error: "",
 					});
@@ -336,11 +370,7 @@ function Story({ initialStory, contractAddress, tokenId, mine }) {
 										<CheckCircleIcon height={20} width={20} scale={1} strokeWidth={0.5} />
 									</Div>
 								),
-								[StoryState.Loading]: (
-									<Div clx={"animate-spin"}>
-										<RefreshIcon height={20} width={20} scale={1} strokeWidth={0.5} className={"-scale-x-100"} />
-									</Div>
-								),
+								[StoryState.Loading]: <Spinner clx={"h-20 w-20"} fill={COLORS.PRIMARY} circleFill={COLORS.GRAY200} />,
 							}[story.state]
 						}
 					</Div>
@@ -361,7 +391,7 @@ function Story({ initialStory, contractAddress, tokenId, mine }) {
 								<textarea
 									placeholder={story.value || "마크다운을 사용하실 수 있습니다."}
 									value={story.edittingValue}
-									className={"bg-gray-200 border-gray-200 box-shadow-none w-full rounded focus:border-gray-400"}
+									className={"bg-gray-200 border-gray-200 box-shadow-none w-full rounded-lg focus:border-gray-400"}
 									style={{ boxShadow: "none", border: "none" }}
 									onChange={handleEditStory}
 									rows={10}
@@ -382,8 +412,8 @@ function Story({ initialStory, contractAddress, tokenId, mine }) {
 function Posts({ posts, currentNftImage }) {
 	if (posts.length == 0) {
 		return (
-			<Div textCenter py30>
-				아직 업로드가 된 제안서가 없습니다. 처음이 되어 보세요!
+			<Div textCenter py30 textBase>
+				아직 게시물이 없습니다.
 			</Div>
 		);
 	}
@@ -400,10 +430,10 @@ function Posts({ posts, currentNftImage }) {
 	);
 }
 
-NftProfile.getInitialProps = async (context: NextPageContext) => {
+Nft.getInitialProps = async (context: NextPageContext) => {
 	const { contractAddress, tokenId } = context.query;
-	const res = await apiHelperWithJwtFromContext(context, apis.nftProfile.contractAddressAndTokenId(contractAddress, tokenId), "GET");
+	const res = await apiHelperWithJwtFromContext(context, apis.nft.contractAddressAndTokenId(contractAddress, tokenId), "GET");
 	return res.nft;
 };
 
-export default NftProfile;
+export default Nft;

@@ -35,7 +35,7 @@ export default function Comment({ comment, nested = false, full = false, onClick
 				</Col>
 				<Col cursorPointer fontWeight={500}>
 					<Div spanTag fontWeight={500} mr10>
-						{comment.nft.nft_profile.name || comment.nft.nft_metadatum.name}
+						{comment.nft.name || comment.nft.nft_metadatum.name}
 					</Div>
 					<Div spanTag onClick={onClickContent} fontNormal>
 						{comment.content}
