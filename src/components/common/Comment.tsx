@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { apiHelperWithToken } from "src/modules/apiHelper";
 import apis from "src/modules/apis";
 import Col from "../Col";
@@ -12,7 +12,7 @@ import { createdAtText } from "src/modules/timeHelper";
 export default function Comment({ comment, nested = false, full = false, onClickContent = null, onClickReply = null }) {
 	const [liked, setLiked] = useState(comment?.is_liked);
 	const likeOffset = comment?.is_liked == liked ? 0 : !liked ? -1 : 1;
-	const [cachedComments, setCachedComments] = useState(comment?.comments || []);
+	const cachedComments = comment?.comments || [];
 	const handleClickLike = () => {
 		setLiked(!liked);
 		const verb = liked ? "DELETE" : "POST";
@@ -21,6 +21,9 @@ export default function Comment({ comment, nested = false, full = false, onClick
 	const handleClickReply = () => {
 		onClickReply(comment);
 	};
+	useEffect(() => {
+		setLiked(comment?.is_liked);
+	}, [comment?.is_liked]);
 	if (!comment) {
 		return null;
 	}

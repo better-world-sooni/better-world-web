@@ -6,7 +6,7 @@ import Row from "src/components/Row";
 import Col from "src/components/Col";
 import { COLORS, truncateKlaytnAddress } from "src/modules/constants";
 import MainTopBar from "src/components/MainTopBar";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import apis from "src/modules/apis";
 import { apiHelperWithJwtFromContext, apiHelperWithToken } from "src/modules/apiHelper";
 import { CheckCircleIcon, ChevronLeftIcon, ChevronRightIcon, HeartIcon, PencilIcon, RefreshIcon } from "@heroicons/react/outline";
@@ -65,6 +65,9 @@ function NftProfile({
 			setFollowing(!following);
 		}
 	};
+	useEffect(() => {
+		setFollowing(is_following);
+	}, [is_following]);
 
 	return (
 		<Div>
@@ -82,7 +85,6 @@ function NftProfile({
 							<Name
 								nftProfileName={nft_profile?.name}
 								nftMetadatumName={nft_metadatum.name}
-								currentNft={currentNft}
 								contractAddress={contract_address}
 								tokenId={token_id}
 								mine={mine}
@@ -137,7 +139,7 @@ function NftProfile({
 	);
 }
 
-function Name({ nftProfileName, nftMetadatumName, contractAddress, tokenId, currentNft, mine }) {
+function Name({ nftProfileName, nftMetadatumName, contractAddress, tokenId, mine }) {
 	const initialName = nftProfileName || nftMetadatumName;
 	const [name, setName] = useState({
 		value: initialName,
@@ -188,6 +190,15 @@ function Name({ nftProfileName, nftMetadatumName, contractAddress, tokenId, curr
 		}
 		return "";
 	};
+
+	useEffect(() => {
+		setName({
+			value: initialName,
+			edittingValue: initialName,
+			state: NameState.Stale,
+			error: "",
+		});
+	}, [initialName]);
 
 	return (
 		<Div>
@@ -296,6 +307,15 @@ function Story({ initialStory, contractAddress, tokenId, mine }) {
 			}
 		}
 	};
+	useEffect(() => {
+		setStory({
+			value: initialStory,
+			edittingValue: initialStory,
+			state: StoryState.Stale,
+			error: "",
+		});
+	}, [initialStory]);
+
 	return (
 		<Div mxAuto py20 borderB1>
 			<Div itemsCenter flex flexRow>

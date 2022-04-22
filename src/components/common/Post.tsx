@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { apiHelperWithToken } from "src/modules/apiHelper";
 import apis from "src/modules/apis";
 import { COLORS, truncateKlaytnAddress } from "src/modules/constants";
@@ -45,6 +45,9 @@ export default function Post({ post, full = false, currentNftImage }) {
 		}
 		setCachedComments([...cachedComments, newComment]);
 	};
+	useEffect(() => {
+			setLiked(post.is_liked);
+		}, [post.is_liked]);
 
 	const displayNewComment = cachedComments.length == 0 || full;
 

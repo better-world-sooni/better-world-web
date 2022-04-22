@@ -65,6 +65,7 @@ const MainTopBar = ({ currentUser, currentNft }) => {
 };
 
 function ProfileDropdown({ currentNft, currentUser }) {
+	const {} = useRouter();
 	const dispatch = useDispatch();
 	const handleClickProfile = () => {
 		if (currentNft) {
