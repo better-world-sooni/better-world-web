@@ -10,7 +10,7 @@ export function apiHelperPure(url, method = 'GET', body = null, headers) {
 }
 
 export function apiHelperWithJwtFromContext(context, url, method = 'GET', body = null) {
-  const {jwt} = cookies(context);
+  const jwt = cookies(context)?.jwt || context.req?.headers.webviewcookie;
   return http(url, method, body, {
     Authorization: 'Bearer ' + jwt
   })
