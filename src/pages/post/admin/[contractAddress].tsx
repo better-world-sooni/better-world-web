@@ -9,7 +9,7 @@ function ContractAddress({ currentUser, currentNft, nft_collection }) {
 	return (
 		<>
 			<MainTopBar currentUser={currentUser} currentNft={currentNft} />
-			<Div mxAuto maxW={700} bgWhite rounded>
+			<Div mxAuto maxW={650} bgWhite rounded>
 				<NewPost currentNft={currentNft} nftCollection={nft_collection} />
 			</Div>
 		</>

@@ -78,6 +78,9 @@ const apis = {
       comment: (postId) => apiV1(`/post/${postId}/comment`)
     }
   },
+  feed: {
+    _: () => apiV1(`/feed`),
+  },
   presignedUrl: {
     _: () => apiV1(`/presigned_url`)
   },

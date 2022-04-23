@@ -40,11 +40,11 @@ const MainTopBar = ({ currentUser, currentNft }) => {
 		<>
 			<Helmet bodyAttributes={{ style: "background-color : rgb(245, 245, 245);" }} />
 			<Div fixed bgWhite wFull z100>
-				<Row maxW={isTablet ? 600 : 950} mxAuto flex itemsCenter py5>
-					<Col auto onClick={() => href(urls.index)} cursorPointer>
+				<Row maxW={isTablet ? 650 : 950} mxAuto flex itemsCenter py5>
+					<Col auto onClick={() => href(urls.home)} cursorPointer>
 						<Div imgTag src={IMAGES.betterWorldBlueLogo} h={50} w={50} style={{ objectFit: "cover" }} />
 					</Col>
-					<Col textPrimary textLeft onClick={() => href(urls.index)} cursorPointer textBase auto pl0>
+					<Col textPrimary textLeft onClick={() => href(urls.home)} cursorPointer textBase auto pl0>
 						BetterWorld{" "}
 						<Div spanTag fontSemibold textPrimary pl2>
 							αlpha

@@ -62,7 +62,7 @@ export default function Home({ currentUser, currentNft }) {
 			return;
 		}
 		try {
-			const res = await apiHelperWithToken(apis.nft_collection.contractAddress(contract), "POST");
+			const res = await apiHelperWithToken(apis.nft_collection.contractAddress._(contract), "POST");
 			console.log(res);
 			if (!res.success) {
 				switch (res.error_code) {

@@ -24,7 +24,6 @@ import { urls } from "src/modules/urls";
 
 function Nfts({ nfts }) {
 	const length = nfts.length;
-	console.log(nfts);
 	if (length == 0) {
 		return (
 			<Div textCenter py30>

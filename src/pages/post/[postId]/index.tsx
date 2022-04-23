@@ -10,7 +10,7 @@ function Index({ post, currentUser, currentNft }) {
 	return (
 		<>
 			<MainTopBar currentUser={currentUser} currentNft={currentNft} />
-			<Div mxAuto maxW={700} bgWhite roundedLg>
+			<Div mxAuto maxW={650} bgWhite roundedLg>
 				<Post post={post} full={true} currentNftImage={currentNft.nft_metadatum.image_uri} index={0} length={1} />
 			</Div>
 		</>

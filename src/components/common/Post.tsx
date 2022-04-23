@@ -45,7 +45,7 @@ export default function Post({ post, full = false, currentNftImage, index, lengt
 			setReplyComment(null);
 			return;
 		}
-		setCachedComments([...cachedComments, newComment]);
+		setCachedComments([newComment, ...cachedComments]);
 	};
 	useEffect(() => {
 		setLiked(post.is_liked);
@@ -154,11 +154,9 @@ export default function Post({ post, full = false, currentNftImage, index, lengt
 					<Div id={`comments`}>
 						{!full && <Comment full={full} comment={cachedComments[0]} onClickContent={hrefToPostIdHottestComment} />}
 						{full &&
-							cachedComments
-								.sort((a, b) => parseFloat(b.id) - parseFloat(a.id))
-								.map((comment) => {
-									return <Comment full={full} key={comment.id} comment={comment} onClickReply={setReplyComment} />;
-								})}
+							cachedComments.map((comment) => {
+								return <Comment full={full} key={comment.id} comment={comment} onClickReply={setReplyComment} />;
+							})}
 					</Div>
 				</Div>
 				{displayNewComment && (
