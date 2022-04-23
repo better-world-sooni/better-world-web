@@ -9,51 +9,93 @@ import { BellIcon, CheckCircleIcon, PencilIcon, TrashIcon, XCircleIcon } from "@
 import { NextPageContext } from "next";
 import { createPresignedUrl, fileChecksum, uploadToPresignedUrl } from "src/modules/fileHelper";
 import Spinner from "src/components/common/Spinner";
-import { COLORS } from "src/modules/constants";
+import { COLORS, NftPrivilege } from "src/modules/constants";
+import { href } from "src/modules/routeHelper";
+import { urls } from "src/modules/urls";
+import Posts from "src/components/common/Posts";
+import useIsTablet from "src/hooks/useIsTablet";
+import Name from "src/components/common/Name";
+import Story from "src/components/common/Story";
 
-function NftCollection({ nft_collection, posts, about, currentUser, currentNft }) {
-	const [contentIndex, setContentIndex] = useState(0);
-	const handleClickFeed = () => {
-		setContentIndex(0);
+enum ContentType {
+	Feed,
+	Member,
+	About,
+}
+
+function NftCollection({ nft_collection, posts, about, nfts, currentUser, currentNft, is_following, follower_count }) {
+	const isTablet = useIsTablet();
+	const [following, setFollowing] = useState(is_following);
+	const followerOffset = is_following == following ? 0 : !following ? -1 : 1;
+	const isRootAdmin = currentNft.privilege == NftPrivilege.ROOT;
+	const isAdder = isRootAdmin || currentNft.privilege == NftPrivilege.ADDER;
+	const [contentType, setContentType] = useState(ContentType.Feed);
+	const handleClickFollowOrUnfollow = async () => {
+		const verb = following ? "DELETE" : "POST";
+		const res = await apiHelperWithToken(apis.follow.contractAddress(nft_collection.contract_address), verb);
+		if (res.success) {
+			setFollowing(!following);
+		}
 	};
-	const handleClickCapsules = () => {
-		setContentIndex(1);
+	const handleClickFeed = () => {
+		setContentType(ContentType.Feed);
 	};
 	const handleClickAbout = () => {
-		setContentIndex(2);
+		setContentType(ContentType.About);
 	};
-	const handleClickProposal = () => {
-		setContentIndex(3);
+	const handleClickMembers = () => {
+		setContentType(ContentType.Member);
 	};
+	useEffect(() => {
+		setFollowing(is_following);
+	}, [is_following, currentNft.token_id, currentNft.contract_address]);
 	return (
 		<>
 			<MainTopBar currentUser={currentUser} currentNft={currentNft} />
-			<Div mxAuto maxW={950}>
+			<Div mxAuto maxW={650}>
 				<Div relative h250>
-					<BackgroundImage imageUri={nft_collection.background_image_uri} contractAddress={nft_collection.contract_address} />
+					<BackgroundImage edittable={isAdder} imageUri={nft_collection.background_image_uri} contractAddress={nft_collection.contract_address} />
 					<Div h150></Div>
-					<Div maxW={650} mxAuto bgWhite px15 roundedLg>
+					<Div maxW={650} mxAuto bgWhite px15 roundedLg={!isTablet}>
 						<Row flex itemsEnd>
 							<Col auto>
-								<ProfileImage imageUri={nft_collection.image_uri} contractAddress={nft_collection.contract_address} />
+								<ProfileImage edittable={isAdder} imageUri={nft_collection.image_uri} contractAddress={nft_collection.contract_address} />
 							</Col>
 							<Col>
 								<Div fontWeight={500} textXl>
-									{nft_collection.name}
+									<Name nftName={nft_collection.name} nftMetadatumName={null} mine={isRootAdmin} contractAddress={nft_collection.contract_address} />
+								</Div>
+								<Div textSm>
+									<Div spanTag fontWeight={500}>
+										{follower_count + followerOffset}
+									</Div>{" "}
+									<Div spanTag>팔로워</Div>
 								</Div>
 								<Row gapX={10} mt10 textBase>
-									<Col pr0>
-										<Div roundedLg flex py5 px15 itemsCenter justifyCenter border1 onClick={handleClickProposal}>
-											<Div textCenter>팔로우</Div>
+									<Col pr0={isRootAdmin}>
+										<Div roundedLg flex py5 px15 itemsCenter justifyCenter border1 onClick={handleClickFollowOrUnfollow} cursorPointer>
+											<Div textCenter>{following ? "언팔로우" : "팔로우"}</Div>
 										</Div>
 									</Col>
-									<Col pl0>
-										<Div roundedLg flex py5 itemsCenter justifyCenter>
-											<Div textCenter textPrimary fontWeight={500}>
-												게시물 작성
+									{isRootAdmin && (
+										<Col pl0>
+											<Div
+												roundedLg
+												border1
+												borderPrimary
+												flex
+												py5
+												itemsCenter
+												justifyCenter
+												cursorPointer
+												onClick={() => href(urls.post.admin.contractAddress(nft_collection.contract_address))}
+											>
+												<Div textCenter textPrimary fontWeight={500}>
+													게시물 작성
+												</Div>
 											</Div>
-										</Div>
-									</Col>
+										</Col>
+									)}
 								</Row>
 							</Col>
 						</Row>
@@ -64,25 +106,79 @@ function NftCollection({ nft_collection, posts, about, currentUser, currentNft }
 								</Div>
 							</Col>
 							<Col>
-								<Div h50 flex itemsCenter justifyCenter cursorPointer onClick={handleClickFeed}>
-									<Div textCenter>멤버</Div>
+								<Div h50 flex itemsCenter justifyCenter cursorPointer onClick={handleClickMembers}>
+									<Div textCenter>{nfts.length} 멤버</Div>
 								</Div>
 							</Col>
 							<Col>
-								<Div h50 flex itemsCenter justifyCenter cursorPointer onClick={handleClickFeed}>
+								<Div h50 flex itemsCenter justifyCenter cursorPointer onClick={handleClickAbout}>
 									<Div textCenter>소개</Div>
 								</Div>
 							</Col>
 						</Row>
 					</Div>
+					<Div maxW={650} bgWhite mxAuto mt10 roundedLg={!isTablet} py10>
+						{
+							{
+								[ContentType.Feed]: <Posts posts={posts} currentNftImage={currentNft.nft_metadatum.image_uri} />,
+								[ContentType.Member]: <Members nfts={nfts} />,
+								[ContentType.About]: <About collection={nft_collection} edittable={isAdder} />,
+							}[contentType]
+						}
+					</Div>
 				</Div>
 			</Div>
-			<Div></Div>
 		</>
 	);
 }
 
-function ProfileImage({ imageUri, contractAddress }) {
+function About({ collection, edittable }) {
+	return (
+		<Div px15 roundedLg bgWhite pb10>
+			<Story initialStory={collection.about} mine={edittable} contractAddress={collection.contract_address} />
+			<Row mt10 flex itemsEnd pt10 borderT1>
+				<Col textCenter>
+					<Div aTag href={collection.website} cursorPointer textGray200={!collection.website}>
+						Website
+					</Div>
+				</Col>
+				<Col textCenter>
+					<Div aTag href={collection.opensea} cursorPointer textGray200={!collection.opensea}>
+						Opensea
+					</Div>
+				</Col>
+				<Col textCenter>
+					<Div aTag href={collection.github} cursorPointer textGray200={!collection.github}>
+						Github
+					</Div>
+				</Col>
+			</Row>
+		</Div>
+	);
+}
+
+function Members({ nfts }) {
+	const isTablet = useIsTablet();
+	const hrefToNft = async (contract_address, token_id) => {
+		href(urls.nftProfile.contractAddressAndTokenId(contract_address, token_id));
+	};
+	return (
+		<Div gridCols4={!isTablet} gridCols3={isTablet} grid gapX={10} gapY={10} px15>
+			{nfts.map((nft, index) => {
+				return (
+					<Div key={index} cursorPointer roundedLg overflowHidden border1 onClick={() => hrefToNft(nft.contract_address, nft.token_id)}>
+						<Div imgTag src={nft.nft_metadatum.image_uri}></Div>
+						<Div py5 px10 fontWeight={500} textCenter>
+							{nft.name || nft.nft_metadatum.name}
+						</Div>
+					</Div>
+				);
+			})}
+		</Div>
+	);
+}
+
+function ProfileImage({ imageUri, contractAddress, edittable }) {
 	const [selectedFile, setSelectedFile] = useState(null);
 	const [loading, setLoading] = useState(false);
 	const handleAddFile = (e) => {
@@ -111,7 +207,7 @@ function ProfileImage({ imageUri, contractAddress }) {
 		}
 		setLoading(true);
 		const signedId = await uploadSelectedFile();
-		const res = await apiHelperWithToken(apis.nft_collection.contractAddress(contractAddress), "PUT", {
+		const res = await apiHelperWithToken(apis.nft_collection.contractAddress._(contractAddress), "PUT", {
 			property: "image",
 			value: signedId,
 		});
@@ -196,7 +292,6 @@ function ProfileImage({ imageUri, contractAddress }) {
 			<Div
 				h150
 				w150
-				bgGray100
 				flex
 				itemsEnd
 				roundedLg
@@ -206,29 +301,32 @@ function ProfileImage({ imageUri, contractAddress }) {
 					backgroundSize: "cover",
 					backgroundPositionX: "center",
 					backgroundPositionY: "center",
-					backgroundColor: "white",
 				}}
 			>
 				<Div my5 mx5>
-					<Div clx="file-input" bgWhite bgOpacity70 p5 rounded cursorPointer>
-						<PencilIcon height={20} width={20} />
-						<input type={"file"} onChange={handleAddFile} accept="image/png, image/gif, image/jpeg" className={"cursor-pointer"}></input>
-					</Div>
+					{edittable && (
+						<Div clx="file-input" bgWhite bgOpacity70 p5 rounded cursorPointer>
+							<PencilIcon height={20} width={20} />
+							<input type={"file"} onChange={handleAddFile} accept="image/png, image/gif, image/jpeg" className={"cursor-pointer"}></input>
+						</Div>
+					)}
 				</Div>
 			</Div>
 		);
 	}
 	return (
 		<Div h150 w150 bgGray100 flex itemsCenter justifyCenter roundedLg>
-			<Div clx="file-input" flex itemsCenter justifyCenter relative textBase wFull hFull>
-				이미지 추가
-				<input type={"file"} onChange={handleAddFile} accept="image/png, image/gif, image/jpeg" className={"cursor-pointer"}></input>
-			</Div>
+			{edittable && (
+				<Div clx="file-input" flex itemsCenter justifyCenter relative textBase wFull hFull>
+					이미지 추가
+					<input type={"file"} onChange={handleAddFile} accept="image/png, image/gif, image/jpeg" className={"cursor-pointer"}></input>
+				</Div>
+			)}
 		</Div>
 	);
 }
 
-function BackgroundImage({ imageUri, contractAddress }) {
+function BackgroundImage({ imageUri, contractAddress, edittable }) {
 	const [selectedFile, setSelectedFile] = useState(null);
 	const [loading, setLoading] = useState(false);
 	const handleAddFile = (e) => {
@@ -257,7 +355,7 @@ function BackgroundImage({ imageUri, contractAddress }) {
 		}
 		setLoading(true);
 		const signedId = await uploadSelectedFile();
-		const res = await apiHelperWithToken(apis.nft_collection.contractAddress(contractAddress), "PUT", {
+		const res = await apiHelperWithToken(apis.nft_collection.contractAddress._(contractAddress), "PUT", {
 			property: "background_image",
 			value: signedId,
 		});
@@ -359,27 +457,31 @@ function BackgroundImage({ imageUri, contractAddress }) {
 				}}
 			>
 				<Div my10 mx15 py5 px10>
-					<Div clx="file-input" bgWhite bgOpacity70 p5 rounded cursorPointer>
-						<PencilIcon height={20} width={20} />
-						<input type={"file"} onChange={handleAddFile} accept="image/png, image/gif, image/jpeg" className={"cursor-pointer"}></input>
-					</Div>
+					{edittable && (
+						<Div clx="file-input" bgWhite bgOpacity70 p5 rounded cursorPointer>
+							<PencilIcon height={20} width={20} />
+							<input type={"file"} onChange={handleAddFile} accept="image/png, image/gif, image/jpeg" className={"cursor-pointer"}></input>
+						</Div>
+					)}
 				</Div>
 			</Div>
 		);
 	}
 	return (
 		<Div h200 wFull bgGray200 absolute top0 flex itemsCenter justifyCenter rounded>
-			<Div clx="file-input" flex itemsCenter justifyCenter relative textBase wFull h200>
-				이미지 추가
-				<input type={"file"} onChange={handleAddFile} accept="image/png, image/gif, image/jpeg" className={"cursor-pointer"}></input>
-			</Div>
+			{edittable && (
+				<Div clx="file-input" flex itemsCenter justifyCenter relative textBase wFull h200>
+					이미지 추가
+					<input type={"file"} onChange={handleAddFile} accept="image/png, image/gif, image/jpeg" className={"cursor-pointer"}></input>
+				</Div>
+			)}
 		</Div>
 	);
 }
 
 NftCollection.getInitialProps = async (context: NextPageContext) => {
 	const { contractAddress } = context.query;
-	const res = await apiHelperWithJwtFromContext(context, apis.nft_collection.contractAddress(contractAddress), "GET");
+	const res = await apiHelperWithJwtFromContext(context, apis.nft_collection.contractAddress.profile(contractAddress), "GET");
 	return res;
 };
 

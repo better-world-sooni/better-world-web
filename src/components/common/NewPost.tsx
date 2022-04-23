@@ -1,8 +1,8 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ReactTextareaAutosize from "react-textarea-autosize";
 import { apiHelperWithToken } from "src/modules/apiHelper";
 import apis from "src/modules/apis";
-import { COLORS, truncateKlaytnAddress } from "src/modules/constants";
+import { COLORS, NftPrivilege, truncateKlaytnAddress } from "src/modules/constants";
 import { createPresignedUrl, fileChecksum, uploadToPresignedUrl } from "src/modules/fileHelper";
 import { href } from "src/modules/routeHelper";
 import { urls } from "src/modules/urls";
@@ -13,7 +13,7 @@ import Spinner from "./Spinner";
 import { Slide } from "react-slideshow-image";
 import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/outline";
 
-export default function NewPost({ currentNft }) {
+export default function NewPost({ currentNft, nftCollection = null }) {
 	const [title, setTitle] = useState("");
 	const [content, setContent] = useState("");
 	const [error, setError] = useState("");
@@ -73,9 +73,8 @@ export default function NewPost({ currentNft }) {
 		const res = await apiHelperWithToken(apis.post._(), "POST", {
 			title,
 			content,
-			contract_address: currentNft.contract_address,
-			token_id: currentNft.token_id,
 			images: signedIdArray,
+			admin: nftCollection ? true : false,
 		});
 		if (!res) {
 			setError("게시물 업로드중 문제가 발생하였습니다.");
@@ -120,16 +119,24 @@ export default function NewPost({ currentNft }) {
 		if (!uploadToPresignedUrlRes) throw new Error();
 		return createPresignedUrlRes.presigned_url_object.blob_signed_id;
 	};
+	useEffect(() => {
+		if (nftCollection) {
+			if (nftCollection.contract_address != currentNft.contract_address || currentNft.privilege != NftPrivilege.ROOT) {
+				alert("어드민 권한이 없습니다.");
+				href(urls.nftProfile.contractAddressAndTokenId(currentNft.contract_address, currentNft.token_id));
+			}
+		}
+	}, [nftCollection, currentNft.contract_address, currentNft.token_id, currentNft.privilege]);
 
 	return (
 		<Div py20>
 			<Div px15>
 				<Row flex itemsCenter pb10>
 					<Col auto>
-						<Div imgTag src={currentNft.nft_metadatum.image_uri} h30 w30 rounded></Div>
+						<Div imgTag src={nftCollection ? nftCollection.image_uri : currentNft.nft_metadatum.image_uri} h30 w30 rounded></Div>
 					</Col>
 					<Col auto pl0>
-						{truncateKlaytnAddress(currentNft.name || currentNft.nft_metadatum.name)}
+						{truncateKlaytnAddress(nftCollection ? nftCollection.name : currentNft.name || currentNft.nft_metadatum.name)}
 					</Col>
 					<Col />
 					<Col auto>

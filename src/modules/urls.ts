@@ -4,7 +4,12 @@ export const urls = {
     feed: '/feed',
     post: {
         index: () => `/post`,
-        postId: (postId, section = "#") => `/post/${postId}${section}`
+        postId: (postId, section = "#") => `/post/${postId}${section}`,
+        admin: {
+            contractAddress:  (contractAddress) => {
+                return `/post/admin/${contractAddress}`
+            }
+        }
     },
     onboarding: {
         klaytnAddress: (klaytnAddress) => `/onboarding/${klaytnAddress}`

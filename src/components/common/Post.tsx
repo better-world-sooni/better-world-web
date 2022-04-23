@@ -18,7 +18,8 @@ import NewComment from "./NewComment";
 import EmptyBlock from "../EmptyBlock";
 import { createdAtText } from "src/modules/timeHelper";
 
-export default function Post({ post, full = false, currentNftImage }) {
+export default function Post({ post, full = false, currentNftImage, index, length }) {
+	const isLast = length - 1 == index;
 	const [liked, setLiked] = useState(post.is_liked);
 	const [cachedComments, setCachedComments] = useState(post.comments || []);
 	const [replyComment, setReplyComment] = useState(null);
@@ -54,7 +55,7 @@ export default function Post({ post, full = false, currentNftImage }) {
 
 	return (
 		<>
-			<Div borderB1 pt20 pb20={!displayNewComment} id={`post_${post.id}`}>
+			<Div borderB1={!isLast} pt20 pb20={!displayNewComment} id={`post_${post.id}`}>
 				<Div px15>
 					<Row flex itemsCenter pb10>
 						<Col auto>

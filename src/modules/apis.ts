@@ -54,10 +54,14 @@ const apis = {
     _: () => apiV1(`/nft`)
   },
   follow: {
-    contractAddressAndTokenId: (contractAddress, tokenId) => apiV1(`/follow/${contractAddress}/${tokenId}`)
+    contractAddressAndTokenId: (contractAddress, tokenId) => apiV1(`/follow/${contractAddress}/${tokenId}`),
+    contractAddress: (contractAddress) => apiV1(`/follow/${contractAddress}`)
   },
   nft_collection: {
-    contractAddress: (contractAddress) => apiV1(`/nft_collection/${contractAddress}`)
+    contractAddress: {
+      _: (contractAddress) => apiV1(`/nft_collection/${contractAddress}`),
+      profile: (contractAddress) => apiV1(`/nft_collection/${contractAddress}/profile`)
+    }
   },
   comment: {
     post: (postId) => apiV1(`/comment/post/${postId}`),
