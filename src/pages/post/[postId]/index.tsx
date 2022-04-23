@@ -1,22 +1,21 @@
 import Div from "src/components/Div";
-import Helmet from "react-helmet";
 import Confetti from "src/components/modals/Confetti";
 import MainTopBar from "src/components/MainTopBar";
 import apis from "src/modules/apis";
 import { apiHelperWithJwtFromContext } from "src/modules/apiHelper";
 import { NextPageContext } from "next";
 import Post from "src/components/common/Post";
+import useIsTablet from "src/hooks/useIsTablet";
 
 function Index({ post, currentUser, currentNft }) {
+	const isTablet = useIsTablet();
 	return (
-		<Div>
-			<Helmet bodyAttributes={{ style: "background-color : rgb(250, 250, 250);" }} />
+		<>
 			<MainTopBar currentUser={currentUser} currentNft={currentNft} />
-			<Confetti />
-			<Div mxAuto maxW={700} bgWhite>
-				<Post post={post} full={true} currentNftImage={currentNft.nft_metadatum.image_uri} />
+			<Div mxAuto maxW={650} bgWhite rounded={!isTablet}>
+				<Post post={post} full={true} currentNftImage={currentNft.nft_metadatum.image_uri} index={0} length={1} />
 			</Div>
-		</Div>
+		</>
 	);
 }
 

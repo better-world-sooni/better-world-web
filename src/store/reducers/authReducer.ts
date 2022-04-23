@@ -8,7 +8,7 @@ export const CHANGE_NFT = 'auth/CHANGE_NFT' as const
 
 // action function
 export const loginAction = ({redirect, jwt}) => ({ type: LOGIN, redirect, jwt })
-export const changeNftAction = ({contract_address, token_id, redirect}) => ({ type: CHANGE_NFT, contract_address, token_id, redirect })
+export const changeNftAction = ({contract_address, token_id, redirect = null}) => ({ type: CHANGE_NFT, contract_address, token_id, redirect })
 
 const f = (action, func) => func(action)
 

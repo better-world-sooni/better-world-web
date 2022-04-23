@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { apiHelperWithToken } from "src/modules/apiHelper";
 import apis from "src/modules/apis";
 import Col from "../Col";
@@ -8,11 +8,13 @@ import { HeartIcon } from "@heroicons/react/outline";
 import { HeartIcon as HeartIconSolid } from "@heroicons/react/solid";
 import { COLORS, kmoment } from "src/modules/constants";
 import { createdAtText } from "src/modules/timeHelper";
+import { href } from "src/modules/routeHelper";
+import { urls } from "src/modules/urls";
 
 export default function Comment({ comment, nested = false, full = false, onClickContent = null, onClickReply = null }) {
 	const [liked, setLiked] = useState(comment?.is_liked);
 	const likeOffset = comment?.is_liked == liked ? 0 : !liked ? -1 : 1;
-	const [cachedComments, setCachedComments] = useState(comment?.comments || []);
+	const cachedComments = comment?.comments || [];
 	const handleClickLike = () => {
 		setLiked(!liked);
 		const verb = liked ? "DELETE" : "POST";
@@ -21,6 +23,12 @@ export default function Comment({ comment, nested = false, full = false, onClick
 	const handleClickReply = () => {
 		onClickReply(comment);
 	};
+	const handleClickProfile = () => {
+		href(urls.nftProfile.contractAddressAndTokenId(comment.nft.contract_address, comment.nft.token_id));
+	};
+	useEffect(() => {
+		setLiked(comment?.is_liked);
+	}, [comment?.is_liked]);
 	if (!comment) {
 		return null;
 	}
@@ -28,11 +36,20 @@ export default function Comment({ comment, nested = false, full = false, onClick
 		<Div id={`comment_${comment.id}`} py5>
 			<Row gapX={0} mt10 textBase>
 				<Col flex itemsCenter justifyCenter auto pr0>
-					<Div imgTag src={comment.nft.nft_metadatum.image_uri} rounded h={nested ? 18 : 25} w={nested ? 18 : 25} overflowHidden></Div>
+					<Div
+						cursorPointer
+						onClick={handleClickProfile}
+						imgTag
+						src={comment.nft.nft_metadatum.image_uri}
+						rounded
+						h={nested ? 18 : 25}
+						w={nested ? 18 : 25}
+						overflowHidden
+					></Div>
 				</Col>
 				<Col cursorPointer fontWeight={500}>
 					<Div spanTag fontWeight={500} mr10>
-						{comment.nft.nft_profile.name || comment.nft.nft_metadatum.name}
+						{comment.nft.name || comment.nft.nft_metadatum.name}
 					</Div>
 					<Div spanTag onClick={onClickContent} fontNormal>
 						{comment.content}

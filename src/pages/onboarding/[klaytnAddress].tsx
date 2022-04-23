@@ -15,8 +15,9 @@ import { urls } from "src/modules/urls";
 import OnboardingTopBar from "src/components/OnboardingTopBar";
 import { useDispatch } from "react-redux";
 import { changeNftAction } from "src/store/reducers/authReducer";
+import useIsTablet from "src/hooks/useIsTablet";
 
-function Index({ profile, currentUser }) {
+function Index({ user }) {
 	return (
 		<Div>
 			<Helmet bodyAttributes={{ style: "background-color : white;" }} />
@@ -40,7 +41,7 @@ function Index({ profile, currentUser }) {
 				</Div>
 				<EmptyBlock h={30} />
 				<Div mxAuto maxW={1100}>
-					<Nfts nfts={profile.nfts} />
+					<Nfts nfts={user.nfts} />
 				</Div>
 			</Div>
 		</Div>
@@ -48,6 +49,7 @@ function Index({ profile, currentUser }) {
 }
 
 function Nfts({ nfts }) {
+	const isTablet = useIsTablet();
 	const dispatch = useDispatch();
 	const patchAndGotoNft = async (contract_address, token_id) => {
 		const res = await apiHelperWithToken(apis.nft.contractAddressAndTokenId(contract_address, token_id), "PUT", {
@@ -65,7 +67,7 @@ function Nfts({ nfts }) {
 	if (nfts.length == 0) {
 		return (
 			<Div textCenter py30>
-				NFT를 보유하고 계시지 않군요. 아바타를 하나 장만해 보세요!
+				곰즈를 보유하고 계시지 않군요. 걱정마세요 곧 있으면 베터월드는 모든 NFT에게 열립니다!
 			</Div>
 		);
 	}
@@ -73,11 +75,11 @@ function Nfts({ nfts }) {
 		<Div mxAuto maxW={1100} flex justifyCenter>
 			{nfts.map((nft, index) => {
 				return (
-					<Div key={index} style={{ flex: "0 0 calc(25% - 20px)" }} mx10 my10>
-						<Div cursorPointer roundedXl overflowHidden border1 onClick={() => patchAndGotoNft(nft.contract_address, nft.token_id)}>
+					<Div key={index} style={{ flex: `0 0 calc(${isTablet ? 50 : 25}% - 10px)` }} mx5 my5>
+						<Div cursorPointer roundedLg overflowHidden border1 onClick={() => patchAndGotoNft(nft.contract_address, nft.token_id)}>
 							<Div imgTag src={nft.nft_metadatum.image_uri}></Div>
-							<Div py20 px20 fontWeight={500}>
-								{nft.nft_metadatum.name}
+							<Div py5 px10 fontWeight={500} textCenter>
+								{nft.name || nft.nft_metadatum.name}
 							</Div>
 						</Div>
 					</Div>
@@ -90,9 +92,7 @@ function Nfts({ nfts }) {
 Index.getInitialProps = async (context: NextPageContext) => {
 	const { klaytnAddress } = context.query;
 	const res = await apiHelperWithJwtFromContext(context, apis.profile.klaytnAddress(klaytnAddress), "GET");
-	return {
-		profile: res.user,
-	};
+	return res;
 };
 
 export default Index;

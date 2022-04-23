@@ -953,3 +953,9 @@ export function truncateKlaytnAddress(fullStr, strLen = 12, separator = '...') {
       fullStr.substr(fullStr.length - backChars)
     );
 }
+
+export enum NftPrivilege {
+    ROOT = null,
+    NONE = 1,
+    ADDER = 1
+}
