@@ -49,6 +49,9 @@ const apis = {
   profile: {
     klaytnAddress: (klaytnAddress) => apiV1(`/profile/${klaytnAddress}`)
   },
+  search: {
+    nft: (keyword) => apiV1(`/search/nft/${keyword}`)
+  },
   nft: {
     contractAddressAndTokenId: (contractAddress, tokenId) => apiV1(`/nft/${contractAddress}/${tokenId}`),
     _: () => apiV1(`/nft`)

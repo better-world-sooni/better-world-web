@@ -21,6 +21,7 @@ import { Menu, Transition } from "@headlessui/react";
 import SwitchAvatarModal from "./modals/SwitchAccountModal";
 import Helmet from "react-helmet";
 import Confetti from "./modals/Confetti";
+import SearchNft from "src/modules/searchNft"
 
 const MainTopBar = ({ currentUser, currentNft }) => {
 	const { locale } = useRouter();
@@ -51,6 +52,9 @@ const MainTopBar = ({ currentUser, currentNft }) => {
 						</Div>
 					</Col>
 					<Col />
+					<Col>
+						<SearchNft/>
+					</Col>
 					{currentNft && currentUser && (
 						<Col auto cursorPointer pt2>
 							<ProfileDropdown currentNft={currentNft} currentUser={currentUser} />
