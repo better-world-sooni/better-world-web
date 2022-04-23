@@ -883,8 +883,8 @@ export const deployedAddress = "0xE5e47D1540D136777C0B4E0865F467987C3d6513";
 
 
 export const COLORS = {
-    PRIMARY: '#7a5de8',
-    PRIMARY_LIGHT: 'rgba(122, 93, 232, 0.2)',
+    PRIMARY: 'rgb(25, 110, 237)',
+    PRIMARY_LIGHT: 'rgba(25, 110, 237, 0.1)',
     SECONDARY: '#513ccd',
     SECONDARY2: '#3f3d88',
     SUCCESS: '#3cd278',
@@ -952,4 +952,10 @@ export function truncateKlaytnAddress(fullStr, strLen = 12, separator = '...') {
       separator +
       fullStr.substr(fullStr.length - backChars)
     );
+}
+
+export enum NftPrivilege {
+    ROOT = null,
+    NONE = 1,
+    ADDER = 1
 }

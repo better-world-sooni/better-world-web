@@ -1,21 +1,10 @@
-import { GlobeAltIcon, SearchCircleIcon } from "@heroicons/react/outline";
-import { useDispatch, useSelector } from "react-redux";
-import useIsTablet from "src/hooks/useIsTablet";
-import { emailVerificationAction, signInAction } from "src/store/reducers/modalReducer";
-import { RootState } from "src/store/reducers/rootReducer";
-import Link from "next/link";
 import Col from "./Col";
 import Div from "./Div";
 import Row from "./Row";
-import { useRouter } from "next/router";
-import SignInModal from "./modals/SignInModal";
-import KlipQRModal from "./modals/KlipQRModal";
 import { href } from "src/modules/routeHelper";
 import { urls } from "src/modules/urls";
-import EmailVerificationModal from "./modals/EmailVerificationModal";
 import { IMAGES } from "src/modules/images";
 import EmptyBlock from "./EmptyBlock";
-import { truncateKlaytnAddress } from "src/modules/constants";
 
 const OnboardingTopBar = () => {
 	return (

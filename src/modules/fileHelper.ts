@@ -25,7 +25,7 @@ export const fileChecksum = async (file) => {
   return checksum
 }
 
-export const createPresignedUrl = async (name, type, byte_size, checksum, metadata = {}) => {
+export const createPresignedUrl = async (name, type, byte_size, checksum, attached_record = "post", metadata = {}) => {
     const body = {
         file: {
             filename: name,
@@ -33,7 +33,8 @@ export const createPresignedUrl = async (name, type, byte_size, checksum, metada
             checksum: checksum,
             content_type: type,
             metadata
-        }
+        },
+        attached_record
     }
     const res = await apiHelperWithToken(apis.presignedUrl._(), 'POST', body)
     return res

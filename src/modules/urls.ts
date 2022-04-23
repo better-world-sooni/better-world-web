@@ -3,7 +3,13 @@ export const urls = {
     home: '/home',
     feed: '/feed',
     post: {
-        postId: (postId) => `/post/${postId}`
+        index: () => `/post`,
+        postId: (postId, section = "#") => `/post/${postId}${section}`,
+        admin: {
+            contractAddress:  (contractAddress) => {
+                return `/post/admin/${contractAddress}`
+            }
+        }
     },
     onboarding: {
         klaytnAddress: (klaytnAddress) => `/onboarding/${klaytnAddress}`
