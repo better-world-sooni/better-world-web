@@ -15,11 +15,7 @@ function* loginSaga(action) {
 
 function* changeNftSaga(action) {
   yield call(setCurrentNftJwt, {...action})
-  if (action.redirect) {
-    yield call(href, action.redirect)
-  } else {
-    location.reload()
-  }
+  yield call(href, action.redirect)
 }
 
 export default function* watchAuth() {

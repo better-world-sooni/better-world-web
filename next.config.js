@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 module.exports = {
   i18n: {
-    locales: ['ko'],
+    locales: ['ko', 'en'],
     defaultLocale: 'ko',
   },
   publicRuntimeConfig: {

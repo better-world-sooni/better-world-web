@@ -1,24 +1,16 @@
 import Div from "src/components/Div";
+import Helmet from "react-helmet";
+import Confetti from "src/components/modals/Confetti";
+import EmptyBlock from "src/components/EmptyBlock";
+import Row from "src/components/Row";
+import Col from "src/components/Col";
+import { IMAGES } from "src/modules/images";
+import { truncateKlaytnAddress } from "src/modules/constants";
 import MainTopBar from "src/components/MainTopBar";
-import NewPost from "src/components/common/NewPost";
-import { apiHelperWithJwtFromContext } from "src/modules/apiHelper";
-import { NextPageContext } from "next";
-import apis from "src/modules/apis";
-import Posts from "src/components/common/Posts";
+import { href } from "src/modules/routeHelper";
+import { urls } from "src/modules/urls";
 
-function Index({ currentUser, currentNft, feed }) {
-	return (
-		<>
-			<MainTopBar currentUser={currentUser} currentNft={currentNft} />
-			<Div mxAuto maxW={650} bgWhite rounded>
-				<Posts posts={feed} currentNftImage={currentNft.nft_metadatum.image_uri} />
-			</Div>
-		</>
-	);
+export default function Home({ user }) {
+	// href(urls.feed);
+	return null;
 }
-
-Index.getInitialProps = async (context: NextPageContext) => {
-	const res = await apiHelperWithJwtFromContext(context, apis.feed._(), "GET");
-	return res;
-};
-export default Index;

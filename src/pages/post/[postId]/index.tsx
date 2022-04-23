@@ -1,4 +1,5 @@
 import Div from "src/components/Div";
+import Helmet from "react-helmet";
 import Confetti from "src/components/modals/Confetti";
 import MainTopBar from "src/components/MainTopBar";
 import apis from "src/modules/apis";
@@ -8,18 +9,20 @@ import Post from "src/components/common/Post";
 
 function Index({ post, currentUser, currentNft }) {
 	return (
-		<>
+		<Div>
+			<Helmet bodyAttributes={{ style: "background-color : rgb(250, 250, 250);" }} />
 			<MainTopBar currentUser={currentUser} currentNft={currentNft} />
-			<Div mxAuto maxW={650} bgWhite roundedLg>
-				<Post post={post} full={true} currentNftImage={currentNft.nft_metadatum.image_uri} index={0} length={1} />
+			<Confetti />
+			<Div mxAuto maxW={700} bgWhite>
+				<Post post={post} full={true} />
 			</Div>
-		</>
+		</Div>
 	);
 }
 
 Index.getInitialProps = async (context: NextPageContext) => {
 	const { postId } = context.query;
-	const res = await apiHelperWithJwtFromContext(context, apis.post.postId._(postId), "GET");
+	const res = await apiHelperWithJwtFromContext(context, apis.post.postId(postId), "GET");
 	return res;
 };
 

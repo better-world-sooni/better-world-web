@@ -50,22 +50,20 @@ const apis = {
     klaytnAddress: (klaytnAddress) => apiV1(`/profile/${klaytnAddress}`)
   },
   nft: {
-    contractAddressAndTokenId: (contractAddress, tokenId) => apiV1(`/nft/${contractAddress}/${tokenId}`),
-    _: () => apiV1(`/nft`)
+    contractAddressAndTokenId: (contractAddress, tokenId) => apiV1(`/nft/${contractAddress}/${tokenId}`)
   },
   follow: {
-    contractAddressAndTokenId: (contractAddress, tokenId) => apiV1(`/follow/${contractAddress}/${tokenId}`),
-    contractAddress: (contractAddress) => apiV1(`/follow/${contractAddress}`)
+    contractAddressAndTokenId: (contractAddress, tokenId) => apiV1(`/follow/${contractAddress}/${tokenId}`)
+  },
+  nftProfile: {
+    contractAddressAndTokenId: (contractAddress, tokenId) => apiV1(`/nft_profile/${contractAddress}/${tokenId}`)
   },
   nft_collection: {
-    contractAddress: {
-      _: (contractAddress) => apiV1(`/nft_collection/${contractAddress}`),
-      profile: (contractAddress) => apiV1(`/nft_collection/${contractAddress}/profile`)
-    }
+    contractAddress: (contractAddress) => apiV1(`/nft_collection/${contractAddress}`)
   },
   comment: {
     post: (postId) => apiV1(`/comment/post/${postId}`),
-    comment: (commentId) => apiV1(`/comment/comment/${commentId}`)
+    comment: (commentId) => apiV1(`/comment/post/${commentId}`)
   },
   like: {
     post: (postId) => apiV1(`/like/post/${postId}`),
@@ -73,13 +71,7 @@ const apis = {
   },
   post: {
     _: () => apiV1(`/post`),
-    postId: {
-      _: (postId) => apiV1(`/post/${postId}`),
-      comment: (postId) => apiV1(`/post/${postId}/comment`)
-    }
-  },
-  feed: {
-    _: () => apiV1(`/feed`),
+    postId: (postId) => apiV1(`/post/${postId}`)
   },
   presignedUrl: {
     _: () => apiV1(`/presigned_url`)

@@ -7,6 +7,7 @@ async function createCurrentNftJwt(contract_address, token_id) {
         contract_address,
         token_id
     })
+    console.log(res)
     if(!res.success){
         return null
     }

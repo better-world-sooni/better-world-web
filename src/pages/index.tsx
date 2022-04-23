@@ -3,6 +3,10 @@ import Helmet from "react-helmet";
 import Confetti from "src/components/modals/Confetti";
 import HomeTopBar from "src/components/HomeTopBar";
 import EmptyBlock from "src/components/EmptyBlock";
+import Row from "src/components/Row";
+import Col from "src/components/Col";
+import { IMAGES } from "src/modules/images";
+import { truncateKlaytnAddress } from "src/modules/constants";
 
 export default function Home({ currentUser, currentNft }) {
 	return (

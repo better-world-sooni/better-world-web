@@ -62,7 +62,7 @@ export default function Home({ currentUser, currentNft }) {
 			return;
 		}
 		try {
-			const res = await apiHelperWithToken(apis.nft_collection.contractAddress._(contract), "POST");
+			const res = await apiHelperWithToken(apis.nft_collection.contractAddress(contract), "POST");
 			console.log(res);
 			if (!res.success) {
 				switch (res.error_code) {
@@ -118,7 +118,7 @@ export default function Home({ currentUser, currentNft }) {
 	return (
 		<Div>
 			<Helmet bodyAttributes={{ style: "background-color : white;" }} />
-			<MainTopBar currentUser={currentUser} currentNft={currentNft} />
+			<MainTopBar user={currentUser} />
 			<Confetti />
 			<EmptyBlock h={40} />
 			<Div px30>
