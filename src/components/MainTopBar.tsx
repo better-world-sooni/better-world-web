@@ -33,9 +33,6 @@ const MainTopBar = ({ currentUser, currentNft }) => {
 	const onClickEmailVerification = () => {
 		dispatch(emailVerificationAction({ enabled: true }));
 	};
-	const onClickChat = () => {
-		href(urls.chat);
-	};
 
 	return (
 		<>
@@ -54,6 +51,11 @@ const MainTopBar = ({ currentUser, currentNft }) => {
 					<Col />
 					<Col>
 						<SearchNft/>
+					</Col>
+					<Col auto>
+						<Div bgWhite bgOpacity70 p5 rounded cursorPointer onClick={()=> href(urls.chat)}>
+							<ChatIcon height={20} width={20} scale={1} strokeWidth={2} />
+						</Div>
 					</Col>
 					{currentNft && currentUser && (
 						<Col auto cursorPointer pt2>
