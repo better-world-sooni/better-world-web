@@ -31,6 +31,15 @@ function ChatRoom({ currentUser, currentNft }) {
 	const [messages, setMessages] = useState([]);
 	const [text, setText] = useState("")
 
+
+	useEffect(() => {
+		console.log(enterNfts);
+
+
+	}, [enterNfts])
+
+
+
     const onChange = (e) => {
         setText(e.target.value)
     }
@@ -50,6 +59,7 @@ function ChatRoom({ currentUser, currentNft }) {
 		} else {
 			Alert.alert('네트워크가 불안정하여 메세지를 보내지 못했습니다');
 		}
+		setText("")
 		console.log("send: ", text)
 	}
 
@@ -70,7 +80,7 @@ function ChatRoom({ currentUser, currentNft }) {
 			let _ = await channel.enter(currentRoomId);
 			channel.on('message', res => {
 				console.log("message receive", res['data'])
-				setMessages((m) => [res['data'], ...m]);
+				setMessages((m) => [...m, res['data']]);
 			});
 			channel.on('leave', res => {
 				console.log(res['leave_nft'], res['new_nfts'])
