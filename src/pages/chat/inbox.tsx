@@ -16,9 +16,13 @@ import { Alert } from 'react-alert'
 import { NextPageContext } from "next";
 import { apiHelperWithJwtFromContext, apiHelperWithToken } from "src/modules/apiHelper";
 import apis from "src/modules/apis";
+import { href } from "src/modules/routeHelper";
+import { urls } from "src/modules/urls";
 
 
 function Inbox({ currentUser, currentNft, chat_rooms }) {
+	console.log(currentUser);
+	console.log(currentNft)
 	const jwt = getJwt();
 	const currentNftId = {"token_id": currentNft.token_id, "contract_address": currentNft.contract_address}
 
@@ -28,6 +32,7 @@ function Inbox({ currentUser, currentNft, chat_rooms }) {
 	const updateRoomList = useCallback((newMsg, roomId) => {
 		const roomList = [...chatRooms];
 		const index = roomList.findIndex(x=>x.room_info._id.$oid === roomId);
+		console.log(index);
 		roomList.splice(0, 0, roomList.splice(index, 1)[0]);
 		roomList[0].last_message = newMsg['text'];
 		roomList[0].unread_count += 1;
@@ -38,15 +43,13 @@ function Inbox({ currentUser, currentNft, chat_rooms }) {
 
 
 	useEffect(() => {
-		const channel = new ChatChannel(currentNftId);;
+		const channel = new ChatChannel(currentNftId);
 		const wsConnect = async () => {
 			await cable(jwt).subscribe(channel);
 			setChatSocket(channel);     
-
 			channel.on('message', res => {
 				const newRoomList = updateRoomList(res['data'], res['room'])
 			});
-
 			channel.on('close', () => console.log('Disconnected from chat'));
 			channel.on('disconnect', () => console.log("check disconnect"));
 		};
@@ -61,17 +64,15 @@ function Inbox({ currentUser, currentNft, chat_rooms }) {
 
 	
 	const openRoom = async (openRoomId, numNfts) => {
-		console.log("room click");
+		console.log(openRoomId)
+		href(urls.chat.room(openRoomId))
 	}
-
-
 
 	return (
 		<Div>
 			<Helmet bodyAttributes={{ style: "background-color : white;" }} />
 			<MainTopBar currentUser={currentUser} currentNft={currentNft} />
 			<Confetti />
-
 			<Row flex px30>
 				<Col itemsCenter>
 					<Div flex1 borderBlack borderB2>
@@ -87,7 +88,6 @@ function Inbox({ currentUser, currentNft, chat_rooms }) {
 								/>
 							);
 						})}
-
 					</Div>
 				</Col>
 			</Row>

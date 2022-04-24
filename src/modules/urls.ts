@@ -19,7 +19,10 @@ export const urls = {
             return `/nft-profile/${contractAddress}/${tokenId}`
         }
     },
-    chat: '/chat/inbox',
+    chat: {
+        inbox: '/chat/inbox',
+        room: (roomId) => `/chat/${roomId}`
+    },
     gomzSpace: '/gomz-space',
     nftCollection: {
         contractAddress: (contractAddress) => {

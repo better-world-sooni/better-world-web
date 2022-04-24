@@ -7,7 +7,6 @@ export const COOKIE_OPT = { domain: COOKIE_DOMAIN, path: '/' }
 
 export const getJwt = () => {
     const cookies = new Cookies();
-    console.log(cookies);
     return cookies.get('jwt')
 }
 export const setJwt = (jwt) => {
