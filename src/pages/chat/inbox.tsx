@@ -20,29 +20,19 @@ import { href } from "src/modules/routeHelper";
 import { urls } from "src/modules/urls";
 
 
-
-
 function Inbox({ currentUser, currentNft, chat_rooms, jwt }) {
-	console.log(currentUser);
-	console.log(currentNft)
-	// const jwt = getJwt();
 	const currentNftId = {"token_id": currentNft.token_id, "contract_address": currentNft.contract_address}
-
 	const [chatRooms, setChatRooms] = useState(chat_rooms);
 	const [chatSocket, setChatSocket] = useState(null);
 
 	const updateRoomList = useCallback((newMsg, roomId) => {
 		const roomList = [...chatRooms];
 		const index = roomList.findIndex(x=>x.room_info._id.$oid === roomId);
-		console.log(index);
 		roomList.splice(0, 0, roomList.splice(index, 1)[0]);
 		roomList[0].last_message = newMsg['text'];
 		roomList[0].unread_count += 1;
-		console.log(roomList[0]);
-	
 		return roomList;
 	}, [chatRooms]);
-
 
 	useEffect(() => {
 		const channel = new ChatChannel(currentNftId);
@@ -51,6 +41,7 @@ function Inbox({ currentUser, currentNft, chat_rooms, jwt }) {
 			setChatSocket(channel);     
 			channel.on('message', res => {
 				const newRoomList = updateRoomList(res['data'], res['room'])
+				setChatRooms(newRoomList);
 			});
 			channel.on('close', () => console.log('Disconnected from chat'));
 			channel.on('disconnect', () => console.log("check disconnect"));
@@ -64,9 +55,7 @@ function Inbox({ currentUser, currentNft, chat_rooms, jwt }) {
 		}
 	}, [])
 
-	
 	const openRoom = async (openRoomId, numNfts) => {
-		console.log(openRoomId)
 		href(urls.chat.room(openRoomId))
 	}
 
@@ -98,10 +87,8 @@ function Inbox({ currentUser, currentNft, chat_rooms, jwt }) {
 }
 
 
-
-
 Inbox.getInitialProps = async (context: NextPageContext) => {
-	const res = await apiHelperWithJwtFromContext(context, apis.chat.chatRoom.main(), "GET");
+	const res = await apiHelperWithJwtFromContext(context, apis.chat.chatRoom.all(), "GET");
 	return res;
 };
 export default Inbox;

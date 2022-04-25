@@ -40,8 +40,10 @@ MyApp.getInitialProps = async ({ Component, ctx }): Promise<AppInitialProps> => 
 	let jwt = null
 	if (requiresLogin) {
 		if (oldJwt) {
+			console.log(oldJwt)
 			const authResponse = await apiHelperWithJwtFromContext(ctx, apis.auth.user._(), "GET");
 			if (!authResponse.success) {
+				console.log(authResponse)
 				redirectRoot(ctx);
 			} else {
 				currentUser = authResponse.user;

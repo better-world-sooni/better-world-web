@@ -24,21 +24,11 @@ function ChatRoom({ currentUser, currentNft, jwt }) {
     const currentAvatar = currentNft.nft_metadatum.image_uri;
 	const router = useRouter();
 	const currentRoomId = router.query.roomId.toString();
-	// const jwt = getJwt();
 
 	const [chatSocket, setChatSocket] = useState(null);
   	const [enterNfts, setEnterNfts] = useState([]);
 	const [messages, setMessages] = useState([]);
 	const [text, setText] = useState("")
-
-
-	useEffect(() => {
-		console.log(enterNfts);
-
-
-	}, [enterNfts])
-
-
 
     const onChange = (e) => {
         setText(e.target.value)
@@ -60,9 +50,7 @@ function ChatRoom({ currentUser, currentNft, jwt }) {
 			Alert.alert('네트워크가 불안정하여 메세지를 보내지 못했습니다');
 		}
 		setText("")
-		console.log("send: ", text)
 	}
-
 
 	useEffect(() => {
 		const channel = new ChatChannel({ roomId: currentRoomId });
@@ -70,22 +58,15 @@ function ChatRoom({ currentUser, currentNft, jwt }) {
 			await cable(jwt).subscribe(channel);
 			setChatSocket(channel);     
 			channel.on('enter', res => {
-				const newNfts = res['new_nfts'];
-				const newMsgs = res["update_msgs"];
-				console.log(currentRoomId, "newNft:", newNfts);
-				console.log(currentRoomId, "newMsgs:", newMsgs);
-				setEnterNfts(newNfts);
-				setMessages(newMsgs)
+				setEnterNfts(res['new_nfts']);
+				setMessages(res["update_msgs"])
 			});
 			let _ = await channel.enter(currentRoomId);
 			channel.on('message', res => {
-				console.log("message receive", res['data'])
 				setMessages((m) => [...m, res['data']]);
 			});
 			channel.on('leave', res => {
-				console.log(res['leave_nft'], res['new_nfts'])
 				if(currentNftId != res['leave_nft']){
-					console.log("here")
 					setEnterNfts([...res['new_nfts']])
 				}
 			})
@@ -95,7 +76,6 @@ function ChatRoom({ currentUser, currentNft, jwt }) {
 		wsConnect();
 		return() => {
 		  if(channel) {
-			channel.leave(currentRoomId);
 			channel.disconnect();
 			channel.close();
 		  }   
@@ -152,10 +132,4 @@ function ChatRoom({ currentUser, currentNft, jwt }) {
     );
 }
 
-
-// ChatRoom.getInitialProps = async (context: NextPageContext) => {
-// 	const { roomId } = context.query;
-// 	const res = await apiHelperWithJwtFromContext(context, apis.nft.contractAddressAndTokenId(contractAddress, tokenId), "GET");
-// 	return res.nft;
-// };
 export default ChatRoom
