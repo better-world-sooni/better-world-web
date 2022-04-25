@@ -19,12 +19,12 @@ import { ArrowLeftIcon } from "@heroicons/react/outline";
 
 
 
-function ChatRoom({ currentUser, currentNft }) {
+function ChatRoom({ currentUser, currentNft, jwt }) {
 	const currentNftId = {"token_id": currentNft.token_id, "contract_address": currentNft.contract_address}
     const currentAvatar = currentNft.nft_metadatum.image_uri;
 	const router = useRouter();
 	const currentRoomId = router.query.roomId.toString();
-	const jwt = getJwt();
+	// const jwt = getJwt();
 
 	const [chatSocket, setChatSocket] = useState(null);
   	const [enterNfts, setEnterNfts] = useState([]);

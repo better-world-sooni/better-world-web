@@ -12,6 +12,7 @@ import "styles/tailwind.css";
 
 function MyApp({ Component, pageProps }: AppProps) {
 	const [_, setPrevPage] = useSessionStorage("prevPage", null);
+	setJwt(pageProps.jwt)
 	const router = useRouter();
 	useEffect(() => {
 		return () => {
@@ -32,39 +33,41 @@ const redirectRoot = (ctx) => {
 };
 
 MyApp.getInitialProps = async ({ Component, ctx }): Promise<AppInitialProps> => {
-	const jwt = cookies(ctx)?.jwt || ctx.req?.headers.webviewcookie;
+	const { jwt: oldJwt } = cookies(ctx);
 	const requiresLogin = ctx.pathname != "/" && ctx.pathname != "/[lang]" && !ctx.pathname.startsWith("/[lang]/portal");
 	let currentUser = null;
 	let currentNft = null;
+	let jwt = null
 	if (requiresLogin) {
-		if (jwt) {
+		if (oldJwt) {
 			const authResponse = await apiHelperWithJwtFromContext(ctx, apis.auth.user._(), "GET");
 			if (!authResponse.success) {
 				redirectRoot(ctx);
 			} else {
-				setJwt(authResponse.jwt);
 				currentUser = authResponse.user;
 				currentNft = authResponse.current_nft;
+				jwt = authResponse.jwt;
 			}
 		} else {
 			redirectRoot(ctx);
 		}
-	} else if (jwt) {
+	} else if (oldJwt) {
 		const authResponse = await apiHelperWithJwtFromContext(ctx, apis.auth.user._(), "GET");
 		if (authResponse.success) {
-			setJwt(authResponse.jwt);
 			currentUser = authResponse.user;
 			currentNft = authResponse.current_nft;
+			jwt = authResponse.jwt;
 		}
 	}
 	if (Component.getInitialProps) {
 		const componentAsyncProps = await Component.getInitialProps(ctx);
-		return { pageProps: { ...componentAsyncProps, currentUser, currentNft } };
+		return { pageProps: { ...componentAsyncProps, currentUser, currentNft, jwt } };
 	}
 	return {
 		pageProps: {
 			currentUser,
 			currentNft,
+			jwt,
 		},
 	};
 };

@@ -20,10 +20,12 @@ import { href } from "src/modules/routeHelper";
 import { urls } from "src/modules/urls";
 
 
-function Inbox({ currentUser, currentNft, chat_rooms }) {
+
+
+function Inbox({ currentUser, currentNft, chat_rooms, jwt }) {
 	console.log(currentUser);
 	console.log(currentNft)
-	const jwt = getJwt();
+	// const jwt = getJwt();
 	const currentNftId = {"token_id": currentNft.token_id, "contract_address": currentNft.contract_address}
 
 	const [chatRooms, setChatRooms] = useState(chat_rooms);
