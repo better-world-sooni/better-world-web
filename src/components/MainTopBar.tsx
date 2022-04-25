@@ -4,9 +4,9 @@ import useIsTablet from "src/hooks/useIsTablet";
 import { emailVerificationAction, signInAction, switchAccountModalAction } from "src/store/reducers/modalReducer";
 import { RootState } from "src/store/reducers/rootReducer";
 import Link from "next/link";
-import Col from "./Col";
-import Div from "./Div";
-import Row from "./Row";
+import Div from "src/components/Div";
+import Row from "src/components/Row";
+import Col from "src/components/Col";
 import { useRouter } from "next/router";
 import SignInModal from "./modals/SignInModal";
 import KlipQRModal from "./modals/KlipQRModal";
@@ -33,9 +33,6 @@ const MainTopBar = ({ currentUser, currentNft }) => {
 	const onClickEmailVerification = () => {
 		dispatch(emailVerificationAction({ enabled: true }));
 	};
-	const onClickChat = () => {
-		href(urls.chat);
-	};
 
 	return (
 		<>
@@ -54,6 +51,11 @@ const MainTopBar = ({ currentUser, currentNft }) => {
 					<Col />
 					<Col>
 						<SearchNft/>
+					</Col>
+					<Col auto>
+						<Div bgWhite bgOpacity70 p5 rounded cursorPointer onClick={()=> href(urls.chat.inbox)}>
+							<ChatIcon height={20} width={20} scale={1} strokeWidth={2} />
+						</Div>
 					</Col>
 					{currentNft && currentUser && (
 						<Col auto cursorPointer pt2>
