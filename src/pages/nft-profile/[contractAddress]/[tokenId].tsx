@@ -97,7 +97,7 @@ function NftProfile({
 	};
 	const handleClickDm = async () => {
 		const res = await apiHelperWithToken(apis.chat.chatRoom.contractAddressAndTokenId(contract_address, token_id), "POST");
-		console.log(res);
+		href(urls.chat.room(res.chat_room._id.$oid))
 	};
 	useEffect(() => {
 		setFollowing(is_following);

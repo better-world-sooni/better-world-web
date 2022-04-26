@@ -16,10 +16,7 @@ export default function ChatRoomItem({
     const numNfts = room.num_nfts;
     const unreadMessageCount = room.unread_count;
     const lastMessage = room.last_message;
-    const firstNftAvatar=room.profile_imgs[0];
-    const secondNftAvatar=room.profile_imgs[1];
-    const thirdNftAvatar=room.profile_imgs[2];
-    const fourthNftAvatar=room.profile_imgs[3];
+
 
     const createdAtText = useCallback(createdAt => {
         if (createdAt) {
@@ -40,10 +37,7 @@ export default function ChatRoomItem({
         <Row px20 py10 flex bgWhite onClick={()=>onclick(chatRoomId, numNfts)}>
             <Col auto mr10 relative>
                 <ChatRoomItemAvatars
-                firstNftAvatar={firstNftAvatar}
-                secondNftAvatar={secondNftAvatar}
-                thirdNftAvatar={thirdNftAvatar}
-                fourthNftAvatar={fourthNftAvatar}
+                profileImg={room.profile_imgs}
                 />
             </Col>
             <Col justifyCenter>

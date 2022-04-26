@@ -6,6 +6,7 @@ import { urls } from "src/modules/urls";
 import { NextPageContext } from "next";
 import { apiHelperWithJwtFromContext, apiHelperWithToken } from "src/modules/apiHelper";
 import apis from "src/modules/apis";
+import ChatRoomItemAvatars from "src/pages/chat/chatRoomItemAvatars"
 import Image from "next/image";
 import { IMAGES } from "src/modules/images";
 import { useEffect, useState, useCallback } from "react";
@@ -17,17 +18,13 @@ import { ChatChannel } from 'src/pages/chat/chatChannel';
 import { getJwt } from 'src/modules/cookieHelper'
 import { ArrowLeftIcon } from "@heroicons/react/outline";
 
-
-
-function ChatRoom({ currentUser, currentNft, jwt }) {
+function ChatRoom({ currentNft, jwt, room_id, room_name, room_profile_imgs, init_messages }) {
 	const currentNftId = {"token_id": currentNft.token_id, "contract_address": currentNft.contract_address}
     const currentAvatar = currentNft.nft_metadatum.image_uri;
-	const router = useRouter();
-	const currentRoomId = router.query.roomId.toString();
 
 	const [chatSocket, setChatSocket] = useState(null);
   	const [enterNfts, setEnterNfts] = useState([]);
-	const [messages, setMessages] = useState([]);
+	const [messages, setMessages] = useState(init_messages);
 	const [text, setText] = useState("")
 
     const onChange = (e) => {
@@ -45,7 +42,7 @@ function ChatRoom({ currentUser, currentNft, jwt }) {
 			updated_at: Timestamp
 		};
 		if(chatSocket) {
-			const _ = await chatSocket.send(msg, currentRoomId);
+			const _ = await chatSocket.send(msg, room_id);
 		} else {
 			Alert.alert('네트워크가 불안정하여 메세지를 보내지 못했습니다');
 		}
@@ -53,7 +50,7 @@ function ChatRoom({ currentUser, currentNft, jwt }) {
 	}
 
 	useEffect(() => {
-		const channel = new ChatChannel({ roomId: currentRoomId });
+		const channel = new ChatChannel({ roomId: room_id });
 		const wsConnect = async () => {
 			await cable(jwt).subscribe(channel);
 			setChatSocket(channel);     
@@ -61,7 +58,7 @@ function ChatRoom({ currentUser, currentNft, jwt }) {
 				setEnterNfts(res['new_nfts']);
 				setMessages(res["update_msgs"])
 			});
-			let _ = await channel.enter(currentRoomId);
+			let _ = await channel.enter(room_id);
 			channel.on('message', res => {
 				setMessages((m) => [...m, res['data']]);
 			});
@@ -86,13 +83,16 @@ function ChatRoom({ currentUser, currentNft, jwt }) {
         <Div flex flexCol itemsStretch >
             <Row flex itemsCenter>
                 <Col auto justifyCenter>
-                    <Div onClick={()=> href(urls.chat.inbox)}>
-						<ArrowLeftIcon height={20} width={20} scale={1} strokeWidth={2} />
+                    <Div onClick={()=> href(urls.chat.inbox)} p10>
+						{/* <ArrowLeftIcon height={20} width={20} scale={1} strokeWidth={2} /> */}
+						<ChatRoomItemAvatars
+						profileImg={room_profile_imgs}
+						/>
                     </Div>
                 </Col>
                 <Col auto justifyCenter>
                     <Div>
-                        {currentRoomId}
+                        {room_name}
                     </Div>
                 </Col>
             </Row>
@@ -130,6 +130,12 @@ function ChatRoom({ currentUser, currentNft, jwt }) {
         </Div>
        
     );
+}
+
+ChatRoom.getInitialProps = async (context: NextPageContext) => {
+	const { roomId } = context.query;
+	const res = await apiHelperWithJwtFromContext(context, apis.chat.chatRoom.roomId(roomId), "GET")
+	return res;
 }
 
 export default ChatRoom
