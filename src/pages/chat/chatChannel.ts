@@ -22,24 +22,37 @@ type LeavingMessage = {
   data: string
 }
 
+type NewRoomOpen = {
+  type: 'new'
+  data: string
+}
 
 type ChatMessage = {
   type: 'send'
   data: object
 }
 
-type Message = EnteringMessage | LeavingMessage | ChatMessage 
+type Message = EnteringMessage | NewRoomOpen | LeavingMessage | ChatMessage 
 
 interface Events extends ChannelEvents<Message> {
   enter: (msg: EnteringMessage) => void
   leave: (msg: LeavingMessage) => void
+  new: (msg: NewRoomOpen) => void
 }
 
 export class ChatChannel extends Channel<Params,Message,Events> {
   static identifier = 'ChatChannelWeb'
 
-  async send(message, roomId) {
-    return this.perform('send_message', {message, roomId})
+  async send(message, room) {
+    return this.perform('send_message', {message, room})
+  }
+
+  async sendNew(message, room) {
+    return this.perform('send_message_new', {message, room})
+  }
+
+  async newRoomOpen(roomId) {
+    return this.perform('new_room_open', {roomId})
   }
 
   async enter(roomId) {
@@ -49,6 +62,7 @@ export class ChatChannel extends Channel<Params,Message,Events> {
   async leave(roomId) {
     return this.perform('leave_room', {roomId})
   }
+
   
   receive(message: Message) {
     if (message.type === 'enter') {
@@ -56,6 +70,9 @@ export class ChatChannel extends Channel<Params,Message,Events> {
     }
     else if(message.type === 'leave') {
       return this.emit('leave', message)
+    }
+    else if(message.type === 'new') {
+      return this.emit('new', message)
     }
     super.receive(message)
   }

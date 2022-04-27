@@ -9,21 +9,19 @@ export default function ChatRoomItem({
     onclick,
     room
 }) {
-    const chatRoomId = room.room_info._id.$oid;
+    const roomId = room.room_info._id.$oid;
     const category = room.room_info.category;
-    const createdAt = room.room_info.created_at;
-    const title = room.room_info.roomname;
-    const numNfts = room.num_nfts;
+    const updatedAt = room.room_info.updated_at;
+    const roomName = room.room_name;
+    const numNfts = room.room_info.participants.length;
     const unreadMessageCount = room.unread_count;
     const lastMessage = room.last_message;
-    const firstNftAvatar=room.profile_imgs[0];
-    const secondNftAvatar=room.profile_imgs[1];
-    const thirdNftAvatar=room.profile_imgs[2];
-    const fourthNftAvatar=room.profile_imgs[3];
+    const profileImg = room.room_profile_imgs;
 
-    const createdAtText = useCallback(createdAt => {
-        if (createdAt) {
-          const calendar = kmoment(createdAt).calendar();
+
+    const updatedAtText = useCallback(updatedAt => {
+        if (updatedAt) {
+          const calendar = kmoment(updatedAt).calendar();
           const calendarArr = calendar.split(' ');
           if (calendarArr[0] == '오늘') {
             return calendarArr[1] + ' ' + calendarArr[2];
@@ -37,20 +35,17 @@ export default function ChatRoomItem({
       }, []);
 
     return(
-        <Row px20 py10 flex bgWhite onClick={()=>onclick(chatRoomId, numNfts)}>
+        <Row px20 py10 flex bgWhite onClick={()=>onclick(roomId, numNfts)}>
             <Col auto mr10 relative>
                 <ChatRoomItemAvatars
-                firstNftAvatar={firstNftAvatar}
-                secondNftAvatar={secondNftAvatar}
-                thirdNftAvatar={thirdNftAvatar}
-                fourthNftAvatar={fourthNftAvatar}
+                profileImg={profileImg}
                 />
             </Col>
             <Col justifyCenter>
                 <Row pb2>
                     <Col pr10 auto maxW={'60%'}>
                         <Div fontSize={15} >
-                            {title}
+                            {roomName}
                         </Div>
                     </Col>
                     <Col auto fontSize={5}>
@@ -61,7 +56,7 @@ export default function ChatRoomItem({
                     </Col>
                     <Col justifyCenter itemsEnd>
                         <Div fontSize={13}>
-                            {createdAtText(createdAt)}
+                            {updatedAtText(updatedAt)}
                         </Div>
                     </Col>
                 </Row>

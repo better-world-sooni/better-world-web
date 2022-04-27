@@ -17,7 +17,6 @@ const Messages = ({messages, currentNftId, numNfts}) => {
                 const time = new Date(message.created_at);
                 const avatar = message.avatar;
                 const unreadCount = numNfts - message.read_nft_ids.length;
-                console.log(text, isConsecutive)
                 return(
                     <Div key={index} >
                         <Row {...(isMyMessage && {flexRowReverse: true})}>
