@@ -18,39 +18,54 @@ import { ChatChannel } from 'src/pages/chat/chatChannel';
 import { getJwt } from 'src/modules/cookieHelper'
 import { ArrowLeftIcon } from "@heroicons/react/outline";
 
-function ChatRoom({ currentNft, jwt, room_id, room_name, room_profile_imgs, init_messages }) {
+function ChatRoom({ currentNft, jwt, room_info, room_name, room_profile_imgs, init_messages }) {
 	const currentNftId = {"token_id": currentNft.token_id, "contract_address": currentNft.contract_address}
     const currentAvatar = currentNft.nft_metadatum.image_uri;
+	const roomId = room_info._id.$oid;
+	const router = useRouter()
 
 	const [chatSocket, setChatSocket] = useState(null);
   	const [enterNfts, setEnterNfts] = useState([]);
 	const [messages, setMessages] = useState(init_messages);
 	const [text, setText] = useState("")
-
+	const [isNew, setIsNew] = useState(init_messages.length == 0);
+	
     const onChange = (e) => {
         setText(e.target.value)
     }
     
 	const sendMessage = async(text) => {
-		const Timestamp = new Date();
-		const msg = {
-			text: text,
-			nft: currentNftId,
-			avatar: currentAvatar,
-			read_nft_ids: enterNfts,
-			created_at: Timestamp,
-			updated_at: Timestamp
-		};
 		if(chatSocket) {
-			const _ = await chatSocket.send(msg, room_id);
-		} else {
+			const Timestamp = new Date();
+			const msg = {
+				text: text,
+				nft: currentNftId,
+				avatar: currentAvatar,
+				read_nft_ids: enterNfts,
+				created_at: Timestamp,
+				updated_at: Timestamp
+			};
+			const room = {
+				room_info: room_info,
+				room_name: room_name,
+				room_profile_imgs: room_profile_imgs,
+				last_message: text,
+			};
+			if(isNew) {
+				const _ = await chatSocket.sendNew(msg, room);
+			}
+			else{
+				const _ = await chatSocket.send(msg, room);
+			}
+		}
+		else {
 			Alert.alert('네트워크가 불안정하여 메세지를 보내지 못했습니다');
 		}
 		setText("")
 	}
 
 	useEffect(() => {
-		const channel = new ChatChannel({ roomId: room_id });
+		const channel = new ChatChannel({ roomId: roomId });
 		const wsConnect = async () => {
 			await cable(jwt).subscribe(channel);
 			setChatSocket(channel);     
@@ -58,14 +73,17 @@ function ChatRoom({ currentNft, jwt, room_id, room_name, room_profile_imgs, init
 				setEnterNfts(res['new_nfts']);
 				setMessages(res["update_msgs"])
 			});
-			let _ = await channel.enter(room_id);
+			let _ = await channel.enter(roomId);
 			channel.on('message', res => {
 				setMessages((m) => [...m, res['data']]);
 			});
 			channel.on('leave', res => {
 				if(currentNftId != res['leave_nft']){
-					setEnterNfts([...res['new_nfts']])
+					setEnterNfts(res['new_nfts'])
 				}
+			})
+			channel.on('new', res => {
+				setIsNew(false);
 			})
 			channel.on('close', () => console.log('Disconnected from chat'));
 			channel.on('disconnect', () => console.log("check disconnect"));
@@ -82,9 +100,13 @@ function ChatRoom({ currentNft, jwt, room_id, room_name, room_profile_imgs, init
     return(
         <Div flex flexCol itemsStretch >
             <Row flex itemsCenter>
-                <Col auto justifyCenter>
-                    <Div onClick={()=> href(urls.chat.inbox)} p10>
-						{/* <ArrowLeftIcon height={20} width={20} scale={1} strokeWidth={2} /> */}
+				<Col auto justifyCenter>
+                    <Div onClick={()=> router.back()}>
+						<ArrowLeftIcon height={20} width={20} scale={1} strokeWidth={2} />
+					</Div>
+                </Col>
+				<Col auto justifyCenter>
+                    <Div p10>
 						<ChatRoomItemAvatars
 						profileImg={room_profile_imgs}
 						/>
