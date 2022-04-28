@@ -89,8 +89,10 @@ const apis = {
   },
   chat: {
     chatRoom: {
-      main: () => apiV1(`chat/room/all`)
-    }
+      all: () => apiV1(`chat/room/all`),
+      contractAddressAndTokenId: (contractAddress, tokenId) => apiV1(`/chat/room/${contractAddress}/${tokenId}`),
+      roomId: (roomId) => apiV1(`/chat/room/${roomId}`),
+    } 
   }
 }
 

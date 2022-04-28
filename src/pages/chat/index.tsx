@@ -90,7 +90,7 @@ export default function Chat({ nftCollection, proposals, about, currentUser, cur
 	useEffect(() => {
 		let channel;
 		const wsConnect = async () => {
-			const res = await apiHelperWithToken(apis.chat.chatRoom.main());
+			const res = await apiHelperWithToken(apis.chat.chatRoom.all());
 			if (res?.chat_rooms) {
 				setChatRooms(res.chat_rooms);
 			}

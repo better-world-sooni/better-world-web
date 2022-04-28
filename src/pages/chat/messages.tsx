@@ -11,13 +11,12 @@ const Messages = ({messages, currentNftId, numNfts}) => {
         <Div overflowHidden overflowAuto>
             {messages.map((message, index) => {
                 const author = message.nft;
-                const isConsecutive = isSameNft(messages[index + 1]?.nft, author);
+                const isConsecutive = isSameNft(messages[index - 1]?.nft, author);
                 const isMyMessage = isSameNft(author, currentNftId)
                 const text = message.text;
                 const time = new Date(message.created_at);
                 const avatar = message.avatar;
                 const unreadCount = numNfts - message.read_nft_ids.length;
-
                 return(
                     <Div key={index} >
                         <Row {...(isMyMessage && {flexRowReverse: true})}>

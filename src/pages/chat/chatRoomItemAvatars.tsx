@@ -6,18 +6,10 @@ import Div from "src/components/Div";
 import { IMAGES } from "src/modules/images"
 
 const ChatRoomItemAvatars = ({
-    firstNftAvatar = null,
-    secondNftAvatar = null,
-    thirdNftAvatar = null,
-    fourthNftAvatar = null,
+    profileImg = null,
 }) => {
   
-    const avatarArr = [
-      firstNftAvatar,
-      secondNftAvatar,
-      thirdNftAvatar,
-      fourthNftAvatar,
-    ].filter(item => {
+    const avatarArr = profileImg.filter(item => {
       return item;
     });
   

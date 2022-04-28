@@ -58,6 +58,10 @@ function NftProfile({
 			setFollowing(!following);
 		}
 	};
+	const handleClickDm = async () => {
+		const res = await apiHelperWithToken(apis.chat.chatRoom.contractAddressAndTokenId(contract_address, token_id), "POST");
+		href(urls.chat.room(res.chat_room._id.$oid))
+	};
 	useEffect(() => {
 		setFollowing(is_following);
 	}, [is_following, token_id, contract_address]);
@@ -99,19 +103,30 @@ function NftProfile({
 						</Div>
 					</Div>
 					<Div my10 cursorPointer>
-						{mine ? (
-							<Div flex1 flex justifyCenter px20 py5 roundedLg border1 onClick={handleClickNewPost}>
-								<Div textBase>게시물 작성</Div>
-							</Div>
-						) : following ? (
-							<Div flex1 flex justifyCenter px20 py5 roundedLg border1 onClick={handleClickUnfollow}>
-								<Div textBase>언팔로우</Div>
-							</Div>
-						) : (
-							<Div flex1 flex justifyCenter px20 py5 roundedLg border1 onClick={handleClickFollow}>
-								<Div textBase>팔로우</Div>
-							</Div>
-						)}
+					{mine ? (
+						<Div flex1 flex justifyCenter px20 py5 roundedLg border1 onClick={handleClickNewPost}>
+							<Div textBase>게시물 작성</Div>
+						</Div>
+					) : <Div>
+							<Row>
+								<Col> {following ? (
+									<Div flex1 flex justifyCenter px20 py5 roundedLg border1 onClick={handleClickUnfollow}>
+										<Div textBase>언팔로우</Div>
+									</Div>
+								) : (
+									<Div flex1 flex justifyCenter px20 py5 roundedLg border1 onClick={handleClickFollow}>
+										<Div textBase>팔로우</Div>
+									</Div>
+								)}
+								</Col>
+								<Col>
+									<Div flex1 flex justifyCenter px20 py5 roundedLg border1 onClick={handleClickDm}>
+										<Div textBase>DM</Div>
+									</Div>
+								</Col>
+							</Row>	
+						</Div>
+					}
 					</Div>
 					<Story initialStory={story} mine={mine} />
 				</Div>
