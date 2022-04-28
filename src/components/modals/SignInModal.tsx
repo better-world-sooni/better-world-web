@@ -127,7 +127,7 @@ export default function SignInModal() {
 							{error}
 						</Div>
 					</Div>
-					<Div>
+					<Div cursorPointer>
 						<RoundedButton size={"large"} color="green" text="Done" onClick={onClickKlipQRDone} />
 					</Div>
 				</Div>
@@ -158,12 +158,12 @@ export default function SignInModal() {
 					>
 						<Col />
 						<Col auto px0>
-							<Div>
+							<Div cursorPointer>
 								<Div imgTag src={IMAGES.KAKAO_KLIP_ICON}></Div>
 							</Div>
 						</Col>
 						<Col auto pr0>
-							<Div textCenter textWhite>
+							<Div textCenter textWhite cursorPointer>
 								<Div spanTag>{modalsWording.signIn.methods.klip[locale]}</Div>
 							</Div>
 						</Col>
@@ -181,19 +181,19 @@ export default function SignInModal() {
 					>
 						<Col />
 						<Col auto px0>
-							<Div>
+							<Div cursorPointer>
 								<Div imgTag h24 w24 src={IMAGES.KAIKAS_ICON}></Div>
 							</Div>
 						</Col>
 						<Col auto pr0>
-							<Div textCenter textGray100>
+							<Div textCenter textGray100 cursorPointer>
 								<Div spanTag>{modalsWording.signIn.methods.kaikas[locale]}</Div>
 							</Div>
 						</Col>
 						<Col />
 					</Row>
-					<Div w={600}></Div>
-					<Row roundedFull h56 flex itemsCenter my15 border1>
+					<Div w={400}></Div>
+					<Row roundedFull h56 flex itemsCenter my15 border1 cursorPointer>
 						<Col />
 						<Col auto>
 							<Div spanTag fontLight>

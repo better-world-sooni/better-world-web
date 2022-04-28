@@ -32,13 +32,15 @@ const redirectRoot = (ctx) => {
 };
 
 MyApp.getInitialProps = async ({ Component, ctx }): Promise<AppInitialProps> => {
-	const jwt = cookies(ctx)?.jwt || ctx.req?.headers.webviewcookie;
+	const jwt = cookies(ctx)?.jwt;
+	console.log(jwt);
 	const requiresLogin = ctx.pathname != "/" && ctx.pathname != "/[lang]" && !ctx.pathname.startsWith("/[lang]/portal");
 	let currentUser = null;
 	let currentNft = null;
 	if (requiresLogin) {
 		if (jwt) {
 			const authResponse = await apiHelperWithJwtFromContext(ctx, apis.auth.user._(), "GET");
+			console.log(authResponse);
 			if (!authResponse.success) {
 				redirectRoot(ctx);
 			} else {
@@ -51,11 +53,11 @@ MyApp.getInitialProps = async ({ Component, ctx }): Promise<AppInitialProps> => 
 		}
 	} else if (jwt) {
 		const authResponse = await apiHelperWithJwtFromContext(ctx, apis.auth.user._(), "GET");
+		console.log(authResponse);
 		if (authResponse.success) {
 			setJwt(authResponse.jwt);
 			currentUser = authResponse.user;
 			currentNft = authResponse.current_nft;
-			console.log(currentUser, currentNft);
 		}
 	}
 	if (Component.getInitialProps) {

@@ -8,45 +8,28 @@ import { useRouter } from "next/router";
 import { apiHelper, apiHelperWithToken } from "src/modules/apiHelper";
 import apis from "src/modules/apis";
 import { emailVerificationAction } from "src/store/reducers/modalReducer";
+import EmptyBlock from "../EmptyBlock";
 
 export default function EmailVerificationModal() {
+	const [success, setSuccess] = useState<boolean>(false);
+	const [putPasswordError, setPutPasswordError] = useState<boolean>(false);
+	const [password, setPassword] = useState<string>("");
+	const [passwordError, setPasswordError] = useState<boolean>(false);
+	const [passwordConfirmation, setPasswordConfirmation] = useState<string>("");
+	const [passwordConfirmationError, setPasswordConfirmationError] = useState<boolean>(false);
 	const dispatch = useDispatch();
-	const { locale } = useRouter();
 	const { emailVerificationEnabled, user } = useSelector((state: RootState) => ({
 		emailVerificationEnabled: state.modal.emailVerification.enabled,
 		user: state.auth.user,
 	}));
 	const closeModal = () => {
+		setSuccess(false);
+		setPassword("");
+		setPasswordError(false);
+		setPasswordConfirmation("");
+		setPasswordConfirmationError(false);
 		dispatch(emailVerificationAction({ enabled: false }));
 	};
-
-	const [email, setEmail] = useState<string>("");
-	const [emailError, setEmailError] = useState<boolean>(false);
-	const validateEmail = (email) => {
-		return String(email)
-			.toLowerCase()
-			.match(
-				/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
-			);
-	};
-	const handleChangeEmail = ({ target: { value } }) => {
-		setEmail(value);
-		const isValid = validateEmail(value);
-		if (isValid && emailError) {
-			setEmailError(false);
-		} else if (!(isValid || emailError)) {
-			setEmailError(true);
-		}
-	};
-
-	const [password, setPassword] = useState<string>("");
-	const [passwordError, setPasswordError] = useState<boolean>(false);
-	//^	The password string will start this way
-	// (?=.*[a-z])	The string must contain at least 1 lowercase alphabetical character
-	// (?=.*[A-Z])	The string must contain at least 1 uppercase alphabetical character
-	// (?=.*[0-9])	The string must contain at least 1 numeric character
-	// (?=.[!@#$%^&])	The string must contain at least one special character, but we are escaping reserved RegEx characters to avoid conflict
-	// (?=.{8,})	The string must be eight characters or longer
 	const validatePassword = (password) => {
 		return String(password).match(/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})/);
 	};
@@ -60,8 +43,6 @@ export default function EmailVerificationModal() {
 		}
 	};
 
-	const [passwordConfirmation, setPasswordConfirmation] = useState<string>("");
-	const [passwordConfirmationError, setPasswordConfirmationError] = useState<boolean>(false);
 	const validatePasswordConfirmation = (confirmation) => {
 		return password === confirmation;
 	};
@@ -74,69 +55,103 @@ export default function EmailVerificationModal() {
 			setPasswordConfirmationError(true);
 		}
 	};
-
-	const postEmail = () => {
-		if (!(passwordConfirmationError || emailError || passwordError || password === "" || passwordConfirmation === "" || email === "")) {
+	const areValidInputs = !(passwordConfirmationError || passwordError || password === "" || passwordConfirmation === "");
+	const postEmail = async () => {
+		if (areValidInputs) {
 			try {
-				const emailResult = apiHelperWithToken(apis.auth.email._(), "POST", {
-					address: email,
+				const emailResult = await apiHelperWithToken(apis.auth.password._(), "PUT", {
 					password,
 					password_confirmation: passwordConfirmation,
 				});
-				console.log(emailResult);
-			} catch (e) {
-				console.log(e);
-			}
-			return;
+				if (emailResult.success) setSuccess(true);
+				return;
+			} catch (e) {}
+			setPutPasswordError(true);
 		}
-		alert("Check your inputs");
 	};
 
 	return (
-		<Modal open={emailVerificationEnabled} onClose={closeModal}>
-			<Div maxW={600} mx20 px15>
-				<Div textCenter py30>
+		<Modal open={emailVerificationEnabled} onClose={closeModal} bdClx={"bg-black/30"} clx={"bg-white"}>
+			<Div w={400} mx20 px15 my30>
+				<Div textCenter>
 					<Div spanTag fontBold textXl>
-						Verify Your Email
+						비밀번호 설정
 					</Div>
 				</Div>
 				<Row my15 roundedMd flex itemsCenter>
-					<div className="mb-4">
-						<label className="block text-gray-700 text-sm font-bold mb-2">Email</label>
+					<Div>
+						<label className="block text-gray-700 text-sm font-bold mb-2">비밀번호</label>
 						<input
-							onChange={handleChangeEmail}
-							className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-							id="Email"
-							type="email"
-							placeholder="Email"
-						/>
-						<Div textDanger>{emailError && "Invalid Email"}</Div>
-					</div>
-					<div className="mb-4">
-						<label className="block text-gray-700 text-sm font-bold mb-2">Password</label>
-						<input
+							placeholder="비밀번호"
+							className={"px-5 w-full focus:outline-none focus:border-gray-400 bg-gray-200 rounded-lg"}
+							style={{ height: 40, boxShadow: "none", border: "none" }}
+							type="password"
 							onChange={handleChangePassword}
-							className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-							id="Password"
-							type="password"
-							placeholder="Password"
-						/>
-						<Div textDanger>{passwordError && "Invalid Password"}</Div>
-					</div>
-					<div className="mb-4">
-						<label className="block text-gray-700 text-sm font-bold mb-2">Password Confirmation</label>
+						></input>
+						<Div textDanger textXs spanTag>
+							{passwordError && "비밀 번호는 숫자, 특수문자, 대소문자 영문이 포함돼 있는 8글자 이상의 단어입니다."}
+						</Div>
+					</Div>
+					<EmptyBlock h={4} />
+					<Div>
+						<label className="block text-gray-700 text-sm font-bold mb-2">비밀번호 확인</label>
 						<input
-							onChange={handleChangePasswordConfirmation}
-							className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-							id="Password Confirmation"
+							placeholder="비밀번호 확인"
+							style={{ height: 40, boxShadow: "none", border: "none" }}
 							type="password"
-							placeholder="Password Confirmation"
-						/>
-						<Div textDanger>{passwordConfirmationError && "Passwords do not match"}</Div>
-					</div>
-					<Div onClick={postEmail}>Signup</Div>
+							className={"px-5 w-full focus:outline-none focus:border-gray-400 bg-gray-200 rounded-lg"}
+							onChange={handleChangePasswordConfirmation}
+						></input>
+						<Div textDanger textXs>
+							{passwordConfirmationError && "비밀번호와 확인이 일치하지 않습니다."}
+						</Div>
+					</Div>
+					<EmptyBlock h={20} />
+					<ThreeStateButton state={success ? 2 : areValidInputs ? 1 : 0} onClick={postEmail} />
+					<Div textDanger textXs spanTag>
+						{putPasswordError && "비밀번호를 설정하지 못하였습니다."}
+					</Div>
 				</Row>
 			</Div>
 		</Modal>
+	);
+}
+
+function ThreeStateButton({ state, onClick }) {
+	enum State {
+		Disabled,
+		Clickable,
+		Success,
+	}
+	const propsFromState = (state) => {
+		if (state == State.Disabled) {
+			return { bgGray100: true, textGray400: true };
+		}
+		if (state == State.Clickable) {
+			return { bgPrimary: true, textWhite: true };
+		}
+		if (state == State.Success) {
+			return { bgSuccess: true, textWhite: true };
+		}
+		return {};
+	};
+	const textFromState = (state) => {
+		if (state == State.Disabled) {
+			return "확인";
+		}
+		if (state == State.Clickable) {
+			return "확인";
+		}
+		if (state == State.Success) {
+			return "완료";
+		}
+		return "";
+	};
+	return (
+		<Div>
+			<Div cursorPointer h40 {...propsFromState(state)} roundedLg flex justifyCenter itemsCenter onClick={state == State.Clickable && onClick}>
+				<Div>{textFromState(state)}</Div>
+			</Div>
+		</Div>
 	);
 }

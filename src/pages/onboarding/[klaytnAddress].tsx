@@ -67,7 +67,7 @@ function Nfts({ nfts }) {
 	if (nfts.length == 0) {
 		return (
 			<Div textCenter py30>
-				곰즈를 보유하고 계시지 않군요. 걱정마세요 곧 있으면 베터월드는 모든 NFT에게 열립니다!
+				곰즈를 보유하고 계시지 않군요. 걱정마세요, 곧 있으면 베터월드는 모든 NFT에게 열립니다!
 			</Div>
 		);
 	}

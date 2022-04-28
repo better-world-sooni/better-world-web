@@ -38,8 +38,8 @@ const apis = {
     klip: {
       verify: () =>apiV1('/auth/klip/verification')
     },
-    email: {
-      _: () => apiV1('/auth/email')
+    password: {
+      _: () => apiV1('/auth/password')
     },
     user: {
       _: () => apiV1('/auth/user')

@@ -23,25 +23,27 @@ import Helmet from "react-helmet";
 import Confetti from "./modals/Confetti";
 import SearchNft from "src/modules/searchNft"
 
-const MainTopBar = ({ currentUser, currentNft }) => {
+const MainTopBar = ({ currentUser, currentNft, home = false }) => {
 	const { locale } = useRouter();
 	const dispatch = useDispatch();
 	const isTablet = useIsTablet();
 	const onClickLogin = () => {
+		if (currentUser) {
+			if (currentNft) {
+				href(urls.nftProfile.contractAddressAndTokenId(currentNft.contract_address, currentNft.token_id));
+				return;
+			}
+			href(urls.onboarding.klaytnAddress(currentUser.klaytn_account.address));
+			return;
+		}
 		dispatch(signInAction({ enabled: true }));
-	};
-	const onClickEmailVerification = () => {
-		dispatch(emailVerificationAction({ enabled: true }));
-	};
-	const onClickChat = () => {
-		href(urls.chat);
 	};
 
 	return (
 		<>
 			<Helmet bodyAttributes={{ style: "background-color : rgb(245, 245, 245);" }} />
 			<Div fixed bgWhite wFull z100>
-				<Row maxW={isTablet ? 650 : 950} mxAuto flex itemsCenter py5>
+				<Row maxW={650} mxAuto flex itemsCenter py5>
 					<Col auto onClick={() => href(urls.home)} cursorPointer>
 						<Div imgTag src={IMAGES.betterWorldBlueLogo} h={50} w={50} style={{ objectFit: "cover" }} />
 					</Col>
@@ -52,12 +54,13 @@ const MainTopBar = ({ currentUser, currentNft }) => {
 						</Div>
 					</Col>
 					<Col />
-					<Col>
-						<SearchNft/>
-					</Col>
-					{currentNft && currentUser && (
-						<Col auto cursorPointer pt2>
+					{currentNft && !home ? (
+						<Col auto cursorPointer pt4>
 							<ProfileDropdown currentNft={currentNft} currentUser={currentUser} />
+						</Col>
+					) : (
+						<Col auto rounded3xl border1 px20 py5 onClick={onClickLogin}>
+							입장
 						</Col>
 					)}
 				</Row>
@@ -91,7 +94,7 @@ function ProfileDropdown({ currentNft, currentUser }) {
 	};
 	return (
 		<Menu as="div">
-			<Menu.Button className="justify-center shadow-sm">
+			<Menu.Button className="shadow-sm">
 				<Div cursorPointer imgTag src={currentNft.nft_metadatum.image_uri} h30 w30 rounded></Div>
 			</Menu.Button>
 			<Transition
@@ -133,16 +136,6 @@ function ProfileDropdown({ currentNft, currentUser }) {
 								</Div>
 							)}
 						</Menu.Item>
-						{/* <Menu.Item>
-							{({ active }) => (
-								<Div py10 px10 flex flexRow itemsCenter clx={`${active ? "bg-gray-100 text-black" : "text-gray-800"}`}>
-									<Div mr10>
-										<KeyIcon height={20} width={20} />
-									</Div>{" "}
-									<Div>Root Holder</Div>
-								</Div>
-							)}
-						</Menu.Item> */}
 						<Menu.Item>
 							{({ active }) => (
 								<Div borderT1 py10 px10 flex flexRow itemsCenter clx={`${active ? "bg-gray-100 text-black" : "text-gray-800"}`}>

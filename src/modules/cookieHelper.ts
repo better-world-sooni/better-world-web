@@ -13,3 +13,7 @@ export const setJwt = (jwt) => {
     const cookies = new Cookies();
     return cookies.set('jwt', jwt, COOKIE_OPT)
 }
+export const removeJwt = () => {
+    const cookies = new Cookies();
+    return cookies.remove('jwt', COOKIE_OPT)
+}

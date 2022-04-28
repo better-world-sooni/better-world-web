@@ -32,6 +32,14 @@ export default function Post({ post, full = false, currentNftImage, index, lengt
 	const hrefToPostId = () => href(urls.post.postId(post.id));
 	const hrefToPostIdComments = () => href(urls.post.postId(post.id, "#comments"));
 	const hrefToPostIdHottestComment = () => href(urls.post.postId(post.id, `#comments_${cachedComments[0]?.id}`));
+    const hrefToProfile = () => {
+			const { contract_address, token_id } = post.nft;
+			if (post.nft.token_id) {
+				href(urls.nftProfile.contractAddressAndTokenId(contract_address, token_id));
+			} else {
+				href(urls.nftCollection.contractAddress(contract_address));
+			}
+		};
 	const handleNewCommentSuccess = (newComment, repliedComment) => {
 		if (repliedComment) {
 			const updatedCommentIndex = cachedComments.findIndex((comment) => {
@@ -58,10 +66,10 @@ export default function Post({ post, full = false, currentNftImage, index, lengt
 			<Div borderB1={!isLast} pt20 pb20={!displayNewComment} id={`post_${post.id}`}>
 				<Div px15>
 					<Row flex itemsCenter pb10>
-						<Col auto>
+						<Col auto onClick={hrefToProfile}>
 							<Div imgTag src={post.nft.nft_metadatum.image_uri} h30 w30 rounded></Div>
 						</Col>
-						<Col auto pl0>
+						<Col auto pl0 onClick={hrefToProfile}>
 							{truncateKlaytnAddress(post.nft.name || post.nft.nft_metadatum.name)}
 						</Col>
 						<Col />

@@ -20,46 +20,9 @@ function Nft(props) {
 		<>
 			<MainTopBar currentUser={props.currentUser} currentNft={props.currentNft} />
 			<Div flex justifyCenter gapX={15}>
-				{!isTablet && <NftCollection collection={props.collection} />}
 				<NftProfile {...props} />
 			</Div>
 		</>
-	);
-}
-function NftCollection({ collection }) {
-	return (
-		<Div relative>
-			<Div>
-				<Div maxW={300} px15 roundedLg bgWhite py20>
-					<Div textLg fontWeight={500}>
-						컬렉션
-					</Div>
-					<Div mt10 imgTag src={collection.image_uri} roundedLg></Div>
-					<Div fontWeight={500} textXl mt10>
-						{collection.name} {collection.symbol && `(${collection.symbol})`}
-					</Div>
-					<Div textBase>{collection.about}</Div>
-					<Row mt10 flex itemsEnd pt10 borderT1>
-						<Col textCenter>
-							<Div aTag href={collection.website} cursorPointer textGray200={!collection.website}>
-								Website
-							</Div>
-						</Col>
-						<Col textCenter>
-							<Div aTag href={collection.opensea} cursorPointer textGray200={!collection.opensea}>
-								Opensea
-							</Div>
-						</Col>
-						<Col textCenter>
-							<Div aTag href={collection.github} cursorPointer textGray200={!collection.github}>
-								Github
-							</Div>
-						</Col>
-					</Row>
-				</Div>
-				<Div></Div>
-			</Div>
-		</Div>
 	);
 }
 

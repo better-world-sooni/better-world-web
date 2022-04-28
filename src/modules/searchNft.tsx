@@ -75,17 +75,17 @@ const SearchNft = () => {
     };
 
     return (
-        <QueryClientProvider client={queryClient}>
-            <textarea
-                placeholder="search Nft"
-                className="m-5 resize-none border-none focus:outline-none w-full"
-                onChange={onChangeInput}
-                rows={1}
-                value={inputValue}
-            />				
-            <ResultList inputValue={searchValue} setInputValue={setInputValue}/>
-        </QueryClientProvider>
-    )
+			<QueryClientProvider client={queryClient}>
+				<input
+					placeholder="NFT 찾기"
+					className={" rounded w-full bg-gray-200 text-sm focus:outline-none focus:border-gray-400"}
+					style={{ height: 32, paddingLeft: 10, paddingRight: 10 }}
+					onChange={onChangeInput}
+					value={inputValue}
+				/>
+				<ResultList inputValue={searchValue} setInputValue={setInputValue} />
+			</QueryClientProvider>
+		);
 }
 export default SearchNft;
 
