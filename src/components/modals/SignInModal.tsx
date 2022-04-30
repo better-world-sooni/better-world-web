@@ -92,7 +92,7 @@ export default function SignInModal() {
 						const mainNft = verificationResponse.user.main_nft;
 						const redirect = mainNft
 							? urls.nftProfile.contractAddressAndTokenId(mainNft.contract_address, mainNft.token_id)
-							: urls.onboarding.klaytnAddress(verificationResponse.user.klaytn_account.address);
+							: urls.onboarding.index();
 						const loginParams = {
 							jwt: verificationResponse.jwt,
 							redirect,

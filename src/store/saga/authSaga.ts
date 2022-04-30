@@ -1,8 +1,10 @@
 import { call, put, takeEvery } from 'redux-saga/effects'
+import useWebviewPostMessage from 'src/modules/webviewPostMessage'
 import { setCurrentNftJwt } from 'src/modules/authHelper'
 import { removeJwt, setJwt } from 'src/modules/cookieHelper'
 import { href } from 'src/modules/routeHelper'
 import { CHANGE_NFT, LOGIN, REMOVE_ACCOUNT } from '../reducers/authReducer'
+import webviewPostMessage from 'src/modules/webviewPostMessage'
 
 function* loginSaga(action) {
     yield call(setJwt, action.jwt)

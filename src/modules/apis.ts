@@ -8,7 +8,9 @@ export const SERVER_URL = publicRuntimeConfig.CONF_SERVER_URL || 'https://api.go
 // SERVER_URL을 바꾸고 싶으면, 위에 주소를 직접 수장하지 말고 .env.local 파일에 CONF_SERVER_URL를 추가해 주세요
 
 
-const apiV1 = (path) => urljoin(`${SERVER_URL}/api/v1`, path)
+const apiV1 = (path) => {
+  return { url: urljoin(`${SERVER_URL}/api/v1`, path)}
+}
 
 // null 일경우에는 파라메터 제거
 export const urlParams = (obj, nullable?) => {
@@ -23,13 +25,6 @@ export const urlParams = (obj, nullable?) => {
 }
 
 const apis = {
-  land: {
-      get: (x, y) => apiV1(`/land${urlParams({
-        x,
-        y,
-      })}`),
-      getAll: () => apiV1('land/all'),
-  },
   auth: {
     kaikas: {
       verification: () => apiV1('/auth/kaikas/verification'),
@@ -47,7 +42,8 @@ const apis = {
     jwt: () => apiV1('/auth/jwt')
   },
   profile: {
-    klaytnAddress: (klaytnAddress) => apiV1(`/profile/${klaytnAddress}`)
+    klaytnAddress: (klaytnAddress) => apiV1(`/profile/${klaytnAddress}`),
+    _: () => apiV1(`/profile`)
   },
   search: {
     nft: (keyword) => apiV1(`/search/nft/${keyword}`)
@@ -95,5 +91,21 @@ const apis = {
     } 
   }
 }
+
+const mapFunctionToPath = (data, path = []) => {
+  data &&
+    Object.entries(data).map(([key, v]) => {
+      if (typeof v === 'function') {
+        const apiKey = [...path, key].join('.');
+        data[key] = (...args) => ({...v(...args), key: apiKey});
+        Object.defineProperty(data[key], '_apiKey', {value: apiKey});
+      } else if (typeof v === 'object') {
+        mapFunctionToPath(v, [...path, key]);
+      }
+    });
+};
+(function () {
+  mapFunctionToPath(apis, ['apis']);
+})();
 
 export default apis

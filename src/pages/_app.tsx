@@ -33,18 +33,17 @@ const redirectRoot = (ctx) => {
 };
 
 MyApp.getInitialProps = async ({ Component, ctx }): Promise<AppInitialProps> => {
-	const { jwt: oldJwt } = cookies(ctx);
+
+	const oldJwt = ctx?.req?.headers?.webviewcookie || cookies(ctx).jwt;
 	const requiresLogin = ctx.pathname != "/" && ctx.pathname != "/[lang]" && !ctx.pathname.startsWith("/[lang]/portal");
 	let currentUser = null;
 	let currentNft = null;
-	let jwt = null
+	let jwt = null;
 	if (requiresLogin) {
 		if (oldJwt) {
-			console.log(oldJwt)
 			const authResponse = await apiHelperWithJwtFromContext(ctx, apis.auth.user._(), "GET");
-			console.log(authResponse);
 			if (!authResponse.success) {
-				console.log(authResponse)
+				console.log(authResponse);
 				redirectRoot(ctx);
 			} else {
 				currentUser = authResponse.user;

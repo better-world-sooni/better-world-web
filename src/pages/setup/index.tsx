@@ -117,7 +117,6 @@ export default function Home({ currentUser, currentNft }) {
 	};
 	return (
 		<Div>
-			<Helmet bodyAttributes={{ style: "background-color : white;" }} />
 			<MainTopBar currentUser={currentUser} currentNft={currentNft} />
 			<Confetti />
 			<EmptyBlock h={40} />

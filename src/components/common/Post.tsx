@@ -32,14 +32,14 @@ export default function Post({ post, full = false, currentNftImage, index, lengt
 	const hrefToPostId = () => href(urls.post.postId(post.id));
 	const hrefToPostIdComments = () => href(urls.post.postId(post.id, "#comments"));
 	const hrefToPostIdHottestComment = () => href(urls.post.postId(post.id, `#comments_${cachedComments[0]?.id}`));
-    const hrefToProfile = () => {
-			const { contract_address, token_id } = post.nft;
-			if (post.nft.token_id) {
-				href(urls.nftProfile.contractAddressAndTokenId(contract_address, token_id));
-			} else {
-				href(urls.nftCollection.contractAddress(contract_address));
-			}
-		};
+	const hrefToProfile = () => {
+		const { contract_address, token_id } = post.nft;
+		if (post.nft.token_id) {
+			href(urls.nftProfile.contractAddressAndTokenId(contract_address, token_id));
+		} else {
+			href(urls.nftCollection.contractAddress(contract_address));
+		}
+	};
 	const handleNewCommentSuccess = (newComment, repliedComment) => {
 		if (repliedComment) {
 			const updatedCommentIndex = cachedComments.findIndex((comment) => {

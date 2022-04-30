@@ -1,19 +1,20 @@
-import Div from "src/components/Div";
-import MainTopBar from "src/components/MainTopBar";
-import NewPost from "src/components/common/NewPost";
-import { apiHelperWithJwtFromContext } from "src/modules/apiHelper";
+import { apiHelperWithJwtFromContext, apiHelperWithToken } from "src/modules/apiHelper";
 import { NextPageContext } from "next";
 import apis from "src/modules/apis";
 import Posts from "src/components/common/Posts";
+import WebviewWrapper from "src/components/WebviewWrapper";
+import useRefreshContent from "src/hooks/useRefeshContent";
 
 function Index({ currentUser, currentNft, feed }) {
+	const refreshQuery = async () => {
+		const res = await apiHelperWithToken(apis.feed._(), "GET");
+		return res.feed;
+	};
+	const [cachedContent, refreshContent] = useRefreshContent(feed, refreshQuery);
 	return (
-		<>
-			<MainTopBar currentUser={currentUser} currentNft={currentNft} />
-			<Div mxAuto maxW={650} bgWhite rounded>
-				<Posts posts={feed} currentNftImage={currentNft.nft_metadatum.image_uri} />
-			</Div>
-		</>
+		<WebviewWrapper currentNft={currentNft} currentUser={currentUser} onRefresh={refreshContent} messageable>
+			<Posts posts={cachedContent} currentNftImage={currentNft.nft_metadatum.image_uri} />
+		</WebviewWrapper>
 	);
 }
 

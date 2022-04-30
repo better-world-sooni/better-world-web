@@ -123,7 +123,7 @@ export default function NewPost({ currentNft, nftCollection = null }) {
 		if (nftCollection) {
 			if (nftCollection.contract_address != currentNft.contract_address || currentNft.privilege != NftPrivilege.ROOT) {
 				alert("어드민 권한이 없습니다.");
-				href(urls.nftProfile.contractAddressAndTokenId(currentNft.contract_address, currentNft.token_id));
+				href(urls.nftProfile.index());
 			}
 		}
 	}, [nftCollection, currentNft.contract_address, currentNft.token_id, currentNft.privilege]);

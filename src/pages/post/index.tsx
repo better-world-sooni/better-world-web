@@ -1,15 +1,12 @@
 import Div from "src/components/Div";
-import MainTopBar from "src/components/MainTopBar";
 import NewPost from "src/components/common/NewPost";
+import WebviewWrapper from "src/components/WebviewWrapper";
 
 function Index({ currentUser, currentNft }) {
 	return (
-		<>
-			<MainTopBar currentUser={currentUser} currentNft={currentNft} />
-			<Div mxAuto maxW={650} bgWhite rounded>
-				<NewPost currentNft={currentNft} />
-			</Div>
-		</>
+		<WebviewWrapper currentNft={currentNft} currentUser={currentUser} pullable={false} backable>
+			<NewPost currentNft={currentNft} />
+		</WebviewWrapper>
 	);
 }
 

@@ -1,7 +1,6 @@
 export const urls = {
-    index: '/',
-    home: '/home',
-    feed: '/feed',
+    index: () => '/',
+    home: () => '/home',
     post: {
         index: () => `/post`,
         postId: (postId, section = "#") => `/post/${postId}${section}`,
@@ -12,15 +11,16 @@ export const urls = {
         }
     },
     onboarding: {
-        klaytnAddress: (klaytnAddress) => `/onboarding/${klaytnAddress}`
+        index: () => `/onboarding`
     },
     nftProfile: {
         contractAddressAndTokenId: (contractAddress, tokenId) => {
             return `/nft-profile/${contractAddress}/${tokenId}`
-        }
+        },
+        index: () => '/nft-profile'
     },
     chat: {
-        inbox: '/chat/inbox',
+        index: () => '/chat',
         room: (roomId) => `/chat/${roomId}`
     },
     gomzSpace: '/gomz-space',

@@ -1,77 +1,50 @@
-import { ChatIcon, GlobeAltIcon, KeyIcon, LockClosedIcon, SearchCircleIcon, SparklesIcon, UserCircleIcon } from "@heroicons/react/outline";
-import { useDispatch, useSelector } from "react-redux";
-import useIsTablet from "src/hooks/useIsTablet";
-import { emailVerificationAction, signInAction, switchAccountModalAction } from "src/store/reducers/modalReducer";
-import { RootState } from "src/store/reducers/rootReducer";
-import Link from "next/link";
+import { ChatAlt2Icon, ChevronLeftIcon, LockClosedIcon, SparklesIcon, UserCircleIcon } from "@heroicons/react/outline";
+import { useDispatch } from "react-redux";
+import { switchAccountModalAction } from "src/store/reducers/modalReducer";
 import Div from "src/components/Div";
 import Row from "src/components/Row";
 import Col from "src/components/Col";
 import { useRouter } from "next/router";
-import SignInModal from "./modals/SignInModal";
-import KlipQRModal from "./modals/KlipQRModal";
 import { href } from "src/modules/routeHelper";
 import { urls } from "src/modules/urls";
-import EmailVerificationModal from "./modals/EmailVerificationModal";
 import { IMAGES } from "src/modules/images";
-import EmptyBlock from "./EmptyBlock";
-import { truncateKlaytnAddress } from "src/modules/constants";
 import { Fragment } from "react";
 import { Menu, Transition } from "@headlessui/react";
-import SwitchAvatarModal from "./modals/SwitchAccountModal";
-import Helmet from "react-helmet";
-import Confetti from "./modals/Confetti";
-import SearchNft from "src/modules/searchNft"
 
-const MainTopBar = ({ currentUser, currentNft, home = false }) => {
-	const { locale } = useRouter();
-	const dispatch = useDispatch();
-	const isTablet = useIsTablet();
-	const onClickLogin = () => {
-		if (currentUser) {
-			if (currentNft) {
-				href(urls.nftProfile.contractAddressAndTokenId(currentNft.contract_address, currentNft.token_id));
-				return;
-			}
-			href(urls.onboarding.klaytnAddress(currentUser.klaytn_account.address));
-			return;
-		}
-		dispatch(signInAction({ enabled: true }));
+const MainTopBar = ({ currentUser, currentNft, backable = false, messageable = false }) => {
+	const { back } = useRouter();
+	const handleClikChat = () => {
+		href(urls.chat.index());
 	};
-
 	return (
-		<>
-			<Helmet bodyAttributes={{ style: "background-color : rgb(245, 245, 245);" }} />
-			<Div fixed bgWhite wFull z100>
-				<Row maxW={650} mxAuto flex itemsCenter py5>
-					<Col auto onClick={() => href(urls.home)} cursorPointer>
-						<Div imgTag src={IMAGES.betterWorldBlueLogo} h={50} w={50} style={{ objectFit: "cover" }} />
-					</Col>
-					<Col textPrimary textLeft onClick={() => href(urls.home)} cursorPointer textBase auto pl0>
-						BetterWorld{" "}
-						<Div spanTag fontSemibold textPrimary pl2>
-							αlpha
+		<Div fixed bgWhite wFull z100>
+			<Row maxW={650} mxAuto flex itemsCenter py3>
+				<Col auto cursorPointer>
+					{backable ? (
+						<Div onClick={back} h={45} flex itemsCenter justifyCenter>
+							<ChevronLeftIcon height={25}></ChevronLeftIcon>
 						</Div>
-					</Col>
-					<Col />
-					{currentNft && !home ? (
-						<Col auto cursorPointer pt4>
-							<ProfileDropdown currentNft={currentNft} currentUser={currentUser} />
-						</Col>
 					) : (
-						<Col auto rounded3xl border1 px20 py5 onClick={onClickLogin}>
-							입장
-						</Col>
+						<Div imgTag src={IMAGES.betterWorldBlueLogo} h={45} style={{ objectFit: "cover" }} />
 					)}
-				</Row>
-				<SwitchAvatarModal />
-				<SignInModal />
-				<EmailVerificationModal />
-				<KlipQRModal />
-				<Confetti />
-			</Div>
-			<EmptyBlock h={70} />
-		</>
+				</Col>
+				{backable ? (
+					<Col textBase auto px0 cursorPointer onClick={back} fontWeight={500} mt3>
+						뒤로
+					</Col>
+				) : (
+					<Col textBase textPrimary auto px0 cursorPointer fontWeight={500}>
+						BetterWorld
+					</Col>
+				)}
+				<Col />
+				{messageable && (
+					<Col auto onClick={handleClikChat} textPrimary>
+						<ChatAlt2Icon height={25} />
+					</Col>
+				)}
+			</Row>
+		</Div>
 	);
 };
 
@@ -80,7 +53,7 @@ function ProfileDropdown({ currentNft, currentUser }) {
 	const dispatch = useDispatch();
 	const handleClickProfile = () => {
 		if (currentNft) {
-			href(urls.nftProfile.contractAddressAndTokenId(currentNft.contract_address, currentNft.token_id));
+			href(urls.nftProfile.index());
 		}
 	};
 	const handleClickSwitchAccount = () => {

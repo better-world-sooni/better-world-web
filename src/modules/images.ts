@@ -1,7 +1,7 @@
 export const IMAGES = {
     KAKAO_KLIP_ICON: '/images/logos/klipLogo.svg',
     KAIKAS_ICON: '/images/logos/kaikasLogo.svg',
-    basicBearWhite: "static/images/basicBearWhite.png",
+    gomzAstronaut: "/images/gomzAstronaut.gif",
     metaverse: '/videos/metaverse.mp4',
     basicBearNoBg: "/images/basicBearNoBg.png",
     betterWorldBWLogo: '/images/logos/betterWorldBWLogo.png',
