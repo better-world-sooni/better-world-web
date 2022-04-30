@@ -206,8 +206,18 @@ export default function NewPost({ currentNft, nftCollection = null }) {
 											</Div>
 										)}
 									</div>
-									<Div onClick={() => handleRemoveFile(index)} py10 mt10 mx15 textCenter border1 borderDanger textDanger rounded>
+									<Div onClick={() => handleRemoveFile(index)} py10 mt10 mx15 textCenter border1 borderDanger textDanger rounded textBase>
 										해당 이미지 제거
+									</Div>
+									<Div py10 mt10 mx15 textCenter border1 borderBlack textBase rounded clx="file-input" relative>
+										이미지 추가
+										<input
+											type={"file"}
+											onChange={handleAddFiles}
+											multiple
+											accept="image/png, image/gif, image/jpeg"
+											className={"cursor-pointer"}
+										></input>
 									</Div>
 								</div>
 							);
