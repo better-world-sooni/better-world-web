@@ -5,7 +5,8 @@ import Posts from "src/components/common/Posts";
 import WebviewWrapper from "src/components/WebviewWrapper";
 import useRefreshContent from "src/hooks/useRefeshContent";
 
-function Index({ currentUser, currentNft, feed }) {
+function Index({ currentUser, currentNft, feed, active_capsules }) {
+	console.log(active_capsules)
 	const refreshQuery = async () => {
 		const res = await apiHelperWithToken(apis.feed._(), "GET");
 		return res.feed;

@@ -43,7 +43,6 @@ MyApp.getInitialProps = async ({ Component, ctx }): Promise<AppInitialProps> => 
 		if (oldJwt) {
 			const authResponse = await apiHelperWithJwtFromContext(ctx, apis.auth.user._(), "GET");
 			if (!authResponse.success) {
-				console.log(authResponse);
 				redirectRoot(ctx);
 			} else {
 				currentUser = authResponse.user;
@@ -55,7 +54,6 @@ MyApp.getInitialProps = async ({ Component, ctx }): Promise<AppInitialProps> => 
 		}
 	} else if (oldJwt) {
 		const authResponse = await apiHelperWithJwtFromContext(ctx, apis.auth.user._(), "GET");
-		console.log(authResponse);
 		if (authResponse.success) {
 			currentUser = authResponse.user;
 			currentNft = authResponse.current_nft;
