@@ -37,7 +37,7 @@ export default function NewComment({ currentNftImage, postId, onSuccess, full = 
 			setLoading(false);
 		}
 	};
-	const fullConditionalProps = full ? { sticky: true, bottom0: true, bgWhite: true, pt10: true } : { pb5: 5 };
+	const fullConditionalProps = full ? { sticky: true, bottom0: true, bgWhite: true, pt10: true } : {};
 	return (
 		<Div {...fullConditionalProps}>
 			{replyComment && (
@@ -51,27 +51,36 @@ export default function NewComment({ currentNftImage, postId, onSuccess, full = 
 					</Div>
 				</Div>
 			)}
-			<Row gapX={0} px15={!full} mx0={full}>
+			<Row gapX={0} px15={!full} mx0={full} flexRow flex itemsCenter>
 				<Col flex itemsCenter justifyCenter auto pr0>
 					<Div imgTag src={currentNftImage} rounded h25 w25 overflowHidden></Div>
 				</Col>
 				<Col flex itemsCenter justifyCenter cursorPointer>
-					<Div wFull roundedLg bgGray200 px15 pt5>
+					<Div wFull roundedLg bgGray200 px15>
 						<ReactTextareaAutosize
 							onChange={handleCommentChange}
 							onKeyPress={onKeyPress}
 							placeholder={placeholder}
 							className={"text-sm"}
 							value={newComment}
-							style={{ boxShadow: "none", border: "none", resize: "none", width: "100%", padding: 0, background: "transparent" }}
+							style={{
+								boxShadow: "none",
+								border: "none",
+								resize: "none",
+								width: "100%",
+								padding: 0,
+								background: "transparent",
+								height: 25,
+								display: "flex",
+								lineHeight: 2.5,
+							}}
 						/>
 					</Div>
 				</Col>
-				<Col flex itemsCenter justifyCenter auto pl0 textBase onClick={handlePostComment} cursorPointer>
+				<Col flex itemsCenter justifyCenter auto pl0 textBase onClick={handlePostComment} cursorPointer textSm>
 					{loading ? <Spinner clx={"w-20 h-20"} fill={COLORS.PRIMARY} circleFill={COLORS.GRAY200} /> : "게시"}
 				</Col>
 			</Row>
-			<EmptyBlock h={20} />
 		</Div>
 	);
 }

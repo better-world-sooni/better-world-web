@@ -63,7 +63,7 @@ export default function Post({ post, full = false, currentNftImage, index, lengt
 
 	return (
 		<>
-			<Div borderB1={!isLast} pt20 pb20={!displayNewComment} id={`post_${post.id}`}>
+			<Div style={{ borderBottom: "0.1px solid", borderColor: COLORS.GRAY400 }} id={`post_${post.id}`} py15>
 				<Div px15>
 					<Row flex itemsCenter pb10>
 						<Col auto onClick={hrefToProfile}>
@@ -129,8 +129,8 @@ export default function Post({ post, full = false, currentNftImage, index, lengt
 						</Slide>
 					</Div>
 				)}
-				<Div px15 mb5={displayNewComment}>
-					<Row mt20 gapX={0} pt10 mb5={cachedComments[0]}>
+				<Div px15>
+					<Row mt10 gapX={0} pt10>
 						<Col flex itemsCenter justifyCenter cursorPointer onClick={handleClickLike} auto pr0>
 							<Div mr5>{liked ? <HeartIconSolid height={25} width={25} fill={COLORS.DANGER} /> : <HeartIcon height={25} width={25} />}</Div>
 							<Div textSm>{`${post.likes_count + likeOffset} likes`}</Div>

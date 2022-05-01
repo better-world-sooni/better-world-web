@@ -6,8 +6,8 @@ export default function useRefreshContent(content, refeshQuery) {
 		const res = await refeshQuery();
 		setCachedContent(res);
 	};
-	useEffect(() => {
-		setCachedContent(content);
-	}, [content]);
+	// useEffect(() => {
+	// 	setCachedContent(content);
+	// }, [content]);
     return [cachedContent, refreshContent]
 }

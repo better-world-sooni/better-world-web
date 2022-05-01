@@ -33,7 +33,7 @@ export default function Comment({ comment, nested = false, full = false, onClick
 		return null;
 	}
 	return (
-		<Div id={`comment_${comment.id}`} py5>
+		<Div id={`comment_${comment.id}`}>
 			<Row gapX={0} mt10 textBase>
 				<Col flex itemsCenter justifyCenter auto pr0>
 					<Div

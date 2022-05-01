@@ -12,11 +12,7 @@ export default function Posts({ posts, currentNftImage }) {
 	return (
 		<Div>
 			{posts.map((post, index, array) => {
-				return (
-					<Div key={index} mb10>
-						<Post post={post} currentNftImage={currentNftImage} index={index} length={array.length} />
-					</Div>
-				);
+				return <Post key={index} post={post} currentNftImage={currentNftImage} index={index} length={array.length} />;
 			})}
 		</Div>
 	);
