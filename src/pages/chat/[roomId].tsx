@@ -13,7 +13,7 @@ import Messages from "src/components/chat/messages";
 import { useRouter } from "next/router";
 import { Alert } from "react-alert";
 import { cable } from "src/modules/cable";
-import { ChatChannel } from "src/components/chat/chatChannel";
+import { ChatChannel } from "src/modules/chatChannel";
 import { getJwt } from "src/modules/cookieHelper";
 import { ArrowLeftIcon, ChevronLeftIcon } from "@heroicons/react/outline";
 import ChatRoomItemAvatars from "src/components/chat/chatRoomItemAvatars";
