@@ -6,9 +6,12 @@ export const IMAGES = {
     basicBearNoBg: "/images/basicBearNoBg.png",
     betterWorldBWLogo: '/images/logos/betterWorldBWLogo.png',
     betterWorldBlueLogo: '/images/logos/betterWorldBlueLogo.png',
+    betterWorldBlueShadowLogo: '/images/logos/betterWorldBlueShadowLogo.png',
+    betterWorldFullLogo: '/images/logos/betterWorldFullLogo.png',
     gomzDAOExample: '/images/gomzDAOExample.png',
     backButton: '/images/back.png',
     betterWorldFeedExample: '/images/feed.png',
+    appView: '/images/appView.png',
     downloadOnAppStore: '/images/downloadOnAppStore.png',
     downloadOnGooglePlay: '/images/downloadOnGooglePlay.png',
     characters: {

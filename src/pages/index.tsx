@@ -78,30 +78,39 @@ export default function Home({ currentUser, currentNft }) {
 		}
 	};
 	return (
-		<Div flex flexCol itemsCenter justifyCenter hScreen>
-			<Helmet bodyAttributes={{ style: "background-color : rgb(250, 250, 250);" }} />
-			<EmailVerificationModal />
-			<Div maxW={800} h={"80vh"} mxAuto flex flexRow justifyCenter>
-				{/* <Div px30>
-					<Div imgTag src={IMAGES.betterWorldFeedExample} h={"80vh"} roundedLg></Div>
-				</Div> */}
-				<Div flex flexCol justifyCenter maxW={380}>
-					<Div flex1></Div>
-					<Div bgWhite py40 px30 roundedLg>
-						<Row itemsCenter flex>
-							<Col auto cursorPointer>
-								<Div imgTag src={IMAGES.betterWorldBlueLogo} w={80} style={{ objectFit: "cover" }} />
-							</Col>
-							<Col textPrimary textLeft cursorPointer textXl auto fontWeight={500}>
-								BetterWorld{" "}
-								<Div spanTag fontSemibold pl2 textBase>
-									αlpha
-								</Div>
-								<Div textBase textCenter>
-									NFT Identity들의 <Div spanTag>Social Network</Div>
-								</Div>
-							</Col>
-						</Row>
+		<Div
+			style={{
+				background: "linear-gradient(180deg, #FFFFFF 0%, #DEF7FF 100%);",
+				}}
+				hFull
+				relative
+		>
+			<EmailVerificationModal/>
+				<Div flex borderB1 borderGray300 px50 py25>
+					<Div
+						flex1
+						maxW250
+						ml10
+						imgTag src={IMAGES.betterWorldFullLogo}>
+					</Div>
+					<Div
+						flex1
+						ml900
+						my-1
+						fontBold
+						fontSize16
+						textCenter
+						leadingLoose
+						roundedFull
+						border={!currentUser}
+						bgPrimary={!currentUser}
+						textWhite={!currentUser}
+						onClick={onClickLogin}
+						clx={"hover:opacity-50"}
+						cursorPointer>
+						{currentUser ? `${truncateKlaytnAddress(currentUser.klaytn_account.address)} 비밀번호 설정` : "Connect Wallet"}
+					</Div>
+				</Div>
 						{currentNft ? (
 							<>
 								<Div py20>
@@ -129,20 +138,7 @@ export default function Home({ currentUser, currentNft }) {
 							</>
 						) : (
 							<>
-								<Div
-									rounded3xl
-									border1={!currentUser}
-									bgPrimary={currentUser}
-									textWhite={currentUser}
-									px20
-									py5
-									onClick={onClickLogin}
-									cursorPointer
-									textCenter
-									mt20
-								>
-									{currentUser ? `${truncateKlaytnAddress(currentUser.klaytn_account.address)} 비밀번호 설정` : "카이카스 유저 앱 비밀번호 설정"}
-								</Div>
+
 								{currentUser && (
 									<Div flex flexRow justifyCenter mt10 textSm>
 										<Div px20 py5 onClick={onClickRemoveAccount} cursorPointer>
@@ -152,21 +148,18 @@ export default function Home({ currentUser, currentNft }) {
 								)}
 							</>
 						)}
-					</Div>
-					<Div mt20 textSm textCenter>
-						앱을 다운로드하세요
-					</Div>
-					<Div flex flexRow mt10 gapX={10} px30>
-						<Div flex1>
-							<Div imgTag src={IMAGES.downloadOnAppStore}></Div>
+					<Div flex>
+						<Div flexCol py50 pl140>
+							<Div w90 mb10 imgTag src={IMAGES.betterWorldBlueShadowLogo}></Div>
+							<Div fontBold fontSize69 leadingNone>INNOVATIVE<br></br>PLAYGROUND<br></br>FOR YOURY</Div>
+							<Div fontBold fontSize68 leadingNone textPrimary>WEB 3.0 IDENTITY</Div>
+							<Div flex w150 hAuto mt40 cursorPointer>
+								<Div imgTag src={IMAGES.downloadOnAppStore}></Div>
+								<Div ml20 imgTag src={IMAGES.downloadOnGooglePlay}></Div>
+							</Div>
 						</Div>
-						<Div flex1>
-							<Div imgTag src={IMAGES.downloadOnGooglePlay}></Div>
-						</Div>
+						<Div w280 hAuto py45 ml250 imgTag src={IMAGES.appView}></Div>
 					</Div>
-					<Div flex1></Div>
-				</Div>
-			</Div>
 		</Div>
 	);
 }
