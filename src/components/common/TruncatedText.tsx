@@ -1,5 +1,4 @@
 import Div from "src/components/Div";
-import { href } from "../../modules/routeHelper";
 
 type TruncatedTextProps = {
 	text: string;

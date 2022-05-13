@@ -358,7 +358,7 @@ function BackgroundImage({ imageUri, contractAddress, edittable }) {
 			setLoading(false);
 			return;
 		}
-		location.reload();
+		// location.reload();
 	};
 	const uploadSelectedFile = async () => {
 		try {
