@@ -5,7 +5,7 @@ import Helmet from "react-helmet";
 import MainTopBar from "src/components/MainTopBar";
 import { useEffect, useState, useCallback, useRef } from "react";
 import { cable } from "src/modules/cable";
-import { ChatChannel } from "src/components/chat/chatChannel";
+import { ChatChannel } from "src/modules/chatChannel";
 import { NextPageContext } from "next";
 import { useRouter } from "next/router";
 import { apiHelperWithJwtFromContext, apiHelperWithToken } from "src/modules/apiHelper";
