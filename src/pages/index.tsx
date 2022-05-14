@@ -82,20 +82,17 @@ export default function Home({ currentUser, currentNft }) {
 			style={{
 				background: "linear-gradient(180deg, #FFFFFF 0%, #DEF7FF 100%);",
 				}}
-				hFull
+				hScreen
 				relative
 		>
 			<EmailVerificationModal/>
-				<Div flex borderB1 borderGray300 px50 py25>
+				<>
+					<Div absolute w220 top20 left50 imgTag src={IMAGES.betterWorldFullLogo}></Div>
 					<Div
-						flex1
-						maxW250
-						ml10
-						imgTag src={IMAGES.betterWorldFullLogo}>
-					</Div>
-					<Div
-						flex1
-						ml900
+						absolute
+						w180
+						top20
+						right50
 						my-1
 						fontBold
 						fontSize16
@@ -110,7 +107,7 @@ export default function Home({ currentUser, currentNft }) {
 						cursorPointer>
 						{currentUser ? `${truncateKlaytnAddress(currentUser.klaytn_account.address)} 비밀번호 설정` : "Connect Wallet"}
 					</Div>
-				</Div>
+				</>
 						{currentNft ? (
 							<>
 								<Div py20>
@@ -148,17 +145,18 @@ export default function Home({ currentUser, currentNft }) {
 								)}
 							</>
 						)}
+					<Div wFull h75 borderB1 borderGrey600></Div>
 					<Div flex>
 						<Div flexCol py50 pl140>
 							<Div w90 mb10 imgTag src={IMAGES.betterWorldBlueShadowLogo}></Div>
-							<Div fontBold fontSize69 leadingNone>INNOVATIVE<br></br>PLAYGROUND<br></br>FOR YOURY</Div>
+							<Div fontBold fontSize69 leadingNone>INNOVATIVE<br></br>PLAYGROUND<br></br>FOR YOUR</Div>
 							<Div fontBold fontSize68 leadingNone textPrimary>WEB 3.0 IDENTITY</Div>
 							<Div flex w150 hAuto mt40 cursorPointer>
 								<Div imgTag src={IMAGES.downloadOnAppStore}></Div>
 								<Div ml20 imgTag src={IMAGES.downloadOnGooglePlay}></Div>
 							</Div>
 						</Div>
-						<Div w280 hAuto py45 ml250 imgTag src={IMAGES.appView}></Div>
+						<Div w280 hAuto py35 ml250 imgTag src={IMAGES.appView}></Div>
 					</Div>
 		</Div>
 	);
