@@ -19,6 +19,7 @@ import { useState } from "react";
 import { useRouter } from "next/router";
 import { modalsWording } from "src/wording/modals";
 import EmailVerificationModal from "src/components/modals/EmailVerificationModal";
+import useIsTablet from "src/hooks/useIsTablet";
 
 export default function Home({ currentUser, currentNft }) {
 	const [error, setError] = useState(null);
@@ -77,6 +78,52 @@ export default function Home({ currentUser, currentNft }) {
 			);
 		}
 	};
+
+	const isTablet = useIsTablet();
+	if (isTablet) {
+		return (
+			<Div
+				hScreen
+				relative>
+				<Div flex justifyCenter>
+					<Div mt100 w50 imgTag src={IMAGES.betterWorldBlueLogo}></Div>
+				</Div>
+				<Div flex justifyCenter fontSize26>
+					<Div textPrimary uniSans>BetterWorld</Div>
+					<Div textPrimary fontBold ml10>αlpha</Div>
+				</Div>
+				<Div flexCol my77 fontSize32>
+					<Div fontBold textCenter>Innovative<br></br>Playground<br></br>For Your</Div>
+					<Div fontBold textCenter textPrimary>Web 3.0 Identity.</Div>
+				</Div>
+				<Div flex justifyCenter>
+					<Div flexCol fontSize14>
+						<Div flex w210 h50 fontSemibold justifyCenter itemsCenter roundedFull
+						border={!currentUser}
+						bgPrimary={!currentUser}
+						textWhite={!currentUser}
+						onClick={onClickLogin}
+						clx={"hover:opacity-50"}
+						cursorPointer>
+						{currentUser ? `${truncateKlaytnAddress(currentUser.klaytn_account.address)} 비밀번호 설정` : "지갑 연결하기"}
+						</Div>
+						<Div flex w210 h50 fontSemibold justifyCenter itemsCenter border1 borderPrimary textPrimary roundedFull mt10>앱 다운로드하기</Div>
+					</Div>
+				</Div>
+				<Div wFull py40 absolute bottom0 style={{background: "#F8F8F8",}}>
+					<Div flex justifyCenter fontSize13>
+						<Div fontLight textGray600>서비스 소개</Div>
+						<Div mx8 fontLight textGray600>l</Div>
+						<Div fontLight textGray600>이용 약관</Div>
+						<Div mx8 fontLight textGray600>l</Div>
+						<Div fontLight textGray600>개인 정보 처리 방침</Div>
+					</Div>
+					<Div notoSans fontLight fontSize11 textCenter textGray600>Ⓒ 2022 BetterWorld from SOONI Labs</Div>
+				</Div>
+			</Div>
+		);
+	}
+
 	return (
 		<Div
 			style={{
@@ -90,10 +137,10 @@ export default function Home({ currentUser, currentNft }) {
 					<Div absolute w220 top20 left50 imgTag src={IMAGES.betterWorldFullLogo}></Div>
 					<Div
 						absolute
-						w180
+						px30
+						py3
 						top20
 						right50
-						my-1
 						fontBold
 						fontSize16
 						textCenter
@@ -105,7 +152,7 @@ export default function Home({ currentUser, currentNft }) {
 						onClick={onClickLogin}
 						clx={"hover:opacity-50"}
 						cursorPointer>
-						{currentUser ? `${truncateKlaytnAddress(currentUser.klaytn_account.address)} 비밀번호 설정` : "Connect Wallet"}
+						{currentUser ? `${truncateKlaytnAddress(currentUser.klaytn_account.address)} 비밀번호 설정` : "지갑 연결하기"}
 					</Div>
 				</>
 						{currentNft ? (
