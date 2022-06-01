@@ -36,7 +36,7 @@ function Index({ user, currentUser, currentNft }) {
 					</Div>
 					<EmptyBlock h={30} />
 					<Div mxAuto maxW={1100}>
-						<Nfts nfts={user.nfts} />
+						{/* <Nfts nfts={user.nfts} /> */}
 					</Div>
 				</Div>
 			</Div>
@@ -86,10 +86,10 @@ function Nfts({ nfts }) {
 	);
 }
 
-Index.getInitialProps = async (context: NextPageContext) => {
-	const { klaytnAddress } = context.query;
-	const res = await apiHelperWithJwtFromContext(context, apis.profile._(), "GET");
-	return res;
-};
+// Index.getInitialProps = async (context: NextPageContext) => {
+// 	const { klaytnAddress } = context.query;
+// 	const res = await apiHelperWithJwtFromContext(context, apis.profile._(), "GET");
+// 	return res;
+// };
 
 export default Index;

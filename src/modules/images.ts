@@ -6,6 +6,7 @@ export const IMAGES = {
     basicBearNoBg: "/images/basicBearNoBg.png",
     betterWorldBWLogo: '/images/logos/betterWorldBWLogo.png',
     betterWorldBlueLogo: '/images/logos/betterWorldBlueLogo.png',
+    betterWorldWhiteLogo: '/images/logos/betterWorldWhiteLogo.png',
     betterWorldBlueShadowLogo: '/images/logos/betterWorldBlueShadowLogo.png',
     betterWorldFullLogo: '/images/logos/betterWorldFullLogo.png',
     gomzDAOExample: '/images/gomzDAOExample.png',
