@@ -93,7 +93,7 @@ export default function Home({ currentUser, currentNft }) {
 					<Div textPrimary fontBold ml10>αlpha</Div>
 				</Div>
 				<Div flexCol my77 fontSize32>
-					<Div fontBold textCenter>Innovative<br></br>Playground<br></br>For Your</Div>
+					<Div fontBold textCenter>No More Minting,<br></br>No More Paying.<br></br>Just Be Your</Div>
 					<Div fontBold textCenter textPrimary>Web 3.0 Identity.</Div>
 				</Div>
 				<Div flex justifyCenter>
@@ -196,14 +196,14 @@ export default function Home({ currentUser, currentNft }) {
 					<Div flex>
 						<Div flexCol py50 pl140>
 							<Div w90 mb10 imgTag src={IMAGES.betterWorldBlueShadowLogo}></Div>
-							<Div fontBold fontSize69 leadingNone>INNOVATIVE<br></br>PLAYGROUND<br></br>FOR YOUR</Div>
-							<Div fontBold fontSize68 leadingNone textPrimary>WEB 3.0 IDENTITY</Div>
+							<Div fontBold fontSize66 leadingTight>NO MORE MINTING,<br></br>NO MORE PAYING.<br></br>JUST BE YOUR</Div>
+							<Div fontBold textPrimary fontSize66 leadingTight>WEB 3.0 IDENTITY.</Div>
 							<Div flex w150 hAuto mt40 cursorPointer>
 								<Div imgTag src={IMAGES.downloadOnAppStore}></Div>
 								<Div ml20 imgTag src={IMAGES.downloadOnGooglePlay}></Div>
 							</Div>
 						</Div>
-						<Div w280 hAuto py35 ml250 imgTag src={IMAGES.appView}></Div>
+						<Div absolute right140 h550 wAuto my50 ml250 imgTag src={IMAGES.appView}></Div>
 					</Div>
 		</Div>
 	);
