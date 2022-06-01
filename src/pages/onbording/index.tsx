@@ -8,9 +8,17 @@ import { MenuIcon } from "@heroicons/react/outline";
 import { COLORS } from "src/modules/constants";
 import "react-step-progress-bar/styles.css";
 import { ProgressBar, Step } from "react-step-progress-bar";
+import { useEffect, useState, useCallback } from "react";
 import Slider from "react-slick";
 
 export default function Onboarding() {
+
+    const [activeStep, setActiveStep] = useState(0);
+
+    const goNextStep = () => {
+        setActiveStep((prevStep) => prevStep+1)
+    }
+
 	return (
 		<>
 			<Div px80 sticky top0 background bgWhite bgOpacity90>
@@ -39,7 +47,7 @@ export default function Onboarding() {
 			<Div hScreen px80>
 				<Div maxW={1100} mxAuto>
                     <ProgressBar
-                        percent={100}
+                        percent={activeStep/2*100}
                         filledBackground="linear-gradient(to right, #92C0F6, #0049EA)"
                     >
                         <Step transition="scale">
@@ -57,14 +65,43 @@ export default function Onboarding() {
                                 <Div w30 h30 imgTag src={IMAGES.betterWorldBlueLogo} clx={`${accomplished ? "grayscale0" : "grayscale"}`}></Div>
                             )}
                         </Step>
-                        <Step transition="scale">
-                            {({ accomplished }) => (
-                                <Div w30 h30 imgTag src={IMAGES.betterWorldBlueLogo} clx={`${accomplished ? "grayscale0" : "grayscale"}`}></Div>
-                            )}
-                        </Step>
                     </ProgressBar>
+                    <Div >
+                        {
+                            {
+                                [0]: <ConnectWallet />,
+                                [1]: <RegisterUser/>,
+                                [2]: <ReadyForBetterWorld />,
+                            }[activeStep]
+                        }
+                    </Div>
 				</Div>
 			</Div>
 		</>
 	);
 }
+
+function ConnectWallet() {
+    return(
+        <Div>
+            {"Hi"}
+        </Div>
+    )
+}
+
+function RegisterUser() {
+    return(
+        <Div>
+            {"Hii"}
+        </Div>
+    )
+}
+
+function ReadyForBetterWorld() {
+    return(
+        <Div>
+            {"Hi"}
+        </Div>
+    )
+}
+
