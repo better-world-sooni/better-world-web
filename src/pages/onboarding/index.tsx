@@ -10,8 +10,18 @@ import "react-step-progress-bar/styles.css";
 import { ProgressBar, Step } from "react-step-progress-bar";
 import { useEffect, useState, useCallback } from "react";
 import Slider from "react-slick";
+import { PLATFORM, truncateKlaytnAddress } from "src/modules/constants";
+import { apiHelper } from "src/modules/apiHelper";
+import apis from "src/modules/apis";
+import { useRouter } from "next/router";
+import { useDispatch } from "react-redux";
+import { loginAction, removeAccountAuthAction } from "src/store/reducers/authReducer";
+import { modalsWording } from "src/wording/modals";
 
-export default function Onboarding() {
+
+
+
+export default function Onboarding({currentUser, currentNft, jwt}) {
 
     const [activeStep, setActiveStep] = useState(0);
 
@@ -82,10 +92,64 @@ export default function Onboarding() {
 }
 
 function ConnectWallet() {
+    const [error, setError] = useState(null);
+    const { locale } = useRouter();
+    const dispatch = useDispatch();
+    const loginWithKaikas = async () => {
+        // @ts-ignore
+        if (typeof window !== "undefined" && typeof window.klaytn !== "undefined") {
+            const klaytn = window["klaytn"];
+            try {
+                const res = await klaytn.enable();
+                const selectedAddress = res[0];
+                const caver = window["caver"];
+                if (caver && selectedAddress) {
+                    const nonceResponse = await apiHelper(apis.auth.kaikas.nonce(), "POST", {
+                        address: selectedAddress,
+                        platform: PLATFORM,
+                        locale: locale,
+                    });
+                    if (nonceResponse.success) {
+                        const signature = await caver.klay.sign(nonceResponse.nonce, selectedAddress);
+                        const verificationResponse = await apiHelper(apis.auth.kaikas.verification(), "POST", {
+                            signature,
+                            address: selectedAddress,
+                            signup_uuid: typeof nonceResponse.signup == "undefined" ? null : nonceResponse.signup.uuid,
+                        });
+                        const mainNft = verificationResponse.user.main_nft;
+                        const loginParams = {
+                            jwt: verificationResponse.jwt,
+                        };
+                        dispatch(loginAction(loginParams));
+                    }
+                }
+            } catch (error) {
+                setError(
+                    <Div spanTag textWarning>
+                        {modalsWording.signIn.userCancelledRequest[locale]}
+                    </Div>,
+                );
+            }
+        } else {
+            setError(
+                <Div spanTag textDanger>
+                    {modalsWording.signIn.walletNotDetected.kaikas[locale]}
+                </Div>,
+            );
+        }
+    };
     return(
-        <Div>
-            {"Hi"}
-        </Div>
+        <>
+            <Div>
+                {"지갑을 연동하세요"}
+            </Div>
+            <Div>
+                <Div ml8 textWhite bgBlack rounded100 fontSize14 py8 px16 onClick={loginWithKaikas}>
+						지갑 연결
+				</Div>
+            </Div>
+        </>
+
     )
 }
 
