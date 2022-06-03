@@ -13,6 +13,7 @@ export const IMAGES = {
     backButton: '/images/back.png',
     betterWorldFeedExample: '/images/feed.png',
     appView: '/images/appView.png',
+    connectExample: '/images/connect.png',
     downloadOnAppStore: '/images/downloadOnAppStore.png',
     downloadOnGooglePlay: '/images/downloadOnGooglePlay.png',
     characters: {
