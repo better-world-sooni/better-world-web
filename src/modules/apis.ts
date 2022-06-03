@@ -39,7 +39,11 @@ const apis = {
     user: {
       _: () => apiV1('/auth/user')
     },
-    jwt: () => apiV1('/auth/jwt')
+    jwt: {
+      _: () => apiV1('/auth/jwt'),
+      qrLogin: () => apiV1('/auth/jwt/qr/login')
+    }
+    
   },
   profile: {
     klaytnAddress: (klaytnAddress) => apiV1(`/profile/${klaytnAddress}`),

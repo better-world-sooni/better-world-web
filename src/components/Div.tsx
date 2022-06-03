@@ -787,6 +787,8 @@ const propsToClx = (props) => {
 
 		// ==== Transforms ====
 		// scale
+		grayscale: () => clxs.push("grayscale"),
+		grayscale0: () => clxs.push("grayscale-0"),
 		// rotate
 		rotate0: () => clxs.push("rotate-0"),
 		rotate1: () => clxs.push("rotate-1"),

@@ -33,36 +33,32 @@ const redirectRoot = (ctx) => {
 };
 
 MyApp.getInitialProps = async ({ Component, ctx }): Promise<AppInitialProps> => {
-	// const oldJwt = ctx?.req?.headers?.webviewcookie || cookies(ctx).jwt;
-	// const requiresLogin = ctx.pathname != "/" && ctx.pathname != "/[lang]" && !ctx.pathname.startsWith("/[lang]/onboarding");
+	const oldJwt = ctx?.req?.headers?.webviewcookie || cookies(ctx).jwt;
+	const requiresLogin = ctx.pathname != "/" && ctx.pathname != "/[lang]"
 	let currentUser = null;
 	let currentNft = null;
 	let jwt = null;
-	// if (requiresLogin) {
-	// 	if (oldJwt) {
-	// 		const authResponse = await apiHelperWithJwtFromContext(ctx, apis.auth.user._(), "GET");
-	// 		if (!authResponse.success) {
-	// 			redirectRoot(ctx);
-	// 		} else {
-	// 			currentUser = authResponse.user;
-	// 			currentNft = authResponse.current_nft;
-	// 			jwt = authResponse.jwt;
-	// 		}
-	// 	} else {
-	// 		redirectRoot(ctx);
-	// 	}
-	// } else if (oldJwt) {
-	// 	const authResponse = await apiHelperWithJwtFromContext(ctx, apis.auth.user._(), "GET");
-	// 	if (authResponse.success) {
-	// 		currentUser = authResponse.user;
-	// 		currentNft = authResponse.current_nft;
-	// 		jwt = authResponse.jwt;
-	// 	}
-	// }
-	// if (Component.getInitialProps) {
-	// 	const componentAsyncProps = await Component.getInitialProps(ctx);
-	// 	return { pageProps: { ...componentAsyncProps, currentUser, currentNft, jwt } };
-	// }
+	if (requiresLogin) {
+		if (oldJwt) {
+			const authResponse = await apiHelperWithJwtFromContext(ctx, apis.auth.user._(), "GET");
+			if (authResponse.success) {
+				currentUser = authResponse.user;
+				currentNft = authResponse.current_nft;
+				jwt = authResponse.jwt;
+			} 
+		}
+	} else if (oldJwt) {
+		const authResponse = await apiHelperWithJwtFromContext(ctx, apis.auth.user._(), "GET");
+		if (authResponse.success) {
+			currentUser = authResponse.user;
+			currentNft = authResponse.current_nft;
+			jwt = authResponse.jwt;
+		}
+	}
+	if (Component.getInitialProps) {
+		const componentAsyncProps = await Component.getInitialProps(ctx);
+		return { pageProps: { ...componentAsyncProps, currentUser, currentNft, jwt } };
+	}
 	return {
 		pageProps: {
 			currentUser,
