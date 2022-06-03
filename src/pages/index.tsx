@@ -89,7 +89,7 @@ export default function Home() {
 						</Div>
 					</Div>
 					<Div textCenter fontSize24>
-						위비들의 모바일 놀이터와 자치 조직
+						위비들의 모바일 자치 조직
 					</Div>
 					<Div fontSize56 textCenter maxW={800} mxAuto fontSemibold mt100>
 						애장하는 PFP의{" "}
