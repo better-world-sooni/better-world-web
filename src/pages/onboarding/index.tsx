@@ -11,14 +11,15 @@ import { ProgressBar, Step } from "react-step-progress-bar";
 import { useEffect, useState, useCallback } from "react";
 import Slider from "react-slick";
 import { PLATFORM, truncateKlaytnAddress } from "src/modules/constants";
-import { apiHelper } from "src/modules/apiHelper";
+import { apiHelper, apiHelperWithToken } from "src/modules/apiHelper";
 import apis from "src/modules/apis";
 import { useRouter } from "next/router";
 import { useDispatch } from "react-redux";
 import { loginAction, removeAccountAuthAction } from "src/store/reducers/authReducer";
 import { modalsWording } from "src/wording/modals";
 import EmptyBlock from "src/components/EmptyBlock";
-
+import { Oval } from  'react-loader-spinner'
+import {QRCodeSVG} from 'qrcode.react';
 
 
 
@@ -30,6 +31,10 @@ export default function Onboarding({currentUser, currentNft, jwt}) {
     const [error, setError] = useState(null);
     const { locale } = useRouter();
     const dispatch = useDispatch();
+
+    const goNextStep = () => {
+        setActiveStep((currentStep) => currentStep+1)
+    }
 
     const loginWithKaikas = async () => {
         // @ts-ignore
@@ -108,7 +113,7 @@ export default function Onboarding({currentUser, currentNft, jwt}) {
                     >
                         <Step transition="scale">
                             {({ accomplished }) => (
-                                <Div>
+                                <Div flex flexCol itemsCenter>
                                     <Div h30 imgTag src={IMAGES.betterWorldBlueLogo} clx={`${accomplished ? "grayscale0" : "grayscale"}`}></Div>
                                     <Div spanTag fontSize10>
                                         {"지갑연결"}
@@ -120,17 +125,17 @@ export default function Onboarding({currentUser, currentNft, jwt}) {
                         </Step>
                         <Step transition="scale">
                             {({ accomplished }) => (
-                                <Div>
+                                <Div flex flexCol itemsCenter>
                                     <Div h30 imgTag src={IMAGES.betterWorldBlueLogo} clx={`${accomplished ? "grayscale0" : "grayscale"}`}></Div>
                                     <Div spanTag fontSize10>
-                                        {"유저등록"}
+                                        {"앱 비밀번호 등록"}
                                     </Div>
                                 </Div>
                             )}
                         </Step>
                         <Step transition="scale">
                             {({ accomplished }) => (
-                                <Div>
+                                <Div flex flexCol itemsCenter>
                                     <Div h30 imgTag src={IMAGES.betterWorldBlueLogo} clx={`${accomplished ? "grayscale0" : "grayscale"}`}></Div>
                                     <Div spanTag fontSize10>
                                         {"준비완료"}
@@ -143,8 +148,8 @@ export default function Onboarding({currentUser, currentNft, jwt}) {
                         {
                             {
                                 [0]: <ConnectWallet login={loginWithKaikas}/>,
-                                [1]: <RegisterUser/>,
-                                [2]: <ReadyForBetterWorld />,
+                                [1]: <RegisterUser goNextStep={goNextStep}/>,
+                                [2]: <ReadyForBetterWorld address={currentUser.klaytn_account.address}/>,
                             }[activeStep]
                         }
                     </Div>
@@ -175,7 +180,7 @@ function ConnectWallet({login}) {
 
 
 
-function RegisterUser() {
+function RegisterUser({goNextStep}) {
 
     const [success, setSuccess] = useState<boolean>(false);
 	const [putPasswordError, setPutPasswordError] = useState<boolean>(false);
@@ -209,6 +214,21 @@ function RegisterUser() {
 		}
 	};
 	const areValidInputs = !(passwordConfirmationError || passwordError || password === "" || passwordConfirmation === "");
+    const passwordRegister = async () => {
+		if (areValidInputs) {
+			try {
+				const emailResult = await apiHelperWithToken(apis.auth.password._(), "PUT", {
+					password,
+					password_confirmation: passwordConfirmation,
+				});
+				if (emailResult.success) setSuccess(true);
+                goNextStep();
+				return;
+			} catch (e) {
+                setPutPasswordError(true);
+            }
+		}
+	};
 
     return(
         <Div w={400} mx20 px15 my30>
@@ -246,7 +266,7 @@ function RegisterUser() {
                     </Div>
                 </Div>
                 <EmptyBlock h={20} />
-                <ThreeStateButton state={success ? 2 : areValidInputs ? 1 : 0} />
+                <ThreeStateButton state={success ? 2 : areValidInputs ? 1 : 0} onClick={passwordRegister}/>
                 <Div textDanger textXs spanTag>
                     {putPasswordError && "비밀번호를 설정하지 못하였습니다."}
                 </Div>
@@ -255,7 +275,7 @@ function RegisterUser() {
     )
 }
 
-function ThreeStateButton({ state }) {
+function ThreeStateButton({ state, onClick }) {
 	enum State {
 		Disabled,
 		Clickable,
@@ -287,7 +307,7 @@ function ThreeStateButton({ state }) {
 	};
 	return (
 		<Div>
-			<Div cursorPointer h40 {...propsFromState(state)} roundedLg flex justifyCenter itemsCenter onClick={state == State.Clickable}>
+			<Div cursorPointer h40 {...propsFromState(state)} roundedLg flex justifyCenter itemsCenter onClick={state == State.Clickable && onClick}>
 				<Div>{textFromState(state)}</Div>
 			</Div>
 		</Div>
@@ -295,11 +315,49 @@ function ThreeStateButton({ state }) {
 }
 
 
-function ReadyForBetterWorld() {
+function ReadyForBetterWorld({address}) {
+    
+    const [qrData, setQrData] = useState(null)
+
+    useEffect(() => {
+        async function fetchData() {
+            const qrRes = await apiHelperWithToken(apis.auth.jwt.qrLogin(), "POST", {
+                address: address
+            });
+            setQrData(qrRes);
+        }
+        fetchData();
+    }, [])
+
+    useEffect(() => {
+        console.log(qrData)
+    }, [qrData])
+
+
     return(
         <Div>
-            {"Hi"}
+            {qrData ? (
+            <QRCodeSVG 
+                size={250}
+                bgColor={"#ffffff"}
+                fgColor={"#4656a4"}
+                level={"Q"}
+                includeMargin={true}
+                value={qrData.jwt}
+            />
+            ) : (
+            <Oval
+                height="100"
+                width="100"
+                color="blue"
+                secondaryColor= "#0049EA"
+              />
+            )}
+            <Div>
+                {"위 qr코드 또는 비밀번호로 Better World를 시작해 보세요"}
+            </Div>
         </Div>
+        
     )
 }
 
