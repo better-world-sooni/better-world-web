@@ -149,7 +149,7 @@ export default function Onboarding({currentUser, currentNft, jwt}) {
                             {
                                 [0]: <ConnectWallet login={loginWithKaikas}/>,
                                 [1]: <RegisterUser goNextStep={goNextStep}/>,
-                                [2]: <ReadyForBetterWorld address={currentUser.klaytn_account.address}/>,
+                                [2]: <ReadyForBetterWorld address={currentUser?.klaytn_account.address}/>,
                             }[activeStep]
                         }
                     </Div>
@@ -318,10 +318,14 @@ function ThreeStateButton({ state, onClick }) {
 function ReadyForBetterWorld({address}) {
     
     const [qrData, setQrData] = useState(null)
+    const [ttl, setTtl] = useState({
+        minutes: 3,
+        seconds: 0,
+    });
 
     useEffect(() => {
         async function fetchData() {
-            const qrRes = await apiHelperWithToken(apis.auth.jwt.qrLogin(), "POST", {
+            const qrRes = await apiHelperWithToken(apis.auth.jwt.loginQr(), "POST", {
                 address: address
             });
             setQrData(qrRes);
@@ -333,6 +337,31 @@ function ReadyForBetterWorld({address}) {
         console.log(qrData)
     }, [qrData])
 
+    useEffect(() => {
+        if (qrData) {
+            const dateInt = qrData?.exp * 1000;
+            const remainingSeconds = Math.floor(
+                (dateInt - new Date().getTime()) / 1000,
+            );
+            setTtl({
+                minutes: Math.floor(remainingSeconds / 60),
+                seconds: remainingSeconds % 60,
+            });
+            const interval = setInterval(() => {
+                const remainingSeconds = Math.floor(
+                    (dateInt - new Date().getTime()) / 1000,
+                );
+                setTtl({
+                    minutes: Math.floor(remainingSeconds / 60),
+                    seconds: remainingSeconds % 60,
+                });
+            }, 1000);
+
+            return () => {
+                clearInterval(interval);
+            };
+        }
+    }, [qrData?.exp]);
 
     return(
         <Div>
@@ -351,9 +380,17 @@ function ReadyForBetterWorld({address}) {
                 width="100"
                 color="blue"
                 secondaryColor= "#0049EA"
-              />
+            />
             )}
-            <Div>
+            {qrData && (
+            <Div  spanTag bold fontSize={20}>
+                { ttl.minutes < 0
+                ? "유효기간 만료"
+                : `잔여 ${ttl.minutes}분 ${ttl.seconds}초`
+                }
+            </Div>
+            )}
+            <Div >
                 {"위 qr코드 또는 비밀번호로 Better World를 시작해 보세요"}
             </Div>
         </Div>
