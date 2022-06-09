@@ -6,6 +6,7 @@ import { useLoginWithKaikas } from "src/modules/authHelper";
 import Carousel from "re-carousel";
 import { useDispatch } from "react-redux";
 import { emailVerificationAction, loginQRModalAction } from "src/store/reducers/modalReducer";
+import Footer from "src/components/Footer";
 
 export default function Onboarding({ currentUser, currentNft }) {
 	const carouselRef = useRef(null);
@@ -34,6 +35,7 @@ export default function Onboarding({ currentUser, currentNft }) {
 					}
 				></Carousel>
 			</Div>
+			<Footer />
 		</>
 	);
 }

@@ -2,7 +2,8 @@ import Div from "src/components/Div";
 import { IMAGES } from "src/modules/images";
 import Bubbles from "src/components/Bubbles";
 import MainTopBar from "src/components/MainTopBar";
-export default function Home({ currentUser, currentNft, jwt }) {
+import Footer from "src/components/Footer";
+export default function Home({ currentUser, currentNft }) {
 	return (
 		<>
 			<MainTopBar currentUser={currentUser} currentNft={currentNft} />
@@ -35,6 +36,7 @@ export default function Home({ currentUser, currentNft, jwt }) {
 					</Div>
 				</Div>
 			</Div>
+			<Footer />
 		</>
 	);
 }

@@ -15,6 +15,7 @@ import { useLoginWithKaikas } from "src/modules/authHelper";
 import SwitchAcountModal from "./modals/SwitchAccountModal";
 import EmailVerificationModal from "./modals/EmailVerificationModal";
 import LoginQRModal from "./modals/LoginQRModal";
+import BasicHead from "./BasicHead";
 
 const MainTopBar = ({ currentUser, currentNft }) => {
 	const { locale } = useRouter();
@@ -42,10 +43,11 @@ const MainTopBar = ({ currentUser, currentNft }) => {
 	};
 	return (
 		<>
+			<BasicHead />
 			<SwitchAcountModal />
 			<EmailVerificationModal />
 			<LoginQRModal address={currentUser?.klaytn_account?.address} />
-			<Div px80 absolute top0 background bgWhite bgOpacity90 borderB1 wFull z100>
+			<Div px80 absolute top0 bgWhite bgOpacity90 borderB1 wFull z100>
 				<Div maxW={1100} mxAuto>
 					<Div flex itemsCenter py4 gapX={8}>
 						<Div rounded10 p4 onClick={gotoHome} cursorPointer>
