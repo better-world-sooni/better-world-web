@@ -147,7 +147,7 @@
     overflow-x: hidden
   }
   path {
-    stroke-width: 1.2;
+    stroke-width: 2;
   }
   .file-input input[type=file] {
     left: 0;
@@ -168,17 +168,4 @@
     background: #000;
     text-align: center
   }
-.ball {
-  position: absolute;
-  border-radius: 50%;
-  background: url("https://d6d3sarhyklmq.cloudfront.net/nft/image/0xe5e47d1540d136777c0b4e0865f467987c3d6513/4.png") no-repeat center center;
-  background-size: contain;
-  height: 100px;
-  width: 100px;
-  pointer-events: none;
-}
-
-.ball-text {
-  text-align: center;
-  padding-top: 40px;
-}
+  

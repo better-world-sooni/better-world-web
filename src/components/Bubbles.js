@@ -22,8 +22,21 @@ class Ball extends Component {
 
   render() {
     return (
-      <div className="ball" style={{left:this.props.ball.x-50, top:this.props.ball.y-50}}>
-        <div className="ball-text">
+      <div style={{
+        left:this.props.ball.x-50, 
+        top:this.props.ball.y-50,
+        position: 'absolute',
+        borderRadius: "50%",
+        background: `url("https://d6d3sarhyklmq.cloudfront.net/nft/image/0xe5e47d1540d136777c0b4e0865f467987c3d6513/${this.props.ball.id + 1}.png") no-repeat center center`,
+        backgroundSize: "contain",
+        height: "50px",
+        width: "50px",
+        pointerEvents: "none",
+      }}>
+        <div style={{
+          textAlign: "center",
+          paddingTop: "40px",
+        }}>
           {this.state.showId && this.props.ball.id}
         </div>
       </div>
@@ -37,10 +50,10 @@ export default class Bubbles extends Component {
     this.state = {
       name: 'React',
       balls: [],
-      numBalls: 5,
-      minSpeed: 0.3,
-      maxSpeed: 5,
-      ballRadius: 20,
+      numBalls: 4,
+      minSpeed: 1,
+      maxSpeed: 4,
+      ballRadius: 25,
       isRunning: true, // set to true to start the simulation right away
       acc: true // should the balls change their speed (and their direction when speed reached 0)?
     };

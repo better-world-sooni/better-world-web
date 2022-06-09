@@ -1,61 +1,89 @@
-import { ChatAlt2Icon, ChevronLeftIcon, LockClosedIcon, SparklesIcon, UserCircleIcon } from "@heroicons/react/outline";
+import { LockClosedIcon, SparklesIcon } from "@heroicons/react/outline";
 import { useDispatch } from "react-redux";
-import { switchAccountModalAction } from "src/store/reducers/modalReducer";
+import { emailVerificationAction, loginQRModalAction, switchAccountModalAction } from "src/store/reducers/modalReducer";
 import Div from "src/components/Div";
-import Row from "src/components/Row";
-import Col from "src/components/Col";
 import { useRouter } from "next/router";
 import { href } from "src/modules/routeHelper";
 import { urls } from "src/modules/urls";
 import { IMAGES } from "src/modules/images";
 import { Fragment } from "react";
 import { Menu, Transition } from "@headlessui/react";
+import { PLATFORM, truncateKlaytnAddress } from "src/modules/constants";
+import { loginAction, removeAccountAuthAction } from "src/store/reducers/authReducer";
+import { getNftProfileImage } from "src/modules/nftUtils";
+import { useLoginWithKaikas } from "src/modules/authHelper";
+import SwitchAcountModal from "./modals/SwitchAccountModal";
+import EmailVerificationModal from "./modals/EmailVerificationModal";
+import LoginQRModal from "./modals/LoginQRModal";
 
-const MainTopBar = ({ currentUser, currentNft, backable = false, messageable = false }) => {
-	const { back } = useRouter();
-	const handleClikChat = () => {
-		href(urls.chat.index());
+const MainTopBar = ({ currentUser, currentNft }) => {
+	const { locale } = useRouter();
+	const dispatch = useDispatch();
+	const gotoHome = () => {
+		href(urls.index());
+	};
+	const gotoOnboarding = () => {
+		href(urls.onboarding.index());
+	};
+	const loginWithKaikas = useLoginWithKaikas();
+	const handleGetQR = () => {
+		dispatch(
+			loginQRModalAction({
+				enabled: true,
+			}),
+		);
+	};
+	const handleSetPassword = () => {
+		dispatch(
+			emailVerificationAction({
+				enabled: true,
+			}),
+		);
 	};
 	return (
-		<Div fixed bgWhite wFull z100>
-			<Row maxW={650} mxAuto flex itemsCenter py3>
-				<Col auto cursorPointer>
-					{backable ? (
-						<Div onClick={back} h={45} flex itemsCenter justifyCenter>
-							<ChevronLeftIcon height={25}></ChevronLeftIcon>
+		<>
+			<SwitchAcountModal />
+			<EmailVerificationModal />
+			<LoginQRModal address={currentUser?.klaytn_account?.address} />
+			<Div px80 absolute top0 background bgWhite bgOpacity90 borderB1 wFull z100>
+				<Div maxW={1100} mxAuto>
+					<Div flex itemsCenter py4 gapX={8}>
+						<Div rounded10 p4 onClick={gotoHome} cursorPointer>
+							<Div h44 imgTag src={IMAGES.betterWorldBlueLogo}></Div>
 						</Div>
-					) : (
-						<Div imgTag src={IMAGES.betterWorldBlueLogo} h={45} style={{ objectFit: "cover" }} />
-					)}
-				</Col>
-				{backable ? (
-					<Col textBase auto px0 cursorPointer onClick={back} fontWeight={500} mt3>
-						뒤로
-					</Col>
-				) : (
-					<Col textBase textPrimary auto px0 cursorPointer fontWeight={500}>
-						BetterWorld
-					</Col>
-				)}
-				<Col />
-				{messageable && (
-					<Col auto onClick={handleClikChat} textPrimary>
-						<ChatAlt2Icon height={25} />
-					</Col>
-				)}
-			</Row>
-		</Div>
+						<Div fontBold onClick={gotoHome} cursorPointer>
+							BetterWorld
+						</Div>
+						<Div flex1 />
+						<Div ml8 rounded100 border1 fontSize14 py6 px16 cursorPointer onClick={gotoOnboarding}>
+							위비 온보딩
+						</Div>
+						{currentNft && (
+							<Div ml8 rounded100 border1 fontSize14 py6 px16 cursorPointer onClick={handleGetQR}>
+								로그인 큐알 발급
+							</Div>
+						)}
+						{currentNft && (
+							<Div ml8 rounded100 border1 fontSize14 py6 px16 cursorPointer onClick={handleSetPassword}>
+								비밀번호 재설정
+							</Div>
+						)}
+						{currentUser ? (
+							<ProfileDropdown currentUser={currentUser} currentNft={currentNft} />
+						) : (
+							<Div ml8 textWhite bgBlack rounded100 fontSize14 py6 px16 cursorPointer onClick={loginWithKaikas}>
+								지갑 연결
+							</Div>
+						)}
+					</Div>
+				</Div>
+			</Div>
+		</>
 	);
 };
 
 function ProfileDropdown({ currentNft, currentUser }) {
-	const {} = useRouter();
 	const dispatch = useDispatch();
-	const handleClickProfile = () => {
-		if (currentNft) {
-			href(urls.nftProfile.index());
-		}
-	};
 	const handleClickSwitchAccount = () => {
 		dispatch(
 			switchAccountModalAction({
@@ -65,10 +93,19 @@ function ProfileDropdown({ currentNft, currentUser }) {
 			}),
 		);
 	};
+	const handleClickRemoveAccount = () => {
+		dispatch(removeAccountAuthAction({}));
+	};
 	return (
 		<Menu as="div">
-			<Menu.Button className="shadow-sm">
-				<Div cursorPointer imgTag src={currentNft.nft_metadatum.image_uri} h30 w30 rounded></Div>
+			<Menu.Button>
+				{!currentNft ? (
+					<Div ml8 textWhite bgBlack rounded100 fontSize14 py6 px16 cursorPointer>
+						{truncateKlaytnAddress(currentUser.klaytn_account.address)}
+					</Div>
+				) : (
+					<Div ml8 cursorPointer imgTag src={getNftProfileImage(currentNft, 200, 200)} h32 w32 roundedFull mt6 border1 borderBlack></Div>
+				)}
 			</Menu.Button>
 			<Transition
 				as={Fragment}
@@ -79,43 +116,46 @@ function ProfileDropdown({ currentNft, currentUser }) {
 				leaveFrom="transform opacity-100 scale-100"
 				leaveTo="transform opacity-0 scale-95"
 			>
-				<Menu.Items className="origin-top-right absolute right-10 mt-2 w-200 rounded shadow-lg bg-white focus:outline-none ">
-					<Div w200 textBase>
-						<Menu.Item>
-							{({ active }) => (
-								<Div onClick={handleClickProfile} py10 px10 flex flexRow itemsCenter clx={`${active ? "bg-gray-100 text-black" : "text-gray-800"}`}>
-									<Div mr10>
-										<UserCircleIcon height={20} width={20} />
-									</Div>{" "}
-									<Div>프로필</Div>
-								</Div>
-							)}
-						</Menu.Item>
+				<Menu.Items className="origin-top-right absolute mt-2 rounded-lg border-1 bg-white focus:outline-none ">
+					<Div textBase>
+						{currentNft && (
+							<Menu.Item>
+								{({ active }) => (
+									<Div
+										onClick={handleClickSwitchAccount}
+										py12
+										px16
+										flex
+										flexRow
+										itemsCenter
+										cursorPointer
+										clx={`${active ? "bg-gray-100 text-black" : "text-gray-800"}`}
+									>
+										<Div mr10>
+											<SparklesIcon height={20} width={20} />
+										</Div>{" "}
+										<Div>계정 전환</Div>
+									</Div>
+								)}
+							</Menu.Item>
+						)}
 						<Menu.Item>
 							{({ active }) => (
 								<Div
-									onClick={handleClickSwitchAccount}
-									py10
-									px10
+									onClick={handleClickRemoveAccount}
+									borderT1
+									py12
+									px16
 									flex
 									flexRow
 									itemsCenter
+									cursorPointer
 									clx={`${active ? "bg-gray-100 text-black" : "text-gray-800"}`}
 								>
 									<Div mr10>
-										<SparklesIcon height={20} width={20} />
-									</Div>{" "}
-									<Div>계정 전환</Div>
-								</Div>
-							)}
-						</Menu.Item>
-						<Menu.Item>
-							{({ active }) => (
-								<Div borderT1 py10 px10 flex flexRow itemsCenter clx={`${active ? "bg-gray-100 text-black" : "text-gray-800"}`}>
-									<Div mr10>
 										<LockClosedIcon height={20} width={20} />
 									</Div>{" "}
-									<Div>로그아웃</Div>
+									<Div>연결 해제</Div>
 								</Div>
 							)}
 						</Menu.Item>

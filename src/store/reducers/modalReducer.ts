@@ -17,7 +17,10 @@ const initialState = {
     enabled: false,
     currentNft: null,
     currentUser: null,
-  }
+  },
+  loginQRModal: {
+    enabled: false
+  },
 }
 
 // action type
@@ -26,12 +29,14 @@ export const SIGN_IN = 'modal/SIGNIN' as const
 export const EMAIL_VERIFICATION = 'modal/EMAIL_VERIFICATION' as const
 export const KLIP_QR_ACTION = 'modal/KLIP_QR_ACTION' as const
 export const SWITCH_ACCOUNT_MODAL = 'modal/SWITCH_ACCOUNT_MODAL' as const
+export const LOGIN_QR_MODAL = 'modal/LOGIN_QR_MODAL' as const
 
 // action function
 export const confettiAction = ({enabled}) => ({ type: CONFETTI, enabled })
 export const signInAction = ({enabled}) => ({ type: SIGN_IN, enabled })
 export const emailVerificationAction = ({enabled}) => ({ type: EMAIL_VERIFICATION, enabled })
 export const klipQRAction = ({enabled, qrImage, requestKey}) => ({ type: KLIP_QR_ACTION, enabled, qrImage, requestKey })
+export const loginQRModalAction = ({enabled}) => ({ type: LOGIN_QR_MODAL, enabled })
 export const switchAccountModalAction = ({enabled, currentNft, currentUser}) => ({ type: SWITCH_ACCOUNT_MODAL, enabled, currentNft, currentUser })
 
 const f = (action, func) => func(action)
@@ -84,6 +89,15 @@ export const modalReducer = (state = initialState, action) => {
             enabled,
             currentNft, 
             currentUser
+          }
+        }
+      })
+    case LOGIN_QR_MODAL:
+      return f(action, ({ enabled }) => {
+        return {
+          ...state,
+          loginQRModal: {
+            enabled
           }
         }
       })

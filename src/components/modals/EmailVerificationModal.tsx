@@ -18,9 +18,8 @@ export default function EmailVerificationModal() {
 	const [passwordConfirmation, setPasswordConfirmation] = useState<string>("");
 	const [passwordConfirmationError, setPasswordConfirmationError] = useState<boolean>(false);
 	const dispatch = useDispatch();
-	const { emailVerificationEnabled, user } = useSelector((state: RootState) => ({
+	const { emailVerificationEnabled } = useSelector((state: RootState) => ({
 		emailVerificationEnabled: state.modal.emailVerification.enabled,
-		user: state.auth.user,
 	}));
 	const closeModal = () => {
 		setSuccess(false);

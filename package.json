@@ -45,6 +45,7 @@
     "qrcode": "^1.5.0",
     "qrcode.react": "^3.0.2",
     "randomstring": "^1.2.2",
+    "re-carousel": "^2.4.0",
     "react": "17.0.2",
     "react-activity": "^2.1.3",
     "react-alert": "^7.0.3",
