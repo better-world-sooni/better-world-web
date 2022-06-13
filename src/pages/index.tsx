@@ -8,7 +8,7 @@ export default function Home({ currentUser, currentNft }) {
 		<>
 			<MainTopBar currentUser={currentUser} currentNft={currentNft} />
 			<Div hScreen px80 flex itemsCenter justifyCenter>
-				<Bubbles />
+				{/* <Bubbles /> */}
 				<Div maxW={1100} mb100 py50 px100>
 					<Div flex justifyCenter itemsEnd gapX={10}>
 						<Div fontBold>
