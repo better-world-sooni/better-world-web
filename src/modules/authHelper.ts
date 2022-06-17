@@ -41,6 +41,7 @@ export const useLoginWithKaikas = () => {
                         platform: PLATFORM,
                         locale: locale,
                     });
+                    console.log(nonceResponse)
                     if (nonceResponse.success) {
                         const signature = await caver.klay.sign(nonceResponse.nonce, selectedAddress);
                         const verificationResponse = await apiHelper(apis.auth.kaikas.verification(), "POST", {
@@ -48,6 +49,7 @@ export const useLoginWithKaikas = () => {
                             address: selectedAddress,
                             signup_uuid: typeof nonceResponse.signup == "undefined" ? null : nonceResponse.signup.uuid,
                         });
+                        console.log(verificationResponse)
                         const mainNft = verificationResponse.user.main_nft;
                         const loginParams = {
                             jwt: verificationResponse.jwt,
