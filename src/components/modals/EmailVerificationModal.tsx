@@ -106,7 +106,7 @@ export default function EmailVerificationModal() {
 						</Div>
 					</Div>
 					<EmptyBlock h={20} />
-					<ThreeStateButton state={success ? 2 : areValidInputs ? 1 : 0} onClick={postEmail} />
+					<ThreeStateButton state={success ? 2 : areValidInputs ? 1 : 0} onClick={closeModal} />
 					<Div textDanger textXs spanTag>
 						{putPasswordError && "비밀번호를 설정하지 못하였습니다."}
 					</Div>

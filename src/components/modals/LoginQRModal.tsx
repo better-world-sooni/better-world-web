@@ -30,7 +30,7 @@ export default function LoginQRModal({ address }) {
 		setQrData(qrRes);
 	}
 	useEffect(() => {
-		fetchData();
+		if(loginQRModalEnabled) fetchData();
 	}, [loginQRModalEnabled]);
 
 	useEffect(() => {
