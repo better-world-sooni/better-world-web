@@ -63,6 +63,7 @@ export default function EmailVerificationModal() {
 					password_confirmation: passwordConfirmation,
 				});
 				if (emailResult.success) setSuccess(true);
+				closeModal();
 				return;
 			} catch (e) {}
 			setPutPasswordError(true);
@@ -106,7 +107,7 @@ export default function EmailVerificationModal() {
 						</Div>
 					</Div>
 					<EmptyBlock h={20} />
-					<ThreeStateButton state={success ? 2 : areValidInputs ? 1 : 0} onClick={closeModal} />
+					<ThreeStateButton state={success ? 2 : areValidInputs ? 1 : 0} onClick={postEmail} />
 					<Div textDanger textXs spanTag>
 						{putPasswordError && "비밀번호를 설정하지 못하였습니다."}
 					</Div>
