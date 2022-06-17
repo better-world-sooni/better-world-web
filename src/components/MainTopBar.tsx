@@ -46,7 +46,7 @@ const MainTopBar = ({ currentUser, currentNft }) => {
 			<BasicHead />
 			<SwitchAcountModal />
 			<EmailVerificationModal />
-			<LoginQRModal address={currentUser?.klaytn_account?.address} />
+			<LoginQRModal address={currentUser?.address} />
 			<Div px80 absolute top0 bgWhite bgOpacity90 borderB1 wFull z100>
 				<Div maxW={1100} mxAuto>
 					<Div flex itemsCenter py4 gapX={8}>
@@ -103,7 +103,7 @@ function ProfileDropdown({ currentNft, currentUser }) {
 			<Menu.Button>
 				{!currentNft ? (
 					<Div ml8 textWhite bgBlack rounded100 fontSize14 py6 px16 cursorPointer>
-						{truncateKlaytnAddress(currentUser.klaytn_account.address)}
+						{truncateKlaytnAddress(currentUser.address)}
 					</Div>
 				) : (
 					<Div ml8 cursorPointer imgTag src={getNftProfileImage(currentNft, 200, 200)} h32 w32 roundedFull mt6 border1 borderBlack></Div>
