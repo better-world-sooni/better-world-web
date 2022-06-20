@@ -49,32 +49,32 @@ const MainTopBar = ({ currentUser, currentNft }) => {
 			<LoginQRModal address={currentUser?.address} />
 			<Div px80 absolute top0 bgWhite bgOpacity90 borderB1 wFull z100>
 				<Div maxW={1100} mxAuto>
-					<Div flex itemsCenter py4 gapX={8}>
-						<Div rounded10 p4 onClick={gotoHome} cursorPointer>
-							<Div h44 imgTag src={IMAGES.betterWorldBlueLogo}></Div>
+					<Div flex itemsCenter py12 gapX={8}>
+						<Div rounded10 onClick={gotoHome} cursorPointer>
+							<Div w44 imgTag src={IMAGES.betterWorldBold}></Div>
 						</Div>
-						<Div fontBold onClick={gotoHome} cursorPointer>
-							BetterWorld
+						<Div w120 imgTag src={IMAGES.betterWorldWord} onClick={gotoHome} cursorPointer>
 						</Div>
+						<Div textSecondary italic>αlpha</Div>
 						<Div flex1 />
-						<Div ml8 rounded100 border1 fontSize14 py6 px16 cursorPointer onClick={gotoOnboarding}>
-							위비 온보딩
+						<Div ml8 roundedFull fontSize15 py6 px20 cursorPointer onClick={gotoOnboarding}>
+							WeBe 온보딩
 						</Div>
 						{currentNft && (
-							<Div ml8 rounded100 border1 fontSize14 py6 px16 cursorPointer onClick={handleGetQR}>
-								로그인 큐알 발급
+							<Div ml8 roundedFull border1 fontSize15 py6 px20 cursorPointer onClick={handleGetQR}>
+								로그인용 QR 발급
 							</Div>
 						)}
 						{currentNft && (
-							<Div ml8 rounded100 border1 fontSize14 py6 px16 cursorPointer onClick={handleSetPassword}>
+							<Div ml8 roundedFull border1 fontSize15 py6 px20 cursorPointer onClick={handleSetPassword}>
 								비밀번호 재설정
 							</Div>
 						)}
 						{currentUser ? (
 							<ProfileDropdown currentUser={currentUser} currentNft={currentNft} />
 						) : (
-							<Div ml8 textWhite bgBlack rounded100 fontSize14 py6 px16 cursorPointer onClick={loginWithKaikas}>
-								지갑 연결
+							<Div flex itemsCenter ml8 textWhite fontBold bgPrimary roundedFull fontSize15 py6 px23 cursorPointer onClick={loginWithKaikas}>
+								앱 로그인
 							</Div>
 						)}
 					</Div>

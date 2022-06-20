@@ -15,7 +15,7 @@ const basicColors = {
     teens: '#4c9cff',
     teensLight: '#d5ebff',
   },
-  secondary: '#513ccd',
+  secondary: '#002D5F',
   secondary2: '#3f3d88',
   transparent: 'transparent',
   current: 'currentColor',

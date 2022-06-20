@@ -45,14 +45,14 @@ export default function Footer() {
 	}
 
 	return (
-		<Div px80 bgWhite bgOpacity90 borderT1>
-			<Div mxAuto maxW={1100} py30>
+		<Div px80>
+			<Div mxAuto maxW={1100} pb30>
 				<Row itemsCenter>
-					<Col auto p30 onClick={handleClickGomz}>
-						<Div imgTag src={IMAGES.betterWorldBlueLogo} h60></Div>
+					<Col auto p10 onClick={handleClickGomz}>
+						<Div imgTag src={IMAGES.betterWorldBold} h35></Div>
 					</Col>
-					<Col py20>
-						<Row py5>
+					<Col textSecondary py10>
+						<Row py2>
 							<Col auto>
 								<Div spanTag>
 									<Div spanTag fontBold>
@@ -60,7 +60,7 @@ export default function Footer() {
 									</Div>{" "}
 									from{" "}
 								</Div>
-								<Div spanTag textPrimary aTag href={"https://soonilabs.com"} fontBold>
+								<Div spanTag aTag href={"https://soonilabs.com"} fontBold>
 									SOONI Labs
 								</Div>
 							</Col>
