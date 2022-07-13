@@ -47,7 +47,7 @@ const MainTopBar = ({ currentUser, currentNft }) => {
 			<SwitchAcountModal />
 			<EmailVerificationModal />
 			<LoginQRModal address={currentUser?.address} />
-			<Div px80 absolute top0 bgWhite bgOpacity90 borderB1 wFull z100>
+			<Div px80 absolute top0 bgWhite borderB1 wFull z100>
 				<Div maxW={1100} mxAuto>
 					<Div flex itemsCenter py12 gapX={8}>
 						<Div rounded10 onClick={gotoHome} cursorPointer>
