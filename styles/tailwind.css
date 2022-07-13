@@ -62,7 +62,7 @@
 
 @layer base {
     body {
-      font-family: Noto Sans
+      font-family: Noto Sans,
       sans-serif !important;
     }
 
