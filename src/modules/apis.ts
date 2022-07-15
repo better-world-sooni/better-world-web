@@ -93,6 +93,12 @@ const apis = {
       contractAddressAndTokenId: (contractAddress, tokenId) => apiV1(`/chat/room/${contractAddress}/${tokenId}`),
       roomId: (roomId) => apiV1(`/chat/room/${roomId}`),
     } 
+  },
+  admin: {
+    user: {
+      list: (page_size, offset) => apiV1(`/admin/user/list${urlParams({page_size, offset})}`),
+      user_address: (user_address) => apiV1(`/admin/user/${user_address}`),
+    }
   }
 }
 
