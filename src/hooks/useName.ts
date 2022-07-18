@@ -15,9 +15,6 @@ export default function useName(nft_name) {
         handleChangeText(value)
     }
     const getNameError = (value) => {
-		if (value == "") {
-			return "이름은 한 글자 이상이어야 합니다.";
-		}
 		if (value.split(" ").length > 5) {
 			return "이름은 다섯 단어 이하여야 합니다.";
 		}

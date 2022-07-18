@@ -1,10 +1,6 @@
 import Div from "src/components/Div";
 import { useState } from "react";
-import { useDispatch } from "react-redux";
-import { loadingAction } from "src/store/reducers/adminReducer";
 export default function Joblist({frame}) {
-    const dispatch = useDispatch();
-    dispatch(loadingAction({loading: false, error: false, success: false}));
     const [adminComponent, setaadminComponent] = useState(frame[0])
 	return (
         <Div hFull wFull px80 flex itemsStart justifyStart bgBlack auto bgWhite my60>

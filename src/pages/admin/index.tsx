@@ -6,16 +6,18 @@ import Dashboard from "src/components/admin/dashboard";
 import UserList from "src/components/admin/userlist";
 import TestAdmin from "src/components/admin/test";
 import { NextPageContext } from "next";
-import { apiHelperWithJwtFromContext } from "src/modules/apiHelper";
-import apis from "src/modules/apis";
 import { useDispatch } from "react-redux";
-import { userlistAction } from "src/store/reducers/adminReducer";
+import { currentNftAction, UserListAction } from "src/store/reducers/adminReducer";
 import Joblist from "src/components/admin/joblist";
+import { dehydrate } from 'react-query';
+import { InitialgetUserListQuery } from 'src/hooks/queries/admin/userlist'
 
-function Admin({user_list, currentUser, currentNft}) {
+function Admin({currentUser, currentNft}) {
+
 	if (!currentNft?.privilege)  return (<>Invalid Access</>);
-	const dispatch = useDispatch();
-	dispatch(userlistAction({user_list: user_list}));
+    const dispatch = useDispatch();
+    dispatch(currentNftAction({currentNft: currentNft}));
+    dispatch(UserListAction({page_size:50, offset:0}));
 	const frame = [
 		<AdminTemplete key={0} name={"Dashboard"} Comps={Dashboard}/>,
 		<AdminTemplete key={1} name={"User List"} Comps={UserList}/>,
@@ -34,9 +36,9 @@ function Admin({user_list, currentUser, currentNft}) {
 	);
 }
 
-Admin.getInitialProps = async (ctx:NextPageContext) => {
-	const res = await apiHelperWithJwtFromContext(ctx, apis.admin.user.list(50,0), 'GET')
-	return {user_list:res};
+Admin.getInitialProps = async (ctx:NextPageContext, queryClient) => {
+	await InitialgetUserListQuery(queryClient, ctx)
+	return {dehydratedState: dehydrate(queryClient)};
 };
 
 function AdminTemplete({name, Comps}) {

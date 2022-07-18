@@ -9,6 +9,19 @@ import { setJwt, getJwt } from "src/modules/cookieHelper";
 import { wrapper } from "src/store/store";
 import cookies from "next-cookies";
 import "styles/tailwind.css";
+import { Hydrate, QueryClient, QueryClientProvider } from 'react-query'
+import React from "react";
+
+const queryClient = new QueryClient({
+	defaultOptions: {
+	queries: {
+	  retry: 0,
+	  useErrorBoundary: true,
+	},
+	mutations: {
+	  useErrorBoundary: true,
+	},
+  },})
 
 function MyApp({ Component, pageProps }: AppProps) {
 	const [_, setPrevPage] = useSessionStorage("prevPage", null);
@@ -19,7 +32,13 @@ function MyApp({ Component, pageProps }: AppProps) {
 			setPrevPage(router.pathname);
 		};
 	}, [router]);
-	return <Component {...pageProps} />;
+	return (
+		<QueryClientProvider client={queryClient}>
+		<Hydrate state={pageProps.dehydratedState}>
+		  <Component {...pageProps} />
+		</Hydrate>
+	  </QueryClientProvider>
+	);
 }
 
 const redirectRoot = (ctx) => {
@@ -56,7 +75,7 @@ MyApp.getInitialProps = async ({ Component, ctx }): Promise<AppInitialProps> => 
 		}
 	}
 	if (Component.getInitialProps) {
-		const componentAsyncProps = await Component.getInitialProps(ctx);
+		const componentAsyncProps = await Component.getInitialProps(ctx, queryClient);
 		return { pageProps: { ...componentAsyncProps, currentUser, currentNft, jwt } };
 	}
 	return {

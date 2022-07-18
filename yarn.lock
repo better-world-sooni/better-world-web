@@ -5127,9 +5127,9 @@ react-multi-carousel@^2.6.5:
   resolved "https://registry.npmjs.org/react-multi-carousel/-/react-multi-carousel-2.6.5.tgz"
   integrity sha512-i5iuAm5XRT/h7uBL9/pGWeRsQXzqvjBrPVP1sobKgDKEvfZuKFpYp/alaQhTRM56Jtkb8jZpSqLn52Ku6jJbDg==
 
-react-query@^3.37.0:
+react-query@^3.39.1:
   version "3.39.1"
-  resolved "https://registry.npmjs.org/react-query/-/react-query-3.39.1.tgz"
+  resolved "https://registry.yarnpkg.com/react-query/-/react-query-3.39.1.tgz#3876c0fdac7a3b5a84e195534e5fa8fbdd628847"
   integrity sha512-qYKT1bavdDiQZbngWZyPotlBVzcBjDYEJg5RQLBa++5Ix5jjfbEYJmHSZRZD+USVHUSvl/ey9Hu+QfF1QAK80A==
   dependencies:
     "@babel/runtime" "^7.5.5"

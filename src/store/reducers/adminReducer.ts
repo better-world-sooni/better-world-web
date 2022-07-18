@@ -1,44 +1,41 @@
 const initialState = {
-  showuserlist: {
-    user_list: null
+  currentNft: {
+    currentNft: null
   },
-  fetchingData: {
-    loading: false,
-    error: false,
-    success: false
+  UserListPage: {
+    page_size: 50,
+    offset: 0,
   },
 }
 
 // action type
-export const USER_LIST = 'admin/USER_LIST' as const
-export const LOADING = 'admin/LOADING' as const
-
+export const CURRENT_NFT = 'admin/CURRENT_NFT' as const
+export const USERLIST = 'admin/USERLIST' as const
 
 // action function
-export const userlistAction = ({user_list}) => ({ type: USER_LIST, user_list})
-export const loadingAction = ({loading, error, success}) => ({ type: LOADING, loading, error, success })
+export const currentNftAction = ({currentNft}) => ({ type: CURRENT_NFT, currentNft})
+export const UserListAction = ({page_size, offset}) => ({ type: USERLIST, page_size, offset})
 
 const f = (action, func) => func(action)
 
 export const adminReducer = (state = initialState, action) => {
   switch (action.type) {
-    case USER_LIST:
-      return f(action, ({user_list}) => {
+    case CURRENT_NFT:
+      return f(action, ({currentNft}) => {
         return {
           ...state,
-          showuserlist: {
-            user_list,
+          currentNft: {
+            currentNft,
           }
         }
       })
-      case LOADING:
-        return f(action, ({loading, error, success}) => {
+      case USERLIST:
+        return f(action, ({page_size, offset}) => {
           return {
             ...state,
-            fetchingData: {
-              loading,
-              error,
-              success
+            UserListPage: {
+              page_size,
+              offset,
             }
           }
         })
