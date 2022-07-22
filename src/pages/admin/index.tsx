@@ -7,7 +7,7 @@ import UserList from "src/components/admin/userlist";
 import TestAdmin from "src/components/admin/test";
 import { NextPageContext } from "next";
 import { useDispatch } from "react-redux";
-import { currentNftAction, UserListAction } from "src/store/reducers/adminReducer";
+import { currentNftAction } from "src/store/reducers/adminReducer";
 import Joblist from "src/components/admin/joblist";
 import { dehydrate } from 'react-query';
 import { InitialgetUserListQuery } from 'src/hooks/queries/admin/userlist'
@@ -17,7 +17,6 @@ function Admin({currentUser, currentNft}) {
 	if (!currentNft?.privilege)  return (<>Invalid Access</>);
     const dispatch = useDispatch();
     dispatch(currentNftAction({currentNft: currentNft}));
-    dispatch(UserListAction({page_size:50, offset:0}));
 	const frame = [
 		<AdminTemplete key={0} name={"Dashboard"} Comps={Dashboard}/>,
 		<AdminTemplete key={1} name={"User List"} Comps={UserList}/>,

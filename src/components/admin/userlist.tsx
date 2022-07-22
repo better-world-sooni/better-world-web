@@ -1,5 +1,5 @@
 import Div from "src/components/Div";
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import React from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "src/store/reducers/rootReducer";
@@ -11,8 +11,18 @@ import useName from "src/hooks/useName"
 import useStory from "src/hooks/useStory";
 import useEdittableToggle from "src/hooks/useEdittableToggle";
 import EmptyBlock from "../EmptyBlock";
-
-import { getUserListQuery, patchUserInfo } from "src/hooks/queries/admin/userlist"
+import Pagination from '@mui/material/Pagination';
+import { getUserListQuery, patchUserInfo, prefetchUserListQuery } from "src/hooks/queries/admin/userlist"
+import { useDispatch } from "react-redux";
+import { UserListAction } from "src/store/reducers/adminReducer";
+import { useQueryClient } from "react-query";
+import Tooltip from '@mui/material/Tooltip';
+import {UserPosttModalAction} from 'src/store/reducers/modalReducer'
+import UserPostModal from "./userposts";
+import TimerText from "../common/timertext";
+import DefaultTransition from "../common/defaulttransition";
+import PaginationPageSizebox from "../common/paginationpagesizebox";
+import Skeleton from '@mui/material/Skeleton';
 
 function UserList() {
 	const { page_size, offset } = useSelector((state: RootState) => ({
@@ -22,10 +32,25 @@ function UserList() {
 	const { isLoading:loading, isFetching:fetching,isError:error, data:user_list, refetch } = getUserListQuery(page_size, offset, ()=>setLoadingButton(true))
 	const [LoadingButtonOn, setLoadingButton] = useState(false)
 	const loading_status = loading || fetching
+	const dispatch = useDispatch();
+	const queryClient = useQueryClient()
+	const handlePaginationOffsetChange = (event: React.ChangeEvent<unknown>, value: number) => {
+		if (offset!=value-1)prefetchUserListQuery(queryClient, page_size, value-1);
+		dispatch(UserListAction({page_size:page_size, offset:value-1}));
+	};
+	const handlePaginationPageSizeChange= (page_size_input) => {
+		if (page_size!=page_size_input)prefetchUserListQuery(queryClient, page_size_input, 0)
+		dispatch(UserListAction({page_size:page_size_input, offset:0}));
+	};
 	return (
 		<Div flex flexCol>
-			<Div selfEnd flex flexRow>
-				<Div fontSize15 fontSemibold mb10 mr10 selfCenter>
+			<Div mt15 mb10 selfCenter flex flexRow wFull>
+			<Div justifyItemsStart flex flexRow wFull>
+				<Div selfCenter><PaginationPageSizebox handlePaginationPageSizeChange={handlePaginationPageSizeChange} page_size={page_size}/></Div>
+				<Div selfCenter>개씩 보기</Div>
+			</Div>
+			<Div selfCenter flex flexRow>
+				<Div minW={120} fontSize15 fontSemibold mr10 selfCenter>
 				<Div spanTag textSuccess>
 					<TimerText condtion={LoadingButtonOn &&!loading_status && !error} text={"Update Complete"} seconds={2} closecontidion={setLoadingButton}/>
 				</Div>
@@ -34,34 +59,40 @@ function UserList() {
 				</Div>
 				</Div>
 				{loading_status ? 
-				<Div fontSize15 fontBold mb10 selfEnd px10 py5 textWhite rounded10 bgPrimary>
+				<Div fontSize15 fontBold selfEnd px10 py5 textWhite rounded10 bgPrimary>
 					<Oval height="14" width="14" color="blue" secondaryColor="#FFFFFF" strokeWidth="5" />
 				</Div>
 			: 
-				<Div fontBold mb10 selfEnd px10 cursorPointer py5 bgPrimaryLight textPrimary rounded10 clx="hover:bg-primary hover:text-white" onClick={refetch}>
+				<Tooltip title="업데이트" arrow>
+				<Div fontBold selfEnd px10 cursorPointer py5 bgPrimaryLight textPrimary rounded10 clx="hover:bg-primary hover:text-white" onClick={refetch}>
 				<RefreshIcon height={20} width={20} className="max-h-20 max-w-20" />
 				</Div>
+				</Tooltip>
 			}
-			</Div>
-		<UserArray user_list={user_list} refetch={refetch}/>
+			</Div></Div>
+		<UserArray user_list={user_list} refetch={refetch} loading={loading_status}/>
+		{user_list?.success ? <Div selfCenter><Pagination count={Math.ceil(user_list?.list?.total_length / page_size)} page={offset+1} showFirstButton showLastButton color="primary" onChange={handlePaginationOffsetChange}/></Div>:""}
 		</Div>
 	);
 }
 
-
-
-function UserArray({user_list, refetch}) {
-	// const success = user_list?.success;
-	// if (!success) return (
-	// 	<Div fontSize20 textStart maxW={1100} mxAuto>
-	// 		오류가 발생하였습니다. 다시 시도하여 주세요.
-	// 	</Div>
-	// );
+function UserArray({user_list, refetch, loading}) {
+	const success = user_list?.success;
+	if (loading && !user_list) return (
+		<Div fontBold mb100 textStart maxW={1100} mxAuto>
+		<Oval height="300" width="300" color="blue" secondaryColor="#FFFFFF" strokeWidth="100" />
+		</Div>
+	)
+	if (!success) return (
+		<Div fontSize20 mb100 textStart maxW={1100} mxAuto>
+			오류가 발생하였습니다. 다시 시도하여 주세요.
+		</Div>
+	)
 	var list = [...user_list.list.users]
 	return (
 		<Div mb100 wFull bgWhite border1 bgOpacity90>
-			{list.map((user, index) => (
-				<UserEntry user={user} key={index} refetch={refetch}/>
+			{list.map((user, _) => (
+				<UserEntry user={user} key={user.user_address} refetch={refetch}/>
 			))}
 		</Div>
 	);
@@ -85,14 +116,15 @@ function UserEntry({user, refetch}) {
 					<Div justifyItemsStart wFull flex flexRow>
 						<Div fontSize20 textBlack minW={120} maxW={120} mr10 textLeft fontBold>{sorted_list[0].name ? sorted_list[0].name : sorted_list[0].nft_name}<br></br><Div fontSemibold fontSize13>{sorted_list[0].name ? sorted_list[0].nft_name : <EmptyBlock h={20} />}</Div></Div>
 						<Div flex flexRow flexWrap>
-						<DataEntry w={55} label={<CubeIcon height={20} width={20} className="max-h-20 max-w-20 mr-10" />} data={sorted_list.length}/>
-						<DataEntry w={55} label={<PencilAltIcon height={20} width={20} className="max-h-20 max-w-20 mr-10" />} data={total_post}/>
-						<DataEntry w={55} label={<LightBulbIcon height={20} width={20} className="max-h-20 max-w-20 mr-10" />} data={total_proposals}/>
-						<DataEntry w={65} label={<HeartIcon height={20} width={20} className="max-h-20 max-w-20 mr-10" />} data={total_contribution}/>
+						<DataEntry name={"PFP 개수"} w={55} label={<CubeIcon height={20} width={20} className="max-h-20 max-w-20 mr-10" />} data={sorted_list.length}/>
+						<DataEntry name={"게시물 합"} w={55} label={<PencilAltIcon height={20} width={20} className="max-h-20 max-w-20 mr-10" />} data={total_post}/>
+						<DataEntry name={"제안 합"} w={55} label={<LightBulbIcon height={20} width={20} className="max-h-20 max-w-20 mr-10" />} data={total_proposals}/>
+						<DataEntry name={"기여도 합"} w={65} label={<HeartIcon height={20} width={20} className="max-h-20 max-w-20 mr-10" />} data={total_contribution}/>
 						</Div>
 					</Div>
 					<Div mr10 selfCenter justifyItemsEnd>
-					<Transition appear={true} show={open} enter="transition duration-100" enterFrom="transform rotate-0" enterTo="transform rotate-180" leave="transition duration-75" leaveFrom="transform rotate-180" leaveTo="transform rotate-0" >
+					{(!open) && <Div px10></Div>}
+					<Transition show={open} enter="transition duration-100" enterFrom="transform rotate-0" enterTo="transform rotate-180" leave="transition duration-75" leaveFrom="transform rotate-180" leaveTo="transform rotate-0" >
 						<ChevronUpIcon height={20} width={20} className="text-gray-400" />
 					</Transition>
 					</Div>
@@ -114,13 +146,17 @@ function UserEntry({user, refetch}) {
 }
 
 function NftEntry({nft, refetch}) {
+	const [loaded, setLoaded] = useState(false);
 	return (
         <Disclosure as="div" className="w-full">
           {({ open }) => (
             <>
               <Disclosure.Button className="w-full bg-gray-100 text-gray-400 hover:bg-gray-200 hover:text-gray-500">
 				<Div py12 px16 wFull flex flexRow cursorPointer clx={`${open ? "bg-gray-200 text-gray-500" : ""}`}>
-					<Div imgTag maxW={75} maxH={75} mr15 src={resizeImageUri(nft.image_uri, 75, 75)}></Div>
+					<Div mr15>
+						{!loaded && <Skeleton variant="rectangular" width={75} height={75} />}
+						 <Div imgTag maxW={75} maxH={75} src={resizeImageUri(nft.image_uri, 75, 75)} onLoad={()=>setLoaded(true)} style={loaded ? { display: 'block' } : { display: 'none' }}></Div>
+					</Div>
 					<Div justifyItemsStart wFull flex flexRow>
 				
 					<Div fontSize20 selfCenter textBlack minW={120} maxW={120} mr25 textLeft fontBold><Div flex flexRow>
@@ -129,9 +165,9 @@ function NftEntry({nft, refetch}) {
 							</Div>
 						<Div fontSemibold fontSize13>{nft.name ? nft.nft_name : <EmptyBlock h={20} /> }</Div></Div>
 						<Div flex flexRow flexWrap>
-						<DataEntry w={55} label={<PencilAltIcon height={20} width={20} className="max-h-20 max-w-20 mr-10" />} data={nft.posts}/>
-						<DataEntry w={55} label={<LightBulbIcon height={20} width={20} className="max-h-20 max-w-20 mr-10" />} data={nft.proposals}/>
-						<DataEntry w={65} label={<HeartIcon height={20} width={20} className="max-h-20 max-w-20 mr-10" />} data={nft.contribution}/>
+						<DataEntry name={"게시물"} w={55} label={<PencilAltIcon height={20} width={20} className="max-h-20 max-w-20 mr-10" />} data={nft.posts}/>
+						<DataEntry name={"제안"} w={55} label={<LightBulbIcon height={20} width={20} className="max-h-20 max-w-20 mr-10" />} data={nft.proposals}/>
+						<DataEntry name={"기여도"} w={65} label={<HeartIcon height={20} width={20} className="max-h-20 max-w-20 mr-10" />} data={nft.contribution}/>
 						<DataEntry w={120} label={"Followings : "} data={nft.following_count}/>
 						<DataEntry w={120} label={"Followers : "} data={nft.follower_count}/>
 						</Div>
@@ -176,7 +212,13 @@ function NftDetails({nft, refetch}) {
 		name: nameHasChanged ? name : null,
 		privilege: privilegeHasChanged ? privilege : null
 	})
+	const dispatch = useDispatch();
+	const handleGetPosts = () => {
+		dispatch(UserPosttModalAction({ enabled: true, contract_address: nft?.contract_address, token_id: nft?. token_id}));
+	};
 	return (
+		<>
+		<UserPostModal name={nft?.name ? nft?.name : nft.nft_name} user_address={nft?.user_address} contract_address={nft?.contract_address} token_id={nft?.token_id} refetch_userlist={refetch} />
 		<Div wFull flex flexRow>
 		<Div justifyItemsStart wFull flex flexRow flexWrap>
 			<DataEntry w={220} label={<Div selfCenter mb20>이름</Div>} data={
@@ -203,7 +245,12 @@ function NftDetails({nft, refetch}) {
 				{storyError ? <Div ml10 mt3 textDanger fontSize11>{storyError}</Div> :<EmptyBlock h={20} />}
 				</Div>
 			}/>
-			<DataEntry w={130} label={<Div flex flexRow><CogIcon height={20} width={20} className="max-h-20 max-w-20 mr-10" />Admin</Div>} data={<SwitchToggle checked={privilege} onChange={handleChangeprivilege} lock={LockAdminToggle} />}/>
+			<DataEntry w={130} label={<Div flex flexRow><CogIcon height={20} width={20} className="max-h-20 max-w-20 mr-10 mb-20" />Admin</Div>} data={<Div><SwitchToggle checked={privilege} onChange={handleChangeprivilege} lock={LockAdminToggle} /><EmptyBlock h={15} /></Div>}/>
+			<Div selfCenter mb10 justifyItemsStart flex flexRow ml25 mr25>
+				<Div>
+				<Div px10 cursorPointer py5 bgGray400 rounded10 clx="hover:bg-gray-600 hover:text-white" onClick={handleGetPosts} > 게시물 관리</Div><EmptyBlock h={20} />
+				</Div>
+			</Div>
 
 		</Div>
 		<Div mr10 selfCenter justifyItemsEnd>
@@ -213,14 +260,18 @@ function NftDetails({nft, refetch}) {
 					<Oval height="14" width="14" color="gray" secondaryColor="#FFFFFF" strokeWidth="5" />
 				</Div>
 				: 
+				<Tooltip title="저장하기" arrow>
 				<Div fontBold px10 cursorPointer py5 bgGray400 rounded10 clx="hover:bg-gray-600 hover:text-white" onClick={mutate}>
 				<CheckIcon height={20} width={20} className="max-h-20 max-w-20" />
-				</Div>
+				</Div></Tooltip>
 			}/>
 			</Div>
 		</Div>
+		</>
 	);
 }
+
+
 
 //Helper Function
 
@@ -236,10 +287,31 @@ function sort_nfts(list) {
 
 //Design Function 
 
-function DataEntry({w, label, data}) {
+function DataEntry({name="", w, label, data}) {
 	return (
-		<Div selfCenter mb10 justifyItemsStart minW={w} maxW={w} flex flexRow ml25 mr25>
+		name=="" ?
+ 		<Div selfCenter mb10 justifyItemsStart minW={w} maxW={w} flex flexRow ml25 mr25>
 		{label}{data}
+		</Div>
+	:
+	<Tooltip title={name} arrow>
+	<Div selfCenter mb10 justifyItemsStart minW={w} maxW={w} flex flexRow ml25 mr25>
+	{label}{data}
+	</Div>
+	</Tooltip>
+	);
+}
+
+function UserAddressPanel({user_address}) {
+	let [isCopied, setIsCopied] = useState(false)
+	function openCopied() {navigator.clipboard.writeText(user_address);setIsCopied(true);}
+	function closeCopied() {setIsCopied(false)}
+	return (
+		<Div py5 fontSize13 bgGray100 px20 flex flexRow>
+		<IdentificationIcon height={20} width={20} className="mr-10 self-center text-gray-600" />
+		<Tooltip title="클릭 시 복사" arrow>
+		<Div py5 rounded10 px10 cursorPointer bgGray300 onClick={openCopied}>{user_address}</Div></Tooltip>
+		<Div selfCenter px10 textInfo fontSemibold ><TimerText condtion={isCopied} text={"User Address가 복사되었습니다."} seconds={2} closecontidion={closeCopied}/></Div>
 		</Div>
 	);
 }
@@ -258,47 +330,6 @@ function SwitchToggle({checked, onChange, lock=false}) {
 			pointer-events-none inline-block h-[20px] w-[20px] transform rounded-full bg-white shadow-lg ring-0 transition duration-200 ease-in-out`}
 		/>
 	</Switch>
-	);
-}
-
-function TimerText({condtion, text, seconds, closecontidion=null}) {
-	const [show, setshow] = useState(false);
-	useEffect(() => {
-		var timer
-		if (condtion) {
-			setshow(true)
-			timer = setTimeout(() => {
-				setshow(false);
-				if (closecontidion!=null){closecontidion()}
-			}, seconds*1000);
-		} else {
-			setshow(false)
-		}
-		return () => {clearTimeout(timer)};
-	}, [condtion]);
-	return (
-		<DefaultTransition show={show} content={text}/>
-		);
-}
-
-function UserAddressPanel({user_address}) {
-	let [isCopied, setIsCopied] = useState(false)
-	function openCopied() {navigator.clipboard.writeText(user_address);setIsCopied(true);}
-	function closeCopied() {setIsCopied(false)}
-	return (
-		<Div py5 fontSize13 bgGray100 px20 flex flexRow>
-		<IdentificationIcon height={20} width={20} className="mr-10 self-center text-gray-600" />
-		<Div py5 rounded10 px10 cursorPointer bgGray300 onClick={openCopied}>{user_address}</Div>
-		<Div selfCenter px10 textInfo fontSemibold ><TimerText condtion={isCopied} text={"User Address가 복사되었습니다."} seconds={2} closecontidion={closeCopied}/></Div>
-		</Div>
-	);
-}
-
-function DefaultTransition({content, show, appear=true}) {
-	return (
-		<Transition show={show} enter="transition ease-out duration-100" enterFrom="transform opacity-0 scale-95" enterTo="transform opacity-100 scale-100" leave="transition ease-in duration-75" leaveFrom="transform opacity-100 scale-100" leaveTo="transform opacity-0 scale-95" >
-		{content}
-		</Transition>
 	);
 }
 

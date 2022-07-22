@@ -97,9 +97,12 @@ const apis = {
   admin: {
     user: {
       list: (page_size, offset) => apiV1(`/admin/user/list${urlParams({page_size, offset})}`),
-      user_address: (user_address) => apiV1(`/admin/user/${user_address}`),
+      user_address: {
+        _: (user_address) => apiV1(`/admin/user/${user_address}`),
+        post: (user_address, contract_address, token_id, page_size, offset) => apiV1(`/admin/user/${user_address}/post${urlParams({contract_address, token_id, page_size, offset})}`),
+      }
     }
-  }
+  },
 }
 
 const mapFunctionToPath = (data, path = []) => {

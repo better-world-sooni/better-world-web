@@ -7,6 +7,12 @@ export function queryHelperWithToken({key, url, method = 'GET', body = null, opt
       ...options
     })
   }
+
+export function queryHelperPrefetchWithToken({key, queryClient, url, method = 'GET', body = null, options = null}) {
+    return queryClient.prefetchQuery(key, ()=>apiHelperWithToken(url, method, body), {
+        ...options
+    })
+}
   
 export function queryHelperWithJwtFromContext({key, ctx, url, method = 'GET', body = null, options = null}) {
 return useQuery(key, ()=>apiHelperWithJwtFromContext(ctx, url, method, body), {

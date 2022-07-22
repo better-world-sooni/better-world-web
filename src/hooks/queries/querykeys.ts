@@ -2,7 +2,11 @@
 
 const querykeys = {
     admin: {
-        userlist: (page_size:Number, offset:Number) => ['user_list', page_size, offset]
+        userlist: {
+            _: (page_size:Number, offset:Number) => ['userlist', page_size, offset],
+            count: ['userlist', 'count'],
+            post: (contract_address, token_id, page_size, offset) => ['userlist', 'post', contract_address, token_id, page_size, offset],
+        },
     }
 }
 
