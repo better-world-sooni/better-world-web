@@ -23,6 +23,8 @@ import TimerText from "../common/timertext";
 import DefaultTransition from "../common/defaulttransition";
 import PaginationPageSizebox from "../common/paginationpagesizebox";
 import Skeleton from '@mui/material/Skeleton';
+import DataEntry from "../common/DataEntry";
+import { ProfileImage } from "../common/ImageHelper";
 
 function UserList() {
 	const { page_size, offset } = useSelector((state: RootState) => ({
@@ -154,8 +156,7 @@ function NftEntry({nft, refetch}) {
               <Disclosure.Button className="w-full bg-gray-100 text-gray-400 hover:bg-gray-200 hover:text-gray-500">
 				<Div py12 px16 wFull flex flexRow cursorPointer clx={`${open ? "bg-gray-200 text-gray-500" : ""}`}>
 					<Div mr15>
-						{!loaded && <Skeleton variant="rectangular" width={75} height={75} />}
-						 <Div imgTag maxW={75} maxH={75} src={resizeImageUri(nft.image_uri, 75, 75)} onLoad={()=>setLoaded(true)} style={loaded ? { display: 'block' } : { display: 'none' }}></Div>
+						<ProfileImage width={75} height={75} uri={nft.image_uri} />
 					</Div>
 					<Div justifyItemsStart wFull flex flexRow>
 				
@@ -286,21 +287,6 @@ function sort_nfts(list) {
 }
 
 //Design Function 
-
-function DataEntry({name="", w, label, data}) {
-	return (
-		name=="" ?
- 		<Div selfCenter mb10 justifyItemsStart minW={w} maxW={w} flex flexRow ml25 mr25>
-		{label}{data}
-		</Div>
-	:
-	<Tooltip title={name} arrow>
-	<Div selfCenter mb10 justifyItemsStart minW={w} maxW={w} flex flexRow ml25 mr25>
-	{label}{data}
-	</Div>
-	</Tooltip>
-	);
-}
 
 function UserAddressPanel({user_address}) {
 	let [isCopied, setIsCopied] = useState(false)
