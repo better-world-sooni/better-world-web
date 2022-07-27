@@ -3,9 +3,10 @@
 const querykeys = {
     admin: {
         userlist: {
-            _: (page_size:Number, offset:Number) => ['userlist', page_size, offset],
-            count: ['userlist', 'count'],
-            post: (contract_address, token_id, page_size, offset) => ['userlist', 'post', contract_address, token_id, page_size, offset],
+            _: (page_size:Number=null, offset:Number=null) => 
+                page_size||offset ? ['userlist', 'list', page_size, offset] : ['userlist', 'list'],
+            post: (contract_address, token_id, page_size:Number=null, offset:Number=null) => 
+            page_size||offset ? ['userlist', 'post', contract_address, token_id, page_size, offset] : ['userlist', 'post', contract_address, token_id],
         },
     }
 }

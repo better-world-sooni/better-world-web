@@ -19,13 +19,13 @@ export default function DataEntry({name="", w, label, data}) {
 export function DataEntryWithoutMargin({name="", w, label, data}) {
 	return (
 		name=="" ?
- 		<Div w={w} flex flexRow ml25>
+ 		<Div w={w} flex flexRow>
 		{label}{data}
 		</Div>
 	:
 	<Tooltip title={name} arrow>
-	<Div w={w} flex flexRow ml25>
-	{label}{data}
+	<Div w={w} flex flexRow>
+	<Div selfCenter>{label}</Div><Div selfCenter>{data}</Div>
 	</Div>
 	</Tooltip>
 	);

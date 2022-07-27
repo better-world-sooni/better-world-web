@@ -97,10 +97,14 @@ const apis = {
   admin: {
     user: {
       list: (page_size, offset) => apiV1(`/admin/user/list${urlParams({page_size, offset})}`),
-      user_address: {
-        _: (user_address) => apiV1(`/admin/user/${user_address}`),
-        post: (user_address, contract_address, token_id, page_size, offset) => apiV1(`/admin/user/${user_address}/post${urlParams({contract_address, token_id, page_size, offset})}`),
-      }
+      _: ()=>  apiV1(`/admin/user`),
+    },
+    post: {
+      list: (contract_address, token_id, page_size, offset) => apiV1(`/admin/post/list${urlParams({contract_address, token_id, page_size, offset})}`),
+      _: ()=> apiV1(`/admin/post`),
+    },
+    comment: {
+      _: ()=> apiV1(`/admin/comment`),
     }
   },
 }

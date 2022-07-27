@@ -6,7 +6,6 @@ import { RootState } from "src/store/reducers/rootReducer";
 import { Disclosure, Transition, Switch } from "@headlessui/react";
 import { Oval } from "react-loader-spinner";
 import { ChevronDownIcon, ChevronUpIcon, AdjustmentsIcon, CubeIcon, IdentificationIcon, PencilAltIcon, LightBulbIcon, HeartIcon, SparklesIcon, CogIcon, RefreshIcon, CheckIcon } from "@heroicons/react/outline";
-import { resizeImageUri } from "src/modules/uriUtils"
 import useName from "src/hooks/useName"
 import useStory from "src/hooks/useStory";
 import useEdittableToggle from "src/hooks/useEdittableToggle";
@@ -14,15 +13,15 @@ import EmptyBlock from "../EmptyBlock";
 import Pagination from '@mui/material/Pagination';
 import { getUserListQuery, patchUserInfo, prefetchUserListQuery } from "src/hooks/queries/admin/userlist"
 import { useDispatch } from "react-redux";
-import { UserListAction } from "src/store/reducers/adminReducer";
+import { UserListAction, UserListPostAction } from "src/store/reducers/adminReducer";
 import { useQueryClient } from "react-query";
 import Tooltip from '@mui/material/Tooltip';
+import { defaultPageSize } from "src/hooks/queries/admin/userlist"
 import {UserPosttModalAction} from 'src/store/reducers/modalReducer'
 import UserPostModal from "./userposts";
 import TimerText from "../common/timertext";
 import DefaultTransition from "../common/defaulttransition";
 import PaginationPageSizebox from "../common/paginationpagesizebox";
-import Skeleton from '@mui/material/Skeleton';
 import DataEntry from "../common/DataEntry";
 import { ProfileImage } from "../common/ImageHelper";
 
@@ -33,7 +32,7 @@ function UserList() {
 	}));
 	const { isLoading:loading, isFetching:fetching,isError:error, data:user_list, refetch } = getUserListQuery(page_size, offset, ()=>setLoadingButton(true))
 	const [LoadingButtonOn, setLoadingButton] = useState(false)
-	const loading_status = loading || fetching
+	const loading_status = fetching&&!loading
 	const dispatch = useDispatch();
 	const queryClient = useQueryClient()
 	const handlePaginationOffsetChange = (event: React.ChangeEvent<unknown>, value: number) => {
@@ -54,13 +53,13 @@ function UserList() {
 			<Div selfCenter flex flexRow>
 				<Div minW={120} fontSize15 fontSemibold mr10 selfCenter>
 				<Div spanTag textSuccess>
-					<TimerText condtion={LoadingButtonOn &&!loading_status && !error} text={"Update Complete"} seconds={2} closecontidion={setLoadingButton}/>
+					<TimerText condtion={!loading && LoadingButtonOn &&!loading_status && !error} text={"Update Complete"} seconds={2} closecontidion={setLoadingButton}/>
 				</Div>
 				<Div spanTag textDanger>
-					<TimerText condtion={LoadingButtonOn && error} text={"Update error"} seconds={2} closecontidion={setLoadingButton}/>
+					<TimerText condtion={!loading && LoadingButtonOn && error} text={"Update error"} seconds={2} closecontidion={setLoadingButton}/>
 				</Div>
 				</Div>
-				{loading_status ? 
+				{user_list &&(loading_status ? 
 				<Div fontSize15 fontBold selfEnd px10 py5 textWhite rounded10 bgPrimary>
 					<Oval height="14" width="14" color="blue" secondaryColor="#FFFFFF" strokeWidth="5" />
 				</Div>
@@ -70,37 +69,32 @@ function UserList() {
 				<RefreshIcon height={20} width={20} className="max-h-20 max-w-20" />
 				</Div>
 				</Tooltip>
-			}
+			)}
 			</Div></Div>
-		<UserArray user_list={user_list} refetch={refetch} loading={loading_status}/>
-		{user_list?.success ? <Div selfCenter><Pagination count={Math.ceil(user_list?.list?.total_length / page_size)} page={offset+1} showFirstButton showLastButton color="primary" onChange={handlePaginationOffsetChange}/></Div>:""}
+		{loading &&	<Div fontBold mb100 textStart maxW={1100} mxAuto>
+		<Oval height="300" width="300" color="blue" secondaryColor="#FFFFFF" strokeWidth="100" /></Div>}
+		{ user_list?.success && <UserArray user_list={user_list}/>}
+		{user_list?.success && <Div selfCenter><Pagination count={Math.ceil(user_list?.list?.total_length / page_size)} page={offset+1} showFirstButton showLastButton color="primary" onChange={handlePaginationOffsetChange}/></Div>}
+		{error||(user_list&&(!user_list.success)) && 
+		<Div fontSize20 mb100 textStart maxW={1100} mxAuto>
+			오류가 발생하였습니다. 다시 시도하여 주세요.
+		</Div>}
 		</Div>
 	);
 }
 
-function UserArray({user_list, refetch, loading}) {
-	const success = user_list?.success;
-	if (loading && !user_list) return (
-		<Div fontBold mb100 textStart maxW={1100} mxAuto>
-		<Oval height="300" width="300" color="blue" secondaryColor="#FFFFFF" strokeWidth="100" />
-		</Div>
-	)
-	if (!success) return (
-		<Div fontSize20 mb100 textStart maxW={1100} mxAuto>
-			오류가 발생하였습니다. 다시 시도하여 주세요.
-		</Div>
-	)
+function UserArray({user_list}) {
 	var list = [...user_list.list.users]
 	return (
 		<Div mb100 wFull bgWhite border1 bgOpacity90>
 			{list.map((user, _) => (
-				<UserEntry user={user} key={user.user_address} refetch={refetch}/>
+				<UserEntry user={user} key={user.user_address}/>
 			))}
 		</Div>
 	);
 }
 
-function UserEntry({user, refetch}) {
+function UserEntry({user}) {
 	var list = [...user.nfts]
 	var sorted_list = sort_nfts(list)
 
@@ -136,7 +130,7 @@ function UserEntry({user, refetch}) {
               <Disclosure.Panel className="bg-white bg-gray-100 border-b-2">
 				<UserAddressPanel user_address={user.user_address}/>
 				{sorted_list.map((nft, index) => (
-					<NftEntry nft={nft} key={index} refetch={refetch}/>
+					<NftEntry nft={nft} key={index}/>
 				))}
               </Disclosure.Panel>
 			}/>
@@ -147,7 +141,7 @@ function UserEntry({user, refetch}) {
 	);
 }
 
-function NftEntry({nft, refetch}) {
+function NftEntry({nft}) {
 	const [loaded, setLoaded] = useState(false);
 	return (
         <Disclosure as="div" className="w-full">
@@ -180,7 +174,7 @@ function NftEntry({nft, refetch}) {
               </Disclosure.Button>
 			  <DefaultTransition show={open} content={
               <Disclosure.Panel className="bg-gray-200 text-gray-700 border-b-2 border-gray-300 py-16 px-12">
-			  <NftDetails nft={nft} refetch={refetch}/>
+			  <NftDetails nft={nft}/>
 				</Disclosure.Panel>
 			  }/>
             </>
@@ -189,7 +183,7 @@ function NftEntry({nft, refetch}) {
 	);
 }
 
-function NftDetails({nft, refetch}) {
+function NftDetails({nft}) {
 	const { currentNft } = useSelector((state: RootState) => ({
 		currentNft: state.admin.currentNft.currentNft
 	}));
@@ -208,18 +202,20 @@ function NftDetails({nft, refetch}) {
 		handleChangeStory,
 	  } = useStory(nft.story ? nft.story: "");
 	const isSave = (nameHasChanged && !nameError) || (storyHasChanged && !storyError) || privilegeHasChanged
-	const {isLoading, mutate} = patchUserInfo(nft, refetch, {
+	const queryClient=useQueryClient()
+	const {isLoading, mutate} = patchUserInfo(nft, queryClient, {
 		story: storyHasChanged? story : null,
 		name: nameHasChanged ? name : null,
 		privilege: privilegeHasChanged ? privilege : null
 	})
 	const dispatch = useDispatch();
 	const handleGetPosts = () => {
+		dispatch(UserListPostAction({page_size:defaultPageSize, offset:0}));
 		dispatch(UserPosttModalAction({ enabled: true, contract_address: nft?.contract_address, token_id: nft?. token_id}));
 	};
 	return (
 		<>
-		<UserPostModal name={nft?.name ? nft?.name : nft.nft_name} user_address={nft?.user_address} contract_address={nft?.contract_address} token_id={nft?.token_id} refetch_userlist={refetch} />
+		<UserPostModal name={nft?.name ? nft?.name : nft.nft_name} contract_address={nft?.contract_address} token_id={nft?.token_id} />
 		<Div wFull flex flexRow>
 		<Div justifyItemsStart wFull flex flexRow flexWrap>
 			<DataEntry w={220} label={<Div selfCenter mb20>이름</Div>} data={

@@ -13,7 +13,8 @@ export function getUserListQuery (page_size:Number, offset:Number, onsettled:any
         key: querykeys.admin.userlist._(page_size, offset),
         url:apis.admin.user.list(page_size, offset), 
         options : {
-            enabled:false,
+            refetchOnMount:false,
+            refetchInterval:false,
             onSettled
         }
     }
@@ -38,24 +39,57 @@ export function prefetchUserListQuery (queryClient:QueryClient, page_size:Number
     })
 }
 
-export function patchUserInfo (nft, refetch, {story, name, privilege}) {
-    const body = {contract_address: nft.contract_address, token_id: nft.token_id, story: story, name: name, privilege: privilege}
+export function patchUserInfo (nft, queryClient, {story, name, privilege}) {
+    const body = {
+        contract_address: nft.contract_address,
+        token_id: nft.token_id,
+        story: story,
+        name: name,
+        privilege: privilege}
     return queryHelperMutationWithToken({
-        url: apis.admin.user.user_address._(nft.user_address),
+        url: apis.admin.user._(),
         method: "PUT",
         body: body,
         options: {
-            onSuccess: refetch
+            onSuccess: ()=>queryClient.invalidateQueries(querykeys.admin.userlist._())
         }
     }
     )
 }
 
-export function getUserPostListQuery (user_address ,contract_address, token_id, page_size:Number, offset:Number, onsettled:any) {
+export function DeletePost (post_id, queryClient:QueryClient, contract_address, token_id) {
+    const body = {
+        post_id: post_id}
+    return queryHelperMutationWithToken({
+        url: apis.admin.post._(),
+        method: "DELETE",
+        body: body,
+        options: {
+            onSuccess: ()=>queryClient.invalidateQueries(querykeys.admin.userlist._())&&queryClient.invalidateQueries(querykeys.admin.userlist.post(contract_address, token_id))
+        }
+    }
+    )
+}
+
+export function DeleteComment (comment_id, queryClient:QueryClient, contract_address, token_id) {
+    const body = {
+        comment_id: comment_id}
+    return queryHelperMutationWithToken({
+        url: apis.admin.comment._(),
+        method: "DELETE",
+        body: body,
+        options: {
+            onSuccess: ()=>queryClient.invalidateQueries(querykeys.admin.userlist.post(contract_address, token_id))
+        }
+    }
+    )
+}
+
+export function getUserPostListQuery (contract_address, token_id, page_size:Number, offset:Number, onsettled:any) {
     const onSettled = useCallback(onsettled, []);
 	return queryHelperWithToken({
         key: querykeys.admin.userlist.post(contract_address, token_id, page_size, offset),
-        url:apis.admin.user.user_address.post(user_address, contract_address, token_id, page_size, offset),
+        url:apis.admin.post.list(contract_address, token_id, page_size, offset),
         options : {
             onSettled
         }
