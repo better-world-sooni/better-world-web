@@ -20,8 +20,6 @@ function Admin({currentUser, currentNft}) {
 	const frame = [
 		<AdminTemplete key={0} name={"Dashboard"} Comps={Dashboard}/>,
 		<AdminTemplete key={1} name={"User List"} Comps={UserList}/>,
-		<AdminTemplete key={2} name={"Test2"} Comps={TestAdmin}/>,
-		<AdminTemplete key={3} name={"Test3"} Comps={TestAdmin}/>,
 	]
 
 	return (

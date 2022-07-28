@@ -11,7 +11,7 @@ import useStory from "src/hooks/useStory";
 import useEdittableToggle from "src/hooks/useEdittableToggle";
 import EmptyBlock from "../EmptyBlock";
 import Pagination from '@mui/material/Pagination';
-import { getUserListQuery, patchUserInfo, prefetchUserListQuery } from "src/hooks/queries/admin/userlist"
+import { cancelUserListQuery, getUserListQuery, patchUserInfo } from "src/hooks/queries/admin/userlist"
 import { useDispatch } from "react-redux";
 import { UserListAction, UserListPostAction } from "src/store/reducers/adminReducer";
 import { useQueryClient } from "react-query";
@@ -24,24 +24,31 @@ import DefaultTransition from "../common/defaulttransition";
 import PaginationPageSizebox from "../common/paginationpagesizebox";
 import DataEntry from "../common/DataEntry";
 import { ProfileImage } from "../common/ImageHelper";
+import SearchBar from "src/hooks/SearchBar";
 
 function UserList() {
-	const { page_size, offset } = useSelector((state: RootState) => ({
+	const { page_size, offset, search_key } = useSelector((state: RootState) => ({
 		page_size: state.admin.UserListPage.page_size,
-		offset: state.admin.UserListPage.offset
+		offset: state.admin.UserListPage.offset,
+		search_key: state.admin.UserListPage.search_key,
 	}));
-	const { isLoading:loading, isFetching:fetching,isError:error, data:user_list, refetch } = getUserListQuery(page_size, offset, ()=>setLoadingButton(true))
+	const { isLoading:loading, isFetching:fetching,isError:error, data:user_list, refetch } = getUserListQuery(page_size, offset, search_key, ()=>setLoadingButton(true))
 	const [LoadingButtonOn, setLoadingButton] = useState(false)
 	const loading_status = fetching&&!loading
 	const dispatch = useDispatch();
-	const queryClient = useQueryClient()
+	const queryClient=useQueryClient()
+	const refetchUserList = (page_size, offset, search_key) => {
+		cancelUserListQuery(queryClient);
+		dispatch(UserListAction({page_size:page_size, offset:offset, search_key:search_key}));
+	}
 	const handlePaginationOffsetChange = (event: React.ChangeEvent<unknown>, value: number) => {
-		if (offset!=value-1)prefetchUserListQuery(queryClient, page_size, value-1);
-		dispatch(UserListAction({page_size:page_size, offset:value-1}));
+		if (offset!=value-1) refetchUserList(page_size, value-1, search_key);
 	};
 	const handlePaginationPageSizeChange= (page_size_input) => {
-		if (page_size!=page_size_input)prefetchUserListQuery(queryClient, page_size_input, 0)
-		dispatch(UserListAction({page_size:page_size_input, offset:0}));
+		if (page_size!=page_size_input)	refetchUserList(page_size_input, 0, search_key);
+	};
+	const handleSearchBarChange= (search_key_input) => {
+		refetchUserList(page_size, 0, search_key_input);
 	};
 	return (
 		<Div flex flexCol>
@@ -49,6 +56,7 @@ function UserList() {
 			<Div justifyItemsStart flex flexRow wFull>
 				<Div selfCenter><PaginationPageSizebox handlePaginationPageSizeChange={handlePaginationPageSizeChange} page_size={page_size}/></Div>
 				<Div selfCenter>개씩 보기</Div>
+				<Div selfCenter ml10><SearchBar w={250} placeholder={"원하시는 PFP를 검색해보세요"} initialText={search_key} handleSearch={handleSearchBarChange}/></Div>
 			</Div>
 			<Div selfCenter flex flexRow>
 				<Div minW={120} fontSize15 fontSemibold mr10 selfCenter>
@@ -86,48 +94,51 @@ function UserList() {
 function UserArray({user_list}) {
 	var list = [...user_list.list.users]
 	return (
+		list.length!=0 ? 
 		<Div mb100 wFull bgWhite border1 bgOpacity90>
 			{list.map((user, _) => (
 				<UserEntry user={user} key={user.user_address}/>
 			))}
-		</Div>
+		</Div> :
+		<Div mb100 wFull bgWhite bgOpacity90>
+			<Div textCenter>유저가 존재하지 않습니다.</Div>
+	</Div> 
 	);
 }
 
 function UserEntry({user}) {
 	var list = [...user.nfts]
 	var sorted_list = sort_nfts(list)
-
-	const total_post = sorted_list.reduce(function(a, b) {return a+b.posts;},0)
-	const total_proposals = sorted_list.reduce(function(a, b) {return a+b.proposals;},0)
-	const total_contribution = sorted_list.reduce(function(a, b) {return a+b.contribution;},0)
-
+	const { search_key } = useSelector((state: RootState) => ({
+		search_key: state.admin.UserListPage.search_key,
+	}));
+	const HandleOpen=(open)=>open||search_key!=""
 	return (
-		
         <Disclosure as="div" className="w-full">
           {({ open }) => (
             <>
               <Disclosure.Button className="w-full text-gray-400 hover:bg-gray-100 hover:text-gray-500">
-				<Div py12 px16 wFull flex flexRow cursorPointer clx={`${open ? "bg-gray-100 text-gray-500" : ""}`}>
+				<Div py12 px16 wFull flex flexRow cursorPointer clx={`${HandleOpen(open) ? "bg-gray-100 text-gray-500" : ""}`}>
 					<Div justifyItemsStart wFull flex flexRow>
-						<Div fontSize20 textBlack minW={120} maxW={120} mr10 textLeft fontBold>{sorted_list[0].name ? sorted_list[0].name : sorted_list[0].nft_name}<br></br><Div fontSemibold fontSize13>{sorted_list[0].name ? sorted_list[0].nft_name : <EmptyBlock h={20} />}</Div></Div>
+						<Div fontSize20 textBlack minW={120} maxW={120} mr10 textLeft fontBold>{user.user_info.user_name ? user.user_info.user_name : user.user_info.user_nft_name}<br></br><Div fontSemibold fontSize13>{user.user_info.user_name ? user.user_info.user_nft_name : <EmptyBlock h={20} />}</Div></Div>
 						<Div flex flexRow flexWrap>
-						<DataEntry name={"PFP 개수"} w={55} label={<CubeIcon height={20} width={20} className="max-h-20 max-w-20 mr-10" />} data={sorted_list.length}/>
-						<DataEntry name={"게시물 합"} w={55} label={<PencilAltIcon height={20} width={20} className="max-h-20 max-w-20 mr-10" />} data={total_post}/>
-						<DataEntry name={"제안 합"} w={55} label={<LightBulbIcon height={20} width={20} className="max-h-20 max-w-20 mr-10" />} data={total_proposals}/>
-						<DataEntry name={"기여도 합"} w={65} label={<HeartIcon height={20} width={20} className="max-h-20 max-w-20 mr-10" />} data={total_contribution}/>
+						<DataEntry name={"PFP 개수"} w={55} label={<CubeIcon height={20} width={20} className="max-h-20 max-w-20 mr-10" />} data={user.user_info.pfp_count}/>
+						<DataEntry name={"게시물 합"} w={55} label={<PencilAltIcon height={20} width={20} className="max-h-20 max-w-20 mr-10" />} data={user.user_info.posts}/>
+						<DataEntry name={"제안 합"} w={55} label={<LightBulbIcon height={20} width={20} className="max-h-20 max-w-20 mr-10" />} data={user.user_info.proposals}/>
+						<DataEntry name={"기여도 합"} w={65} label={<HeartIcon height={20} width={20} className="max-h-20 max-w-20 mr-10" />} data={user.user_info.contribution}/>
 						</Div>
 					</Div>
 					<Div mr10 selfCenter justifyItemsEnd>
-					{(!open) && <Div px10></Div>}
-					<Transition show={open} enter="transition duration-100" enterFrom="transform rotate-0" enterTo="transform rotate-180" leave="transition duration-75" leaveFrom="transform rotate-180" leaveTo="transform rotate-0" >
+					{(!HandleOpen(open)) && <Div px10></Div>}
+					<Transition show={HandleOpen(open)} enter="transition duration-100" enterFrom="transform rotate-0" enterTo="transform rotate-180" leave="transition duration-75" leaveFrom="transform rotate-180" leaveTo="transform rotate-0" >
 						<ChevronUpIcon height={20} width={20} className="text-gray-400" />
 					</Transition>
 					</Div>
 				</Div>
               </Disclosure.Button>
-			<DefaultTransition show={open} content={
-              <Disclosure.Panel className="bg-white bg-gray-100 border-b-2">
+			  
+			<DefaultTransition show={HandleOpen(open)} content={
+              <Disclosure.Panel static className="bg-white bg-gray-100 border-b-2">
 				<UserAddressPanel user_address={user.user_address}/>
 				{sorted_list.map((nft, index) => (
 					<NftEntry nft={nft} key={index}/>
@@ -142,7 +153,6 @@ function UserEntry({user}) {
 }
 
 function NftEntry({nft}) {
-	const [loaded, setLoaded] = useState(false);
 	return (
         <Disclosure as="div" className="w-full">
           {({ open }) => (
@@ -195,7 +205,7 @@ function NftDetails({nft}) {
 		nameError,
 		handleChangeName,
 	  } = useName(nft.name ? nft.name: "");
-	  const {
+	const {
 		story,
 		storyHasChanged,
 		storyError,
@@ -210,7 +220,7 @@ function NftDetails({nft}) {
 	})
 	const dispatch = useDispatch();
 	const handleGetPosts = () => {
-		dispatch(UserListPostAction({page_size:defaultPageSize, offset:0}));
+		dispatch(UserListPostAction({page_size:defaultPageSize, offset:0, search_key:""}));
 		dispatch(UserPosttModalAction({ enabled: true, contract_address: nft?.contract_address, token_id: nft?. token_id}));
 	};
 	return (

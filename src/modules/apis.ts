@@ -96,11 +96,11 @@ const apis = {
   },
   admin: {
     user: {
-      list: (page_size, offset) => apiV1(`/admin/user/list${urlParams({page_size, offset})}`),
+      list: (page_size, offset, search_key) => apiV1(`/admin/user/list${urlParams({page_size, offset, search_key})}`),
       _: ()=>  apiV1(`/admin/user`),
     },
     post: {
-      list: (contract_address, token_id, page_size, offset) => apiV1(`/admin/post/list${urlParams({contract_address, token_id, page_size, offset})}`),
+      list: (contract_address, token_id, page_size, offset, search_key) => apiV1(`/admin/post/list${urlParams({contract_address, token_id, page_size, offset, search_key})}`),
       _: ()=> apiV1(`/admin/post`),
     },
     comment: {

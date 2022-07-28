@@ -3,10 +3,10 @@
 const querykeys = {
     admin: {
         userlist: {
-            _: (page_size:Number=null, offset:Number=null) => 
-                page_size||offset ? ['userlist', 'list', page_size, offset] : ['userlist', 'list'],
-            post: (contract_address, token_id, page_size:Number=null, offset:Number=null) => 
-            page_size||offset ? ['userlist', 'post', contract_address, token_id, page_size, offset] : ['userlist', 'post', contract_address, token_id],
+            _: (page_size:Number=null, offset:Number=null, search_key:String=null) => 
+                page_size||offset||search_key ? ['userlist', 'list', search_key, page_size, offset] : ['userlist', 'list'],
+            post: (contract_address, token_id, page_size:Number=null, offset:Number=null, search_key:String=null) => 
+            page_size||offset||search_key ? ['userlist', 'post', contract_address, token_id, search_key, page_size, offset] : ['userlist', 'post', contract_address, token_id],
         },
     }
 }

@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "src/store/reducers/rootReducer";
 import { UserPosttModalAction } from 'src/store/reducers/modalReducer'
 import { useState } from 'react'
-import { DeleteComment, DeletePost, getUserPostListQuery } from "src/hooks/queries/admin/userlist"
+import { cancelUserPostListQuery, DeleteComment, DeletePost, getUserPostListQuery } from "src/hooks/queries/admin/userlist"
 import { UserListPostAction } from "src/store/reducers/adminReducer";
 import TimerText from "../common/timertext";
 import PaginationPageSizebox from "../common/paginationpagesizebox";
@@ -15,6 +15,7 @@ import Pagination from '@mui/material/Pagination';
 
 import PostList from "../postlist";
 import { useQueryClient } from "react-query";
+import SearchBar from "src/hooks/SearchBar";
 
 export default function UserPostModal({name, contract_address, token_id}) {
 	const { UserPostEnabled, contract_address_reducer, token_id_reducer } = useSelector((state: RootState) => ({
@@ -36,18 +37,28 @@ export default function UserPostModal({name, contract_address, token_id}) {
 
 function ModalEntry({name, contract_address, token_id, closeModal}) {
 	const dispatch=useDispatch()
-	const { page_size, offset } = useSelector((state: RootState) => ({
+	const { page_size, offset, search_key } = useSelector((state: RootState) => ({
 		page_size: state.admin.UserListPostPage.page_size,
-		offset: state.admin.UserListPostPage.offset
+		offset: state.admin.UserListPostPage.offset,
+		search_key: state.admin.UserListPostPage.search_key
 	}));
-	const { isLoading:loading, isFetching:fetching,isError:error, data:post_list, refetch } = getUserPostListQuery(contract_address, token_id, page_size, offset, ()=>{setLoadingButton(true)})
+	const { isLoading:loading, isFetching:fetching,isError:error, data:post_list, refetch } = getUserPostListQuery(contract_address, token_id, page_size, offset, search_key, ()=>{setLoadingButton(true)})
 	const [LoadingButtonOn, setLoadingButton] = useState(false)
 	const loading_status = fetching&&!loading
+	const queryClient = useQueryClient()
+
+	const refetchUserPost = (page_size, offset, search_key) => {
+		cancelUserPostListQuery(queryClient, contract_address, token_id);
+		dispatch(UserListPostAction({page_size:page_size, offset:offset, search_key:search_key}));
+	}
 	const handlePaginationOffsetChange = (event: React.ChangeEvent<unknown>, value: number) => {
-		dispatch(UserListPostAction({page_size:page_size, offset:value-1}));
+		if (offset!=value-1) refetchUserPost(page_size, value-1, search_key);
 	};
-	const handlePaginationPageSizeChange= (page_size) => {
-		dispatch(UserListPostAction({page_size:page_size, offset:0}));
+	const handlePaginationPageSizeChange= (page_size_input) => {
+		if (page_size!=page_size_input)	refetchUserPost(page_size_input, 0, search_key);
+	};
+	const handleSearchBarChange= (search_key_input) => {
+		refetchUserPost(page_size, 0, search_key_input);
 	};
 	return (
 		<Div zIndex={-1000} wFull hFull flex itemsCenter justifyCenter>
@@ -73,6 +84,7 @@ function ModalEntry({name, contract_address, token_id, closeModal}) {
 						<Div selfCenter flex flexRow>
 							<PaginationPageSizebox handlePaginationPageSizeChange={handlePaginationPageSizeChange} page_size={page_size}/>
 							<Div selfCenter>개씩 보기</Div>
+							<Div selfCenter ml10><SearchBar w={250} placeholder={"원하시는 내용을 검색해보세요."} initialText={search_key} handleSearch={handleSearchBarChange}/></Div>
 						</Div>
 					</Div>
 					<Div selfCenter flex flexRow>

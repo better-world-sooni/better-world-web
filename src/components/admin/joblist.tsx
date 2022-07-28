@@ -8,7 +8,7 @@ export default function Joblist({frame}) {
     const [adminComponent, setaadminComponent] = useState(frame[0])
     const dispatch = useDispatch();
     const defaultpatch = () => {
-        dispatch(UserListAction({page_size:defaultPageSize, offset:0}));
+        dispatch(UserListAction({page_size:defaultPageSize, offset:0, search_key:""}));
     }
 	return (
         <Div hFull wFull px80 flex itemsStart justifyStart bgBlack auto bgWhite my60>

@@ -7,10 +7,12 @@ const initialState = {
   UserListPage: {
     page_size: defaultPageSize,
     offset: 0,
+    search_key: "",
   },
   UserListPostPage: {
     page_size: defaultPageSize,
     offset: 0,
+    search_key: "",
   },
 }
 
@@ -21,8 +23,8 @@ export const USERLISTPOST = 'admin/USERLISTPOST' as const
 
 // action function
 export const currentNftAction = ({currentNft}) => ({ type: CURRENT_NFT, currentNft})
-export const UserListAction = ({page_size, offset}) => ({ type: USERLISTPAGE, page_size, offset})
-export const UserListPostAction = ({page_size, offset}) => ({ type: USERLISTPOST, page_size, offset})
+export const UserListAction = ({page_size, offset, search_key}) => ({ type: USERLISTPAGE, page_size, offset, search_key})
+export const UserListPostAction = ({page_size, offset, search_key}) => ({ type: USERLISTPOST, page_size, offset, search_key})
 
 const f = (action, func) => func(action)
 
@@ -38,22 +40,24 @@ export const adminReducer = (state = initialState, action) => {
         }
       })
       case USERLISTPAGE:
-        return f(action, ({page_size, offset}) => {
+        return f(action, ({page_size, offset, search_key}) => {
           return {
             ...state,
             UserListPage: {
               page_size,
               offset,
+              search_key,
             }
           }
         })
         case USERLISTPOST:
-        return f(action, ({page_size, offset}) => {
+        return f(action, ({page_size, offset, search_key}) => {
           return {
             ...state,
             UserListPostPage: {
               page_size,
               offset,
+              search_key,
             }
           }
         })
