@@ -53,9 +53,7 @@ const MainTopBar = ({ currentUser, currentNft }) => {
 						<Div rounded10 onClick={gotoHome} cursorPointer>
 							<Div w44 imgTag src={IMAGES.betterWorldBold}></Div>
 						</Div>
-						<Div w120 imgTag src={IMAGES.betterWorldWord} onClick={gotoHome} cursorPointer>
-						</Div>
-						<Div textSecondary italic>αlpha</Div>
+						<Div w120 imgTag src={IMAGES.betterWorldWord} onClick={gotoHome} cursorPointer></Div>
 						<Div flex1 />
 						<Div ml8 roundedFull fontSize15 py6 px20 cursorPointer onClick={gotoOnboarding}>
 							WeBe 온보딩
