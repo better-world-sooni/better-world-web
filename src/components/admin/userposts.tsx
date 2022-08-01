@@ -79,12 +79,12 @@ function ModalEntry({name, contract_address, token_id, closeModal}) {
 				</Div>
 				<Div mt10 px10 wFull selfCenter>
 				<Div wFull flex flexCol>
-					<Div mt15 selfCenter flex flexRow wFull>
+					<Div mt15 selfCenter flex flexRow wFull mb10>
 					<Div justifyItemsStart flex flexRow wFull>
 						<Div selfCenter flex flexRow>
 							<PaginationPageSizebox handlePaginationPageSizeChange={handlePaginationPageSizeChange} page_size={page_size}/>
 							<Div selfCenter>개씩 보기</Div>
-							<Div selfCenter ml10><SearchBar w={250} placeholder={"원하시는 내용을 검색해보세요."} initialText={search_key} handleSearch={handleSearchBarChange}/></Div>
+							<Div selfCenter ml10><SearchBar w={250} placeholder={"원하는 내용을 검색해보세요"} initialText={search_key} handleSearch={handleSearchBarChange}/></Div>
 						</Div>
 					</Div>
 					<Div selfCenter flex flexRow>

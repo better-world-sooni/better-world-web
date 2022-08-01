@@ -56,7 +56,7 @@ function UserList() {
 			<Div justifyItemsStart flex flexRow wFull>
 				<Div selfCenter><PaginationPageSizebox handlePaginationPageSizeChange={handlePaginationPageSizeChange} page_size={page_size}/></Div>
 				<Div selfCenter>개씩 보기</Div>
-				<Div selfCenter ml10><SearchBar w={250} placeholder={"원하시는 PFP를 검색해보세요"} initialText={search_key} handleSearch={handleSearchBarChange}/></Div>
+				<Div selfCenter ml10><SearchBar w={250} placeholder={"원하는 NFT를 검색해보세요"} initialText={search_key} handleSearch={handleSearchBarChange}/></Div>
 			</Div>
 			<Div selfCenter flex flexRow>
 				<Div minW={120} fontSize15 fontSemibold mr10 selfCenter>
@@ -120,7 +120,7 @@ function UserEntry({user}) {
               <Disclosure.Button className="w-full text-gray-400 hover:bg-gray-100 hover:text-gray-500">
 				<Div py12 px16 wFull flex flexRow cursorPointer clx={`${HandleOpen(open) ? "bg-gray-100 text-gray-500" : ""}`}>
 					<Div justifyItemsStart wFull flex flexRow>
-						<Div fontSize20 textBlack minW={120} maxW={120} mr10 textLeft fontBold>{user.user_info.user_name ? user.user_info.user_name : user.user_info.user_nft_name}<br></br><Div fontSemibold fontSize13>{user.user_info.user_name ? user.user_info.user_nft_name : <EmptyBlock h={20} />}</Div></Div>
+						<Div fontSize20 textBlack minW={120} maxW={120} mr10 textLeft fontBold overflowEllipsis overflowHidden whitespaceNowrap>{user.user_info.user_name ? user.user_info.user_name : user.user_info.user_nft_name}<br></br><Div fontSemibold fontSize13 overflowEllipsis overflowHidden whitespaceNowrap>{user.user_info.user_name ? user.user_info.user_nft_name : <EmptyBlock h={20} />}</Div></Div>
 						<Div flex flexRow flexWrap>
 						<DataEntry name={"PFP 개수"} w={55} label={<CubeIcon height={20} width={20} className="max-h-20 max-w-20 mr-10" />} data={user.user_info.pfp_count}/>
 						<DataEntry name={"게시물 합"} w={55} label={<PencilAltIcon height={20} width={20} className="max-h-20 max-w-20 mr-10" />} data={user.user_info.posts}/>
@@ -165,7 +165,7 @@ function NftEntry({nft}) {
 					<Div justifyItemsStart wFull flex flexRow>
 				
 					<Div fontSize20 selfCenter textBlack minW={120} maxW={120} mr25 textLeft fontBold><Div flex flexRow>
-						{nft.name ? nft.name : nft.nft_name}
+						<Div overflowEllipsis overflowHidden whitespaceNowrap>{nft.name ? nft.name : nft.nft_name}</Div>
 						<Div selfCenter>{nft.main ? <SparklesIcon height={15} width={15} className="max-h-15 max-w-15 ml-10" />:" "}</Div>
 							</Div>
 						<Div fontSemibold fontSize13>{nft.name ? nft.nft_name : <EmptyBlock h={20} /> }</Div></Div>
@@ -255,7 +255,7 @@ function NftDetails({nft}) {
 			<DataEntry w={130} label={<Div flex flexRow><CogIcon height={20} width={20} className="max-h-20 max-w-20 mr-10 mb-20" />Admin</Div>} data={<Div><SwitchToggle checked={privilege} onChange={handleChangeprivilege} lock={LockAdminToggle} /><EmptyBlock h={15} /></Div>}/>
 			<Div selfCenter mb10 justifyItemsStart flex flexRow ml25 mr25>
 				<Div>
-				<Div px10 cursorPointer py5 bgGray400 rounded10 clx="hover:bg-gray-600 hover:text-white" onClick={handleGetPosts} > 게시물 관리</Div><EmptyBlock h={20} />
+				<Div px10 mt10 cursorPointer py5 bgGray400 rounded10 clx="hover:bg-gray-600 hover:text-white" onClick={handleGetPosts} > 게시물 관리</Div><EmptyBlock h={20} />
 				</Div>
 			</Div>
 

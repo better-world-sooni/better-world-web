@@ -36,7 +36,7 @@ function PostEntry({post, showEntry, maxCommentLength, postModal, CommentModal})
 				<Div py4 px16 wFull flex flexRow cursorPointer clx={`${open ? "bg-gray-100 text-gray-700" : ""}`}>
                     <PostType post={post} w={20} labelsize={20}/>
 					<Div justifyItemsStart selfCenter wFull flex flexRow truncate >
-						<Div>{post.content}</Div>
+						<Div overflowEllipsis overflowHidden whitespaceNowrap >{post.content}</Div>
 					</Div>
 					<Div selfCenter flex flexCol>
 					<Div flex flexRow selfCenter>
@@ -77,7 +77,7 @@ export function PostDetails({post, showEntry=true, maxCommentLength=2, postModal
 			<Div px10 py10 selfStart flex flexRow wFull>
 				<Div selfCenter wFull flex flexRow>
 					<Div selfCenter mr10>
-					<ProfileImage width={30} height={30} uri={post.nft.nft_metadatum.image_uri} rounded={true} />
+					<ProfileImage width={30} height={30} uri={post.nft.image_uri} rounded={true} />
 					</Div>
 					<Div selfCenter fontBold>{post.nft.name? post.nft.name: post.nft.nft_metadatum.name}</Div>
 				</Div>
@@ -113,7 +113,7 @@ function ContentDetails({post, loadImage=true, loadComment=true, maxCommentLengt
 				<TruncatedText text={post.content} maxLength={300}/>
 			</Div>
 			{post.reposted_post && <Div wFull selfCenter mt30><RepostDetails repost={post.reposted_post}/></Div>}
-			{loadImage && (post.image_uris.length > 0) && <Div selfCenter mt30><ImageSlide maxHeight={500} maxWidth={500} uris={post.image_uris} click={false}/></Div>}
+			{loadImage && (post.image_uris.length > 0) && <Div selfCenter mt30><ImageSlide maxHeight={500} maxWidth={500} uris={post.image_uris} click={true}/></Div>}
 			{(loadComment && post.comments_count!=0) &&<Div mt30 borderT1 borderGray400 ml50 mr50 px20 py20><TruncatedComment comments={post.comments} maxLength={maxCommentLength} CommentModal={CommentModal}/></Div>}
 		</Div>
 	)
@@ -124,7 +124,7 @@ function TruncatedText({text, maxLength}) {
 	return (
 		<Div textBase>
 		{full ? (
-			<Div>
+			<Div breakAll>
 			<ReactMarkdown children={text}></ReactMarkdown>
 			<Div onClick={()=>setfull(false)} cursorPointer fontBold>
 			간략히
@@ -161,7 +161,7 @@ function Comment({comment, maxLength, CommentModal}) {
 		<Div wFull flex flexRow>
 				<Div selfCenter flex flexRow w={200}>
 					<Div selfCenter mr10>
-					<ProfileImage width={30} height={30} uri={comment.nft.nft_metadatum.image_uri} rounded={true} />
+					<ProfileImage width={30} height={30} uri={comment.nft.image_uri} rounded={true} />
 					</Div>
 					<Div selfCenter fontBold>{comment.nft.name? comment.nft.name: comment.nft.nft_metadatum.name}</Div>
 				</Div>
@@ -194,7 +194,7 @@ function RepostDetails({repost}) {
 				<Div px10 py10 selfStart flex flexRow wFull>
 					<Div selfCenter wFull flex flexRow>
 						<Div selfCenter mr10>
-						<ProfileImage width={30} height={30} uri={repost.nft.nft_metadatum.image_uri} rounded={true} />
+						<ProfileImage width={30} height={30} uri={repost.nft.image_uri} rounded={true} />
 						</Div>
 						<Div selfCenter fontBold>{repost.nft.name? repost.nft.name: repost.nft.nft_metadatum.name}</Div>
 					</Div>
@@ -220,19 +220,19 @@ function PostType({post, w, labelsize, details=false}) {
 	return (
 		post.type=='Proposal' ?
         !(post.voting_status==0||post.voting_status==1) ?
-        !details && <DataEntry name={"제안"} w={w} label={<LightBulbIcon height={labelsize} width={labelsize} className="max-h-20 max-w-20" />} data={""}/>:
+        !details && <DataEntry name={"제안"} w={w} label={<LightBulbIcon height={labelsize} width={labelsize} className="max-h-20 max-w-20" />} data={""} dataEnabled={false}/>:
         <>
             {post.voting_status==0 && (details ? 
                 <Div py5 px5 bgGray200 rounded fontBold mr20><DataEntryWithoutMargin name={""} w={w} label={<XIcon height={labelsize} width={labelsize} className="max-h-20 max-w-20 text-danger mr-10" />} data={"거절됨"}/></Div>
                 :
-                <DataEntry name={"거절된 제안"} w={w} label={<LightBulbIcon height={labelsize} width={labelsize} className="max-h-20 max-w-20 text-danger" />} data={""}/>)}
+                <DataEntry name={"거절된 제안"} w={w} label={<LightBulbIcon height={labelsize} width={labelsize} className="max-h-20 max-w-20 text-danger" />} data={""} dataEnabled={false}/>)}
             {post.voting_status==1 && (details ? 
                 <Div py5 px5 bgGray200 rounded fontBold mr20><DataEntryWithoutMargin name={""} w={w} label={<CheckIcon height={labelsize} width={labelsize} className="max-h-20 max-w-20 text-success mr-10" />} data={"통과됨"}/></Div>
             :
-            <DataEntry name={"통과된 제안"} w={w} label={<LightBulbIcon height={labelsize} width={labelsize} className="max-h-20 max-w-20 text-success" />} data={""}/>)}
+            <DataEntry name={"통과된 제안"} w={w} label={<LightBulbIcon height={labelsize} width={labelsize} className="max-h-20 max-w-20 text-success" />} data={""} dataEnabled={false}/>)}
         </>
         :
-        !details && <DataEntry name={"게시물"} w={w} label={<PencilAltIcon height={labelsize} width={labelsize} className="max-h-20 max-w-20" />} data={""}/>
+        !details && <DataEntry name={"게시물"} w={w} label={<PencilAltIcon height={labelsize} width={labelsize} className="max-h-20 max-w-20" />} data={""} dataEnabled={false}/>
 	)
 }
 

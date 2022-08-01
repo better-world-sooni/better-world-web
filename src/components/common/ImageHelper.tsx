@@ -73,10 +73,11 @@ const Video = ({uri, maxWidth, maxHeight}) => {
                     className='react-player'
                     url={uri}
                     width={maxWidth}
-                    height={maxHeight-30}
+                    height={maxHeight}
                     playing={true}
                     muted={true}
                     controls={true}
+                    loop={true}
                 />
             </Div>
     )
@@ -85,15 +86,13 @@ const Video = ({uri, maxWidth, maxHeight}) => {
 
 export function ImageSlide({uris, maxWidth, maxHeight, click=false}) {
     const carouselRef = useRef(null);
-    const modified_uris=uris;
-    // const modified_uris=uris.concat('https://d6d3sarhyklmq.cloudfront.net/post/image/3e91b714-9cda-41dd-8810-863e0a00de56.mp4')
     return (
-        modified_uris.length>1 ?
+        uris.length>1 ?
         <Div h={maxHeight} w={maxWidth} bgBlack bgOpacity90>
         <Carousel auto ref={carouselRef} widgets={[IndicatorDots, IndicatorButtons]}>
-        {modified_uris.map((uri, index) => (
+        {uris.map((uri, index) => (
                 uri.endsWith('.mp4') ? 
-                <GetVideo maxHeight={maxHeight} maxWidth={maxWidth} uri={uri} key={index}/>
+                <GetVideo maxHeight={maxHeight-30} maxWidth={maxWidth} uri={uri} key={index}/>
                 :
 				<GetImage maxHeight={maxHeight} maxWidth={maxWidth} uri={uri} click={click} key={index}/>
 			)).filter((item) => item)}
@@ -101,10 +100,10 @@ export function ImageSlide({uris, maxWidth, maxHeight, click=false}) {
         </Div>
         :
         <Div h={maxHeight} w={maxWidth}>
-                {modified_uris[0].endsWith('.mp4') ? 
-                <GetVideo maxHeight={maxHeight} maxWidth={maxWidth} uri={modified_uris[0]}/>
+                {uris[0].endsWith('.mp4') ? 
+                <GetVideo maxHeight={maxHeight} maxWidth={maxWidth} uri={uris[0]}/>
                 :
-				<GetImage maxHeight={maxHeight} maxWidth={maxWidth} uri={modified_uris[0]} click={click}/>}
+				<GetImage maxHeight={maxHeight} maxWidth={maxWidth} uri={uris[0]} click={click}/>}
         </Div>
     );
 }
