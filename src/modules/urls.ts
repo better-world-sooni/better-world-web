@@ -13,6 +13,9 @@ export const urls = {
     onboarding: {
         index: () => `/onboarding`
     },
+    admin: {
+        index: () => `/admin`
+    },
     nftProfile: {
         contractAddressAndTokenId: (contractAddress, tokenId) => {
             return `/nft-profile/${contractAddress}/${tokenId}`
