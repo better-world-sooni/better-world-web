@@ -49,7 +49,7 @@ export default function Footer() {
 			<Div mxAuto maxW={1100} pb30>
 				<Row itemsCenter>
 					<Col auto p10 onClick={handleClickGomz}>
-						<Div imgTag src={IMAGES.betterWorldBold} h35></Div>
+						<Div imgTag src={IMAGES.betterWorl_colorLogo} h50></Div>
 					</Col>
 					<Col textSecondary py10>
 						<Row py2>

@@ -8,7 +8,7 @@ export const IMAGES = {
     betterWorldWhiteLogo: '/images/logos/betterWorldWhiteLogo.png',
     betterWorldBlueShadowLogo: '/images/logos/betterWorldBlueShadowLogo.png',
     betterWorldFullLogo: '/images/logos/betterWorldFullLogo.png',
-    betterWorldBold: '/images/logos/betterWorldBold.png',
+    betterWorl_colorLogo: '/images/logos/betterWorldLogo_Alpha.png',
     betterWorldWord: '/images/logos/betterWorldWord.png',
     webeDraft: '/images/webeDraft.png',
     webeDraft2: '/images/webeDraft2.png',

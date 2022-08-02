@@ -32,7 +32,7 @@
     "classnames": "^2.3.1",
     "crypto-js": "^4.1.1",
     "fs": "^0.0.1-security",
-    "gsap": "^3.9.1",
+    "gsap": "^3.10.4",
     "isomorphic-unfetch": "^3.1.0",
     "js-sha3": "^0.8.0",
     "lerp": "^1.0.3",
