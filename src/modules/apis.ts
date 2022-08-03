@@ -93,7 +93,20 @@ const apis = {
       contractAddressAndTokenId: (contractAddress, tokenId) => apiV1(`/chat/room/${contractAddress}/${tokenId}`),
       roomId: (roomId) => apiV1(`/chat/room/${roomId}`),
     } 
-  }
+  },
+  admin: {
+    user: {
+      list: (page_size, offset, search_key) => apiV1(`/admin/user/list${urlParams({page_size, offset, search_key})}`),
+      _: ()=>  apiV1(`/admin/user`),
+    },
+    post: {
+      list: (contract_address, token_id, page_size, offset, search_key) => apiV1(`/admin/post/list${urlParams({contract_address, token_id, page_size, offset, search_key})}`),
+      _: ()=> apiV1(`/admin/post`),
+    },
+    comment: {
+      _: ()=> apiV1(`/admin/comment`),
+    }
+  },
 }
 
 const mapFunctionToPath = (data, path = []) => {

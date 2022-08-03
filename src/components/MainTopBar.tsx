@@ -1,4 +1,4 @@
-import { LockClosedIcon, SparklesIcon } from "@heroicons/react/outline";
+import { LockClosedIcon, SparklesIcon, CogIcon } from "@heroicons/react/outline";
 import { useDispatch } from "react-redux";
 import { emailVerificationAction, loginQRModalAction, switchAccountModalAction } from "src/store/reducers/modalReducer";
 import Div from "src/components/Div";
@@ -51,9 +51,10 @@ const MainTopBar = ({ currentUser, currentNft }) => {
 				<Div maxW={1100} mxAuto>
 					<Div flex itemsCenter py12 gapX={8}>
 						<Div rounded10 onClick={gotoHome} cursorPointer>
-							<Div w44 imgTag src={IMAGES.betterWorldBold}></Div>
+							<Div w36 imgTag src={IMAGES.betterWorl_colorLogo}></Div>
 						</Div>
-						<Div w120 imgTag src={IMAGES.betterWorldWord} onClick={gotoHome} cursorPointer></Div>
+						<Div w120 imgTag src={IMAGES.betterWorldWord} onClick={gotoHome} cursorPointer>
+						</Div>
 						<Div flex1 />
 						<Div ml8 roundedFull fontSize15 py6 px20 cursorPointer onClick={gotoOnboarding}>
 							WeBe 온보딩
@@ -96,6 +97,9 @@ function ProfileDropdown({ currentNft, currentUser }) {
 	const handleClickRemoveAccount = () => {
 		dispatch(removeAccountAuthAction({}));
 	};
+	const gotoAdmin = () => {
+		href(urls.admin.index());
+	};
 	return (
 		<Menu as="div">
 			<Menu.Button>
@@ -118,6 +122,27 @@ function ProfileDropdown({ currentNft, currentUser }) {
 			>
 				<Menu.Items className="origin-top-right absolute mt-2 rounded-lg border-1 bg-white focus:outline-none ">
 					<Div textBase>
+					{currentNft?.privilege && (
+							<Menu.Item>
+								{({ active }) => (
+									<Div
+										onClick={gotoAdmin}
+										py12
+										px16
+										flex
+										flexRow
+										itemsCenter
+										cursorPointer
+										clx={`${active ? "bg-gray-100 text-black" : "text-gray-800"}`}
+									>
+										<Div mr10>
+											<CogIcon height={20} width={20} />
+										</Div>{" "}
+										<Div>ADMIN</Div>
+									</Div>
+								)}
+							</Menu.Item>
+						)}
 						{currentNft && (
 							<Menu.Item>
 								{({ active }) => (
