@@ -20,13 +20,22 @@ const CheckModal=(Title="", Label, YesAction=null, NoAction=null, yesLabel="예"
     const openModal = () => {
         setCheckModalEnabled(true);
     }
+    const Modal = () => (
+			<CheckModalEntry
+				Title={Title}
+				Label={Label}
+				CheckModalEnabled={CheckModalEnabled}
+				HandleYes={HandleYes}
+				HandleNo={HandleNo}
+				yesLabel={yesLabel}
+				noLabel={noLabel}
+			/>
+		);
 
-	return (
-		{Modal: 
-            ()=><CheckModalEntry Title={Title} Label={Label} CheckModalEnabled={CheckModalEnabled} HandleYes={HandleYes} HandleNo={HandleNo} yesLabel={yesLabel} noLabel={noLabel}/>
-        ,
-        openModal: openModal}
-	);
+		return {
+			Modal,
+			openModal,
+		};
 }
 
 
