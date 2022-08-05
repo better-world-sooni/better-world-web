@@ -6,6 +6,7 @@ import React from 'react';
 import ReactCardCarousel from "react-card-carousel";
 import TypeAnimation from "react-type-animation";
 import Fade from 'react-reveal/Fade';
+import ContentControll from "src/components/control";
 export default function Home({ currentUser, currentNft }) {
 	return (
 		<>
@@ -32,13 +33,14 @@ export default function Home({ currentUser, currentNft }) {
 					</Div>
 				</Div>
 			</Div>
-			<Fade up>
+			<ContentControll/>
+			{/* <Fade up>
 				<Div my100 flex justifyCenter itemsCenter>
 					<Div flexCol>
 						<Div fontBold fontSize32 textCenter> 커뮤니티 포럼 </Div>
 						<Div textGray500 mt20 fontSize20 textCenter maxW280>가나다라마바사 가나다라마바,아아아아아, 하이나여노세요. 이제는 이라조다아리다입니다.</Div>
 					</Div>
-					<Div shadow2xl border5 borderBlack roundedXl ml200 maxW270 imgTag src={IMAGES.appDraft}></Div>
+					<Div shadow2xl border5 borderBlack roundedXl ml200 maxW270 imgTag src={IMAGES.appDraft1}></Div>
 				</Div>
 			</Fade>
 			<Fade up>
@@ -67,7 +69,7 @@ export default function Home({ currentUser, currentNft }) {
 						<Div textGray500 mt20 fontSize20 textCenter maxW280>가나다라마바사 가나다라마바,아아아아아, 하이나여노세요. 이제는 이라조다아리다입니다.</Div>
 					</Div>
 				</Div>
-			</Fade>
+			</Fade> */}
 			<Div hScreen wFull flex itemsCenter justifyCenter bgPrimaryLight relative>
 				<Div flexCol>
 					<Div textSecondary uniSans fontSize={"7vw"} textCenter lineHeight={"6.5vw"}>

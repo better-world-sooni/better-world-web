@@ -13,10 +13,23 @@ export const IMAGES = {
     webeDraft: '/images/webeDraft.png',
     webeDraft2: '/images/webeDraft2.png',
     webeDraft3: '/images/webeDraft3.png',
-    appDraft: 'images/appDraft.png',
-    appDraft2: 'images/appDraft2.png',
-    appDraft3: 'images/appDraft3.png',
+    appDraft1: {
+        bgback:'images/appDraft1_1.png',
+        bgfront:'images/appDraft1_2.png',
+        content:'images/appDraft1_3.png',
+        
+    },
+    appDraft2: {
+        tool:'images/appDraft2_1.png',
+        content:'images/appDraft2_2.png',
+    },
+    appDraft3: {
+        initial:'images/appDraft3_1.png',
+        end:'images/appDraft3_2.png',
+    },
     appDraft4: 'images/appDraft4.png',
+    appDraft5: 'images/appDraft4.png',
+    iphon13: 'images/iphone13_pro.png',
     gomzDAOExample: '/images/gomzDAOExample.png',
     backButton: '/images/back.png',
     betterWorldFeedExample: '/images/feed.png',
