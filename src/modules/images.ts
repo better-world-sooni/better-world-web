@@ -15,7 +15,8 @@ export const IMAGES = {
     webeDraft3: '/images/webeDraft3.png',
     appDraft1: {
         bgback:'images/appDraft1_1.png',
-        bgfront:'images/appDraft1_2.png',
+        bgfront1:'images/appDraft1_2_1.png',
+        bgfront2:'images/appDraft1_2_2.png',
         content:'images/appDraft1_3.png',
         
     },
@@ -27,8 +28,28 @@ export const IMAGES = {
         initial:'images/appDraft3_1.png',
         end:'images/appDraft3_2.png',
     },
-    appDraft4: 'images/appDraft4.png',
-    appDraft5: 'images/appDraft4.png',
+    appDraft4: {
+        initial:'images/appDraft4_1.png',
+        end:'images/appDraft4_2.png',
+    },
+    appDraft5: {
+        initial:'images/appDraft5_1.png',
+        end:'images/appDraft5_2.png',
+    },
+    appDraft6: {
+        holder:{
+            initial:'images/appDraft6_1.png',
+            end:'images/appDraft6_2.png',
+        },
+        auth:{
+            initial:'images/appDraft6_3.png',
+            end:'images/appDraft6_4.png',
+        }
+    },
+    bwLogo: {
+        bg:'images/bwLogo_1.png',
+        content:'images/bwLogo_2.png',
+    },
     iphon13: 'images/iphone13_pro.png',
     gomzDAOExample: '/images/gomzDAOExample.png',
     backButton: '/images/back.png',
