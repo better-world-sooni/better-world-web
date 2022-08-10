@@ -21,7 +21,7 @@ export default function Home({ currentUser, currentNft }) {
 	return (
 		<>
 			<MainTopBar currentUser={currentUser} currentNft={currentNft} />
-			<Div wFull hScreen flex itemsCenter justifyCenter overflowHidden>
+			<Div wFull flex itemsCenter justifyCenter>
 				{/* <HeaderAnimatedMod time={0.5} once={false} appstore={appstore} playstore={playstore}/> */}
 				<HeaderAnimated time={0.5} once={false} appstore={appstore} playstore={playstore}/>
 			</Div>
