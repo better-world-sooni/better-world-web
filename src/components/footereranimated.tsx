@@ -78,8 +78,8 @@ export default function FooterAnimated({time, once, appstore, playstore}) {
 			<EmptyBlock h={90}/>
 		</Div>
 	<Div flexCol selfCenter itemsCenter>
-		<motion.li variants={text1Animation}><Div imgTag h70 src={IMAGES.logoword.first}/></motion.li>
-		<motion.li variants={text2Animation}><Div mt30 imgTag h={26} src={IMAGES.logoword.second}/></motion.li>
+		<motion.li variants={text1Animation}><Div imgTag h70 src={IMAGES.logoword.firstGradient}/></motion.li>
+		<motion.li variants={text2Animation}><Div mt30 imgTag h={26} src={IMAGES.logoword.secondBlack}/></motion.li>
 	</Div>
 	</Div>
 	<motion.li variants={linkAnimation}>

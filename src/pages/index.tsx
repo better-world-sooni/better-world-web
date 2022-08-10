@@ -8,8 +8,8 @@ import FooterAnimated from "src/components/footereranimated";
 import { href } from "src/modules/routeHelper";
 import HeaderAnimatedMod from "src/components/headeranimatedmodi";
 
-const appstorelink="https://apps.apple.com/kr/app/betterworld/id1629301689"
-const playstorelink="https://play.google.com/store/apps/details?id=com.betterworld"
+export const appstorelink="https://apps.apple.com/kr/app/betterworld/id1629301689"
+export const playstorelink="https://play.google.com/store/apps/details?id=com.betterworld"
 
 export default function Home({ currentUser, currentNft }) {
 	const appstore = () => {

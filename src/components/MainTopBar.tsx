@@ -17,7 +17,7 @@ import EmailVerificationModal from "./modals/EmailVerificationModal";
 import LoginQRModal from "./modals/LoginQRModal";
 import BasicHead from "./BasicHead";
 import { IdentificationIcon, KeyIcon, QrcodeIcon, UserCircleIcon } from "@heroicons/react/solid";
-import { SvgIcon, Tooltip, Typography } from "@mui/material";
+import { Tooltip } from "@mui/material";
 
 const MainTopBar = ({ currentUser, currentNft }) => {
 	const { locale } = useRouter();
@@ -46,8 +46,10 @@ const MainTopBar = ({ currentUser, currentNft }) => {
 
 	function TopBarEntry({Content, onClick, tooltip}) {
 		return (
-			<Tooltip title={tooltip} placement="bottom" arrow><Div opacity40 selfCenter ml20 cursorPointer h32 w32 roundedFull onClick={onClick}>
-				<Div style={{color: "-webkit-linear-gradient(45deg, #AA37FF 30%, #4738FF 90%)"}}> {Content} </Div>
+			<Tooltip title={tooltip} placement="bottom" arrow><Div opacity40 selfCenter ml20 cursorPointer h32 w32 roundedFull style={{background: "-webkit-linear-gradient(-45deg, #AA37FF 30%, #4738FF 90%)",
+			WebkitBackgroundClip: "text",
+			WebkitTextFillColor: "transparent",}} onClick={onClick}>
+				<Div> {Content} </Div>
 			  </Div></Tooltip>
 		)
 	}
@@ -65,7 +67,7 @@ const MainTopBar = ({ currentUser, currentNft }) => {
 						<Div rounded10 cursorPointer>
 							<Div w36 imgTag src={IMAGES.betterWorl_colorLogo}></Div>
 						</Div>
-						<Div w120 imgTag src={IMAGES.betterWorldWord} cursorPointer>
+						<Div w120 imgTag src={IMAGES.logoword.firstBlack} cursorPointer>
 						</Div></Div>
 						<Div flex1 />
 						<TopBarEntry onClick={gotoOnboarding} tooltip={"Webe 온보딩"} Content={

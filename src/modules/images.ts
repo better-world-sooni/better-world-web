@@ -49,8 +49,12 @@ const images = {
         }
     },
     logoword:{
-        first:'/images/logoword1.png',
-        second:'/images/logoword2.png',
+        firstBlack:'/images/words/word1.png',
+        secondGradient:'/images/words/word2.png',
+        firstGradient:'/images/words/word3.png',
+        secondBlack:'/images/words/word4.png',
+        firstWhite:'/images/words/word5.png',
+        secondWhite:'/images/words/word6.png',
     },
     headerbg:'/images/background.png',
     bwLogo: {
