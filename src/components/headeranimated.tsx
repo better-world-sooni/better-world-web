@@ -50,7 +50,7 @@ export default function HeaderAnimated({time, once, appstore, playstore}) {
 		>
 		<motion.ul variants={container}>
 		<Div relative wFull flex itemsCenter justifyCenter>
-			<Div wFull><Div imgTag src={"/images/background.png"}/></Div>
+			<Div wFull><Div imgTag src={IMAGES.mainbackground}/></Div>
 			<Div absolute hFull mb300 mt500 py50 px100>
 			<motion.li variants={text1Animation}><Div fontSize48 textCenter fontBold roundedFull whitespaceNowrap>
 				애장하는 PFP의{" "}
