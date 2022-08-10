@@ -52,7 +52,7 @@ export default function HeaderAnimatedMod({time, once, appstore, playstore}) {
 		<Div hFull wFull mt100 mb100 py50>
 			<motion.li variants={text1Animation}><Div fontSize48 textCenter fontBold bgWhite roundedFull>
 				애장하는 PFP의{" "}
-				<Div spanTag style={{background: "-webkit-linear-gradient(45deg, #AA37FF 30%, #4738FF 90%)",
+				<Div spanTag style={{background: "-webkit-linear-gradient(-45deg, #AA37FF 30%, #4738FF 90%)",
 					WebkitBackgroundClip: "text",
 					WebkitTextFillColor: "transparent",}}>특권과 혜택</Div>
 				,

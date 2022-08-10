@@ -52,13 +52,16 @@ export default function HeaderAnimated({time, once, appstore, playstore}) {
 		<Div maxW={1100} mt100 mb100 py50 px100>
 			<motion.li variants={text1Animation}><Div fontSize48 textCenter fontBold bgWhite roundedFull>
 				애장하는 PFP의{" "}
-				<Div spanTag style={{background: "-webkit-linear-gradient(45deg, #AA37FF 30%, #4738FF 90%)",
+				<Div spanTag style={{background: "-webkit-linear-gradient(-45deg, #AA37FF 30%, #4738FF 90%)",
 					WebkitBackgroundClip: "text",
 					WebkitTextFillColor: "transparent",}}>특권과 혜택</Div>
 				,
 			</Div></motion.li>
 			<motion.li variants={text2Animation}><Div fontSize48 textCenter mxAuto fontBold bgWhite roundedFull mt20>
-				지금, BetterWorld에서 간편하게 누려보세요.
+				<Div flex flexRow>
+				지금
+				<Div mb5 ml10 mr3 selfCenter imgTag h48 src={IMAGES.logoword.firstGradient}/>
+				에서 간편하게 누려보세요.</Div>
 			</Div></motion.li>
 			<motion.li variants={linkAnimation}>
 			<Div flex justifyCenter mt80 gapX={20}>
