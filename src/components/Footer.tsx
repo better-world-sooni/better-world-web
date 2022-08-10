@@ -5,7 +5,7 @@ import Div from "./Div";
 import Row from "./Row";
 import Col from "./Col";
 
-export default function Footer() {
+export default function Footer({showLogo=true}) {
 	const handleClickGomz = () => {
 		// href(urls.index);
 	};
@@ -16,9 +16,9 @@ export default function Footer() {
 			<Div px20 bgWhite bgOpacity90 borderT1>
 				<Div mxAuto maxW={1100} py20>
 					<Row itemsCenter>
-						<Col auto p30 onClick={handleClickGomz}>
+						{showLogo && <Col auto p30 onClick={handleClickGomz}>
 							<Div imgTag src={IMAGES.betterWorldBlueLogo} w100></Div>
-						</Col>
+						</Col>}
 						<Col py20 fontSize14>
 							<Row py5>
 								<Col auto>
@@ -48,9 +48,9 @@ export default function Footer() {
 		<Div px80>
 			<Div mxAuto maxW={1100} pb30>
 				<Row itemsCenter>
-					<Col auto p10 onClick={handleClickGomz}>
+					{showLogo && <Col auto p10 onClick={handleClickGomz}>
 						<Div imgTag src={IMAGES.betterWorl_colorLogo} h50></Div>
-					</Col>
+					</Col>}
 					<Col textSecondary py10>
 						<Row py2>
 							<Col auto>

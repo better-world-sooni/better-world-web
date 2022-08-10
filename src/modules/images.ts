@@ -13,10 +13,49 @@ export const IMAGES = {
     webeDraft: '/images/webeDraft.png',
     webeDraft2: '/images/webeDraft2.png',
     webeDraft3: '/images/webeDraft3.png',
-    appDraft: 'images/appDraft.png',
-    appDraft2: 'images/appDraft2.png',
-    appDraft3: 'images/appDraft3.png',
-    appDraft4: 'images/appDraft4.png',
+    appDraft1: {
+        bgback:'images/appDraft1_1.png',
+        bgfront1:'images/appDraft1_2_1.png',
+        bgfront2:'images/appDraft1_2_2.png',
+        content:'images/appDraft1_3.png',
+        
+    },
+    appDraft2: {
+        tool:'images/appDraft2_1.png',
+        content:'images/appDraft2_2.png',
+    },
+    appDraft3: {
+        initial:'images/appDraft3_1.png',
+        end:'images/appDraft3_2.png',
+    },
+    appDraft4: {
+        initial:'images/appDraft4_1.png',
+        end:'images/appDraft4_2.png',
+    },
+    appDraft5: {
+        initial:'images/appDraft5_1.png',
+        end:'images/appDraft5_2.png',
+    },
+    appDraft6: {
+        holder:{
+            initial:'images/appDraft6_1.png',
+            end:'images/appDraft6_2.png',
+        },
+        auth:{
+            initial:'images/appDraft6_3.png',
+            end:'images/appDraft6_4.png',
+        }
+    },
+    logoword:{
+        first:'images/logoword1.png',
+        second:'images/logoword2.png',
+    },
+    headerbg:'images/background.png',
+    bwLogo: {
+        bg:'images/bwLogo_1.png',
+        content:'images/bwLogo_2.png',
+    },
+    iphon13: 'images/iphone13_pro.png',
     gomzDAOExample: '/images/gomzDAOExample.png',
     backButton: '/images/back.png',
     betterWorldFeedExample: '/images/feed.png',
