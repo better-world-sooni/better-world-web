@@ -1,5 +1,5 @@
 import { LockClosedIcon, SparklesIcon, CogIcon } from "@heroicons/react/outline";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { emailVerificationAction, loginQRModalAction, switchAccountModalAction } from "src/store/reducers/modalReducer";
 import Div from "src/components/Div";
 import { useRouter } from "next/router";
@@ -16,8 +16,10 @@ import SwitchAcountModal from "./modals/SwitchAccountModal";
 import EmailVerificationModal from "./modals/EmailVerificationModal";
 import LoginQRModal from "./modals/LoginQRModal";
 import BasicHead from "./BasicHead";
-import { IdentificationIcon, KeyIcon, QrcodeIcon, UserCircleIcon } from "@heroicons/react/solid";
+import { KeyIcon, QrcodeIcon, UserCircleIcon } from "@heroicons/react/solid";
 import { Tooltip } from "@mui/material";
+import { RootState } from "src/store/reducers/rootReducer";
+import { Oval } from "react-loader-spinner";
 
 const MainTopBar = ({ currentUser, currentNft }) => {
 	const { locale } = useRouter();
@@ -26,7 +28,7 @@ const MainTopBar = ({ currentUser, currentNft }) => {
 		href(urls.index());
 	};
 	const gotoOnboarding = () => {
-		href(urls.onboarding.index());
+		href(urls.signup.index());
 	};
 	const loginWithKaikas = useLoginWithKaikas();
 	const handleGetQR = () => {
@@ -43,13 +45,16 @@ const MainTopBar = ({ currentUser, currentNft }) => {
 			}),
 		);
 	};
+	const { loginStatus } = useSelector((state: RootState) => ({
+		loginStatus: state.auth.loginStatus.enabled,
+	}));
 
 	function TopBarEntry({Content, onClick, tooltip}) {
 		return (
 			<Tooltip title={tooltip} placement="bottom" arrow><Div opacity40 selfCenter ml20 cursorPointer h32 w32 roundedFull style={{background: "-webkit-linear-gradient(-45deg, #AA37FF 30%, #4738FF 90%)",
 			WebkitBackgroundClip: "text",
 			WebkitTextFillColor: "transparent",}} onClick={onClick}>
-				<Div> {Content} </Div>
+				{Content}
 			  </Div></Tooltip>
 		)
 	}
@@ -70,9 +75,9 @@ const MainTopBar = ({ currentUser, currentNft }) => {
 						<Div w120 imgTag src={IMAGES.logoword.firstBlack} cursorPointer>
 						</Div></Div>
 						<Div flex1 />
-						<TopBarEntry onClick={gotoOnboarding} tooltip={"Webe 온보딩"} Content={
-								<IdentificationIcon/>
-							}/>
+						{!currentNft && <Div bgOpacity50 ml8 bgBlack textWhite roundedFull fontSize15 py6 px20 cursorPointer onClick={gotoOnboarding}>
+							회원가입
+						</Div>}
 						{currentNft && (
 							<TopBarEntry onClick={handleGetQR} tooltip={"로그인용 QR 발급"} Content={
 								<QrcodeIcon/>
@@ -86,7 +91,9 @@ const MainTopBar = ({ currentUser, currentNft }) => {
 						{currentUser ? (
 							<ProfileDropdown currentUser={currentUser} currentNft={currentNft} />
 						) : (
-							<TopBarEntry onClick={loginWithKaikas} tooltip={"앱 로그인"} Content={
+							loginStatus ? <Div bgOpacity40 selfCenter ml20 h32 w32 roundedFull bgBlack flex itemsCenter justifyCenter>
+								<Oval height="24" width="24" color="black" secondaryColor="#FFFFFF" strokeWidth="8" />
+							  </Div>:<TopBarEntry onClick={loginWithKaikas} tooltip={"앱 로그인"} Content={
 								<UserCircleIcon/>
 							}/>
 						)}

@@ -1,6 +1,6 @@
 import { useRouter } from "next/router";
 import { useDispatch } from "react-redux";
-import { loginAction } from "src/store/reducers/authReducer";
+import { loginAction, loginStatusAction } from "src/store/reducers/authReducer";
 import { apiHelper, apiHelperWithToken } from "./apiHelper";
 import apis from "./apis";
 import { PLATFORM } from "./constants";
@@ -31,6 +31,7 @@ export const useLoginWithKaikas = () => {
         // @ts-ignore
         if (typeof window !== "undefined" && typeof window.klaytn !== "undefined") {
             const klaytn = window["klaytn"];
+            dispatch(loginStatusAction({enabled:true}));
             try {
                 const res = await klaytn.enable();
                 const selectedAddress = res[0];
@@ -55,7 +56,7 @@ export const useLoginWithKaikas = () => {
                         dispatch(loginAction(loginParams));
                     }
                 }
-            } catch (error) {}
+            } catch (error) {dispatch(loginStatusAction({enabled:false}));}
         } else {
         }
     }

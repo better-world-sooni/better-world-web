@@ -178,7 +178,9 @@ function Congratulations({ prev }) {
 			<Div maxW={1100} mb100 rounded1000 py50 px100 bgWhite bgOpacity90>
 				<Div fontSize56 textCenter maxW={800} mxAuto fontSemibold>
 					축하드립니다!{" "}
-					<Div spanTag textPrimary>
+					<Div spanTag style={{background: "-webkit-linear-gradient(-45deg, #AA37FF 30%, #4738FF 90%)",
+					WebkitBackgroundClip: "text",
+					WebkitTextFillColor: "transparent",}}>
 						Web3 Identity
 					</Div>
 					의 의미와 가치를 커뮤니티와 함께 찾아가요.
