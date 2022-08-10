@@ -46,6 +46,11 @@ export const IMAGES = {
             end:'images/appDraft6_4.png',
         }
     },
+    logoword:{
+        first:'images/logoword1.png',
+        second:'images/logoword2.png',
+    },
+    headerbg:'images/background.png',
     bwLogo: {
         bg:'images/bwLogo_1.png',
         content:'images/bwLogo_2.png',

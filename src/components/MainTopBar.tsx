@@ -16,6 +16,8 @@ import SwitchAcountModal from "./modals/SwitchAccountModal";
 import EmailVerificationModal from "./modals/EmailVerificationModal";
 import LoginQRModal from "./modals/LoginQRModal";
 import BasicHead from "./BasicHead";
+import { IdentificationIcon, KeyIcon, QrcodeIcon, UserCircleIcon } from "@heroicons/react/solid";
+import { SvgIcon, Tooltip, Typography } from "@mui/material";
 
 const MainTopBar = ({ currentUser, currentNft }) => {
 	const { locale } = useRouter();
@@ -41,40 +43,50 @@ const MainTopBar = ({ currentUser, currentNft }) => {
 			}),
 		);
 	};
+
+	function TopBarEntry({Content, onClick, tooltip}) {
+		return (
+			<Tooltip title={tooltip} placement="bottom" arrow><Div opacity40 selfCenter ml20 cursorPointer h32 w32 roundedFull onClick={onClick}>
+				<Div style={{color: "-webkit-linear-gradient(45deg, #AA37FF 30%, #4738FF 90%)"}}> {Content} </Div>
+			  </Div></Tooltip>
+		)
+	}
+
 	return (
 		<>
 			<BasicHead />
 			<SwitchAcountModal />
 			<EmailVerificationModal />
 			<LoginQRModal address={currentUser?.address} />
-			<Div px80 absolute top0 bgWhite borderB1 wFull z100>
-				<Div maxW={1100} mxAuto>
+			<Div px80 absolute top0 wFull z100>
+				<Div wFull mxAuto>
 					<Div flex itemsCenter py12 gapX={8}>
-						<Div rounded10 onClick={gotoHome} cursorPointer>
+						<Div flex itemsCenter py12 gapX={8} onClick={gotoHome}>
+						<Div rounded10 cursorPointer>
 							<Div w36 imgTag src={IMAGES.betterWorl_colorLogo}></Div>
 						</Div>
-						<Div w120 imgTag src={IMAGES.betterWorldWord} onClick={gotoHome} cursorPointer>
-						</Div>
+						<Div w120 imgTag src={IMAGES.betterWorldWord} cursorPointer>
+						</Div></Div>
 						<Div flex1 />
-						<Div ml8 roundedFull fontSize15 py6 px20 cursorPointer onClick={gotoOnboarding}>
-							WeBe 온보딩
-						</Div>
+						<TopBarEntry onClick={gotoOnboarding} tooltip={"Webe 온보딩"} Content={
+								<IdentificationIcon/>
+							}/>
 						{currentNft && (
-							<Div ml8 roundedFull border1 fontSize15 py6 px20 cursorPointer onClick={handleGetQR}>
-								로그인용 QR 발급
-							</Div>
+							<TopBarEntry onClick={handleGetQR} tooltip={"로그인용 QR 발급"} Content={
+								<QrcodeIcon/>
+							}/>
 						)}
 						{currentNft && (
-							<Div ml8 roundedFull border1 fontSize15 py6 px20 cursorPointer onClick={handleSetPassword}>
-								비밀번호 재설정
-							</Div>
+							<TopBarEntry onClick={handleSetPassword} tooltip={"비밀번호 재설정"} Content={
+								<KeyIcon/>
+							}/>
 						)}
 						{currentUser ? (
 							<ProfileDropdown currentUser={currentUser} currentNft={currentNft} />
 						) : (
-							<Div flex itemsCenter ml8 textWhite fontBold bgPrimary roundedFull fontSize15 py6 px23 cursorPointer onClick={loginWithKaikas}>
-								앱 로그인
-							</Div>
+							<TopBarEntry onClick={loginWithKaikas} tooltip={"앱 로그인"} Content={
+								<UserCircleIcon/>
+							}/>
 						)}
 					</Div>
 				</Div>
@@ -108,7 +120,7 @@ function ProfileDropdown({ currentNft, currentUser }) {
 						{truncateKlaytnAddress(currentUser.address)}
 					</Div>
 				) : (
-					<Div ml8 cursorPointer imgTag src={getNftProfileImage(currentNft, 200, 200)} h32 w32 roundedFull mt6 border1 borderBlack></Div>
+					<Div ml20 selfCenter cursorPointer imgTag src={getNftProfileImage(currentNft, 200, 200)} h32 w32 roundedFull mt6 border1 borderBlack></Div>
 				)}
 			</Menu.Button>
 			<Transition
