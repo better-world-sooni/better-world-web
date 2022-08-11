@@ -256,8 +256,8 @@ function Drafts({time, image_size, margin, hoverscale, animate_time, once}) {
 				<motion.ul variants={text}>
 				<Div absolute _translateX1over2 _translateY1over2>
 					<Div flex flexCol w={300}>
-						<Div fontBold fontSize32 textCenter> 커뮤니티 포럼 </Div>
-						<Div textGray500 fontSize20 textCenter hFull>NFT별 프로필로 혜택 이벤트에 응모하고 익명으로 소통하기</Div>
+						<Div fontBold fontSize32 textCenter> 커뮤니티 피드 </Div>
+						<Div textGray500 fontSize20 textCenter hFull>피드에서 커뮤니티 내 다양한 홀더들과 편리하게 소통하고 팔로잉 피드에서 관심있는 이야기만 모아보세요.</Div>
 					</Div>
 				</Div></motion.ul>
 			</Div>

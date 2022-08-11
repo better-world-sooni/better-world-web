@@ -27,8 +27,8 @@ function Drafts({time, image_size, margin, hoverscale, animate_time, once}) {
 
 	const draft5 = {
 		showtransition: {
-			hidden: { opacity: 0, x:(image_size.width) },
-			show: { opacity: 1, x:(image_size.width), transition: {
+			hidden: { opacity: 0, x:-(image_size.width) },
+			show: { opacity: 1, x:-(image_size.width), transition: {
 				duration: time
 			  } }
 		},
@@ -51,8 +51,8 @@ function Drafts({time, image_size, margin, hoverscale, animate_time, once}) {
 	}
 	
 	const text= {
-		hidden: {opacity: 0,x:-(image_size.width), y:-margin/2 },
-		show: {opacity:1,x:-(image_size.width), y:0, transition : {
+		hidden: {opacity: 0,x:(image_size.width), y:-margin/2 },
+		show: {opacity:1,x:(image_size.width), y:0, transition : {
 			delay: animate_time+time*1.2,
 			duration: time,
 			onComplete: () => {setHover(true);setAnimate(false)},
@@ -81,9 +81,9 @@ function Drafts({time, image_size, margin, hoverscale, animate_time, once}) {
 
 				<motion.ul variants={text}>
 				<Div absolute _translateX1over2 _translateY1over2>
-					<Div flex flexCol w={300}>
-						<Div fontBold fontSize32 textCenter> 커뮤니티 지갑 </Div>
-						<Div textGray500 fontSize20 textCenter hFull>투명한 커뮤니티 지갑 관리</Div>
+					<Div flex flexCol w={350}>
+						<Div fontBold fontSize32 textCenter> 투명한 커뮤니티 자금 관리 </Div>
+						<Div textGray500 fontSize20 textCenter hFull>커뮤니티 지갑 사용 내역을<br></br>한눈에 확인하고 관리하세요</Div>
 					</Div>
 				</Div></motion.ul>
 			</Div>
