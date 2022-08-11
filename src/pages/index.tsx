@@ -136,8 +136,8 @@ export default function Home({ currentUser, currentNft }) {
 					</Div>
 					
 			</Div>
-			<Div wFull bgGray100 borderT1 flex flexCol itemsCenter justifyCenter textCenter fontSize1 textGray500>
-				<Div mt30 mb30>
+			<Div wFull bgGray100 borderT1 flex flexCol itemsCenter justifyCenter textCenter fontSize10 textGray500>
+				<Div mt50 mb50>
 				<Div>BetterWorld from{" "}
 				<Div spanTag textGray700 aTag href={"https://soonilabs.com"}>
 					SOONI Labs
