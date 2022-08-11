@@ -19,8 +19,8 @@ export default function AppDescriptions() {
   return (<Div flex flexCol>
 	<Div selfCenter>
     <Content1modi time={time} image_size={image_size} margin={margin} hoverscale={1} animate_time={animate_time} once={once} />
-	<Content2 time={time} image_size={image_size} margin={margin} hoverscale={hoverscale} animate_time={animate_time} once={once} />
 	<Content3 time={time} image_size={image_size} margin={margin} hoverscale={hoverscale} animate_time={animate_time} once={once} />
+	<Content2 time={time} image_size={image_size} margin={margin} hoverscale={hoverscale} animate_time={animate_time} once={once} />
   	</Div></Div>);
 }
 

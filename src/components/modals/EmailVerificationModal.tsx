@@ -128,7 +128,7 @@ function ThreeStateButton({ state, onClick }) {
 			return { bgGray100: true, textGray400: true };
 		}
 		if (state == State.Clickable) {
-			return { bgPrimary: true, textWhite: true };
+			return { style:{background: "#4738FF"}, textWhite: true };
 		}
 		if (state == State.Success) {
 			return { bgSuccess: true, textWhite: true };

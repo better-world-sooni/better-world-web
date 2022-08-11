@@ -60,7 +60,7 @@ export default function LoginQRModal({ address }) {
 			<Div mx20 px30 my30 flex itemsCenter>
 				<Div>
 					<Div fontSize={24} textCenter fontBold>
-						임시 큐알
+						임시 QR
 					</Div>
 					<Div mxAuto my15>
 						{qrData ? (
@@ -73,15 +73,13 @@ export default function LoginQRModal({ address }) {
 						<Div
 							fontSize={24}
 							textCenter
-							textPrimary={ttl.minutes > 0}
-							textDanger={ttl.minutes <= 0}
 							fontBold
 							flex
 							itemsCenter
 							justifyCenter
 							gapX={10}
 						>
-							<Div>{ttl.minutes < 0 ? "유효기간 만료" : `잔여 ${ttl.minutes}분 ${ttl.seconds}초`}</Div>
+							<Div>{ttl.minutes < 0 ? <Div textDanger>유효기간 만료</Div> : <Div style={{color:"#4738FF"}}>{`잔여 ${ttl.minutes}분 ${ttl.seconds}초`}</Div>}</Div>
 							<Div textWhite roundedFull p8 bgBlack cursorPointer onClick={fetchData}>
 								<RefreshIcon height={20} width={20} />
 							</Div>
