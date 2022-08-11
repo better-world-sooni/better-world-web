@@ -91,7 +91,7 @@ export default function Home({ currentUser, currentNft }) {
 		<motion.div
 		initial="hidden"
 		whileInView="show"
-		viewport={{ once: true, amount:"all" }}
+		viewport={{ once: true, amount:0.1 }}
 		onViewportLeave={()=>sethref(false)}
 		>
 		<motion.ul variants={container}>
