@@ -125,7 +125,7 @@ function ProfileDropdown({ currentNft, currentUser }) {
 		<Menu as="div">
 			<Menu.Button>
 				{!currentNft ? (
-					<Div ml8 textWhite bgBlack rounded100 fontSize14 py6 px16 cursorPointer>
+					<Div ml8 textWhite bgOpacity40 bgBlack rounded100 fontSize14 py6 px16 cursorPointer>
 						{truncateKlaytnAddress(currentUser.address)}
 					</Div>
 				) : (
