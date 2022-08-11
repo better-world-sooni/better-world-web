@@ -67,8 +67,14 @@ function ProfileDropdown({ currentNft, currentUser }) {
 	};
 	return (
 		<Menu as="div">
-			<Menu.Button className="shadow-sm">
-				<Div cursorPointer imgTag src={currentNft.nft_metadatum.image_uri} h30 w30 rounded></Div>
+			<Menu.Button>
+				{!currentNft ? (
+					<Div ml8 textWhite bgOpacity50 bgBlack rounded100 fontSize14 py6 px16 cursorPointer>
+						{truncateKlaytnAddress(currentUser.address)}
+					</Div>
+				) : (
+					<Div ml20 selfCenter cursorPointer imgTag src={getNftProfileImage(currentNft, 200, 200)} h32 w32 roundedFull mt6 border1 borderBlack></Div>
+				)}
 			</Menu.Button>
 			<Transition
 				as={Fragment}
