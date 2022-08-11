@@ -136,12 +136,14 @@ export default function Home({ currentUser, currentNft }) {
 					</Div>
 					
 			</Div>
-			<Div wFull h150 bgGray100 borderT1 flex flexCol itemsCenter justifyCenter textCenter fontSize1 textGray500>
+			<Div wFull bgGray100 borderT1 flex flexCol itemsCenter justifyCenter textCenter fontSize1 textGray500>
+				<Div mt30 mb30>
 				<Div>BetterWorld from{" "}
 				<Div spanTag textGray700 aTag href={"https://soonilabs.com"}>
 					SOONI Labs
 				</Div>
 				<br></br>© BetterWorld. ALL RIGHTS RESERVED</Div>
+				</Div>
 			</Div>
 		</Div></motion.ul></motion.div>
 		</>
