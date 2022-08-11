@@ -4,7 +4,7 @@ import querystring from 'querystring'
 import {isEmpty, omitBy, isNil} from 'lodash'
 const { publicRuntimeConfig } = getConfig()
 
-export const SERVER_URL = publicRuntimeConfig.CONF_SERVER_URL || 'https://api.gomz.io'
+export const SERVER_URL = publicRuntimeConfig.CONF_SERVER_URL || 'https://api.betterworldapp.io'
 // SERVER_URL을 바꾸고 싶으면, 위에 주소를 직접 수장하지 말고 .env.local 파일에 CONF_SERVER_URL를 추가해 주세요
 
 
@@ -41,7 +41,7 @@ const apis = {
     },
     jwt: {
       _: () => apiV1('/auth/jwt'),
-      qrLogin: () => apiV1('/auth/jwt/qr/login')
+      loginQr: () => apiV1('/auth/jwt/qr/create')
     }
     
   },
@@ -93,7 +93,20 @@ const apis = {
       contractAddressAndTokenId: (contractAddress, tokenId) => apiV1(`/chat/room/${contractAddress}/${tokenId}`),
       roomId: (roomId) => apiV1(`/chat/room/${roomId}`),
     } 
-  }
+  },
+  admin: {
+    user: {
+      list: (page_size, offset, search_key) => apiV1(`/admin/user/list${urlParams({page_size, offset, search_key})}`),
+      _: ()=>  apiV1(`/admin/user`),
+    },
+    post: {
+      list: (contract_address, token_id, page_size, offset, search_key) => apiV1(`/admin/post/list${urlParams({contract_address, token_id, page_size, offset, search_key})}`),
+      _: ()=> apiV1(`/admin/post`),
+    },
+    comment: {
+      _: ()=> apiV1(`/admin/comment`),
+    }
+  },
 }
 
 const mapFunctionToPath = (data, path = []) => {

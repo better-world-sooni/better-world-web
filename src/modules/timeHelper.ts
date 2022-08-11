@@ -1,4 +1,8 @@
-import { kmoment } from "./constants";
+import moment from 'moment';
+import 'moment/min/locales';
+moment.locale('ko');
+
+export const kmoment = moment;
 
 export function createdAtText(createdAt) {
     if (createdAt) {
@@ -13,7 +17,17 @@ export function createdAtText(createdAt) {
       if(calendarArr[0] == '지난주'){
           return calendarArr[1]
       }
-      return calendarArr[0] + ' ' + calendarArr[1];
+      return calendarArr[0];
     }
     return null;
 };
+
+export function getCalendarDay(time){
+  if(!time) return null
+  return kmoment(time).calendar()
+}
+
+export function getDate(time) {
+  if(!time) return null
+  return kmoment(time).format("YYYY.MM.DD HH:mm:ss")
+}

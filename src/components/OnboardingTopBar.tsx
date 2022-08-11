@@ -15,10 +15,7 @@ const OnboardingTopBar = () => {
 						<Div imgTag src={IMAGES.betterWorldBlueLogo} h={50} w={50} style={{ objectFit: "cover" }} />
 					</Col>
 					<Col textLg textPrimary auto px0 onClick={() => href(urls.index())} cursorPointer>
-						BetterWorld{" "}
-						<Div spanTag fontSemibold textPrimary pl2>
-							αlpha
-						</Div>
+						BetterWorld
 					</Col>
 					<Col></Col>
 				</Row>

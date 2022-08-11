@@ -22,8 +22,6 @@ export default function KlipQRModal() {
 	};
 	const onClickKlipQRDone = async () => {
 		const klipAuthResult = await klipResult(klipQR.requestKey, locale);
-		console.log(klipQR);
-		console.log(klipAuthResult);
 		if (klipAuthResult.status == "prepared") {
 			setError(<Div spanTag>{"You have not authorized yet."}</Div>);
 		} else if (klipAuthResult.status == "canceled") {
