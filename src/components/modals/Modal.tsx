@@ -6,7 +6,7 @@ import Div from "../Div";
 export default function Modal({ children, open, onClose, bdClx = "", clx = "" }) {
 	return (
 		<Transition.Root show={open} as={Fragment}>
-			<Dialog as="div" className="fixed z-10 inset-0 overflow-y-auto" onClose={onClose}>
+			<Dialog as="div" className="fixed inset-0 overflow-y-auto" onClose={onClose} style={{ zIndex: 1000 }}>
 				<div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
 					<Transition.Child
 						as={Fragment}
@@ -34,7 +34,7 @@ export default function Modal({ children, open, onClose, bdClx = "", clx = "" })
 						leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
 					>
 						<div
-							className={`${clx} inline-block align-bottom rounded-lg text-left overflow-hidden transform transition-all sm:align-middle md:align-middle xs:align-middle`}
+							className={`${clx} inline-block align-bottom rounded-xl text-left overflow-hidden transform transition-all sm:align-middle md:align-middle xs:align-middle`}
 						>
 							{children}
 						</div>

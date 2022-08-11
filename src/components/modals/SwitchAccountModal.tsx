@@ -21,6 +21,7 @@ import { signInAction, switchAccountModalAction } from "src/store/reducers/modal
 import { urls } from "src/modules/urls";
 import { CheckCircleIcon } from "@heroicons/react/solid";
 import Spinner from "../common/Spinner";
+import { getNftName, getNftProfileImage } from "src/modules/nftUtils";
 
 export default function SwitchAcountModal() {
 	const dispatch = useDispatch();
@@ -39,7 +40,7 @@ export default function SwitchAcountModal() {
 	return (
 		<Modal open={enabled} onClose={closeModal} bdClx={"bg-black/30"} clx={"bg-white"}>
 			{currentNft && (
-				<Div px15>
+				<Div px15 border1>
 					<Row py10 flex itemsCenter borderB1>
 						<Col />
 						<Col auto>
@@ -83,12 +84,12 @@ function AvatarAccount({ nft, current = false, onSuccess }) {
 		setLoading(false);
 	};
 	return (
-		<Row py10 flex itemsCenter cursorPointer onClick={patchAndGotoNft}>
+		<Row py16 px8 flex itemsCenter cursorPointer onClick={patchAndGotoNft}>
 			<Col auto>
-				<Div imgTag src={nft.nft_metadatum.image_uri} w50 h50 rounded></Div>
+				<Div imgTag src={getNftProfileImage(nft, 200, 200)} w50 h50 roundedFull></Div>
 			</Col>
 			<Col auto>
-				<Div>{nft.nft_metadatum.name || nft.nft_profile.name}</Div>
+				<Div fontBold>{getNftName(nft)}</Div>
 			</Col>
 			<Col />
 			<Col auto>
@@ -96,9 +97,8 @@ function AvatarAccount({ nft, current = false, onSuccess }) {
 					<Spinner clx={"h-20 w-20"} fill={COLORS.PRIMARY} circleFill={COLORS.GRAY200} />
 				) : current ? (
 					<CheckCircleIcon width={20} height={20} fill={COLORS.SUCCESS} />
-				) : (
-					<SparklesIcon width={20} height={20} />
-				)}
+				) : // <SparklesIcon width={20} height={20} />
+				null}
 			</Col>
 		</Row>
 	);

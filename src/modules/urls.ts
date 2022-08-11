@@ -10,8 +10,11 @@ export const urls = {
             }
         }
     },
-    onboarding: {
-        index: () => `/onboarding`
+    signup: {
+        index: () => `/signup`
+    },
+    admin: {
+        index: () => `/admin`
     },
     nftProfile: {
         contractAddressAndTokenId: (contractAddress, tokenId) => {

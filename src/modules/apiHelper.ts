@@ -59,7 +59,6 @@ function http(urlObject: any, method: string, body: Object, headers: Object){
     )
 }
 function httpPure(url: string, method: string, body: Object, headers: Object){
-  console.log(body)
   alert(body)
   let header = null
   if (body) {

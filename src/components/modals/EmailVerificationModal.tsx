@@ -18,9 +18,8 @@ export default function EmailVerificationModal() {
 	const [passwordConfirmation, setPasswordConfirmation] = useState<string>("");
 	const [passwordConfirmationError, setPasswordConfirmationError] = useState<boolean>(false);
 	const dispatch = useDispatch();
-	const { emailVerificationEnabled, user } = useSelector((state: RootState) => ({
+	const { emailVerificationEnabled } = useSelector((state: RootState) => ({
 		emailVerificationEnabled: state.modal.emailVerification.enabled,
-		user: state.auth.user,
 	}));
 	const closeModal = () => {
 		setSuccess(false);
@@ -64,6 +63,7 @@ export default function EmailVerificationModal() {
 					password_confirmation: passwordConfirmation,
 				});
 				if (emailResult.success) setSuccess(true);
+				closeModal();
 				return;
 			} catch (e) {}
 			setPutPasswordError(true);
@@ -128,7 +128,7 @@ function ThreeStateButton({ state, onClick }) {
 			return { bgGray100: true, textGray400: true };
 		}
 		if (state == State.Clickable) {
-			return { bgPrimary: true, textWhite: true };
+			return { style:{background: "#4738FF"}, textWhite: true };
 		}
 		if (state == State.Success) {
 			return { bgSuccess: true, textWhite: true };
