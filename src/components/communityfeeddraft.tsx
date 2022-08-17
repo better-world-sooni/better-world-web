@@ -4,7 +4,7 @@ import Div from "src/components/Div";
 import { IMAGES } from "src/modules/images";
 import EmptyBlock from "./EmptyBlock";
 import { IphoneBlackContent } from "./iphone";
-import { DraftBottomAnchor, DraftCenterAnchor } from "./appcontentdescriptions";
+import { DraftBottomAnchor, DraftCenterAnchor } from "./drafts";
 
 const rotate=10
 
@@ -21,12 +21,13 @@ function Drafts({time, image_size, margin, hoverscale, animate_time, once}) {
 	const canHover3 = isHovered3&&canHover
 	const canHover4 = isHovered4&&canHover
 	const animate_duration = canAnimate?{delay:animate_time/2, duration: animate_time/2}:{delay: time/2,duration: time/2 }
+	const image_margin=image_size.width*0.2
 	
 	const container = {
-		hidden: { opacity: 0, y:-margin+(image_size.height/2)*hoverscale},
+		hidden: { opacity: 0,y : -margin},
 		show: {
 		  opacity: 1,
-		  y: (image_size.height/2)*hoverscale,
+		  y: 0,
 		  transition: {
 			duration: time,
 			onUpdate: () => setHover(false),
@@ -37,26 +38,26 @@ function Drafts({time, image_size, margin, hoverscale, animate_time, once}) {
 
 	const draft1 = {
 		showtransition: {
-			hidden: { opacity: 0, x:-(image_size.width+margin)},
-			show: { opacity: 1, x:-(image_size.width+margin), transition: {
+			hidden: { opacity: 0, x:-((image_size.width/2)+image_margin+image_size.width+(image_margin/2)) },
+			show: { opacity: 1, x:-((image_size.width/2)+image_margin+image_size.width+(image_margin/2)), transition: {
 				duration: time
 			  } }
-		  },
+		},
 		taketransition: {
 			hidden: { opacity: 1 },
-			show: { opacity: 1, rotate:-rotate, transition: {
+			show: { opacity: 1, x:((image_size.width/2)+image_margin+image_size.width+(image_margin/2))-image_size.width-(image_margin*2*3/2), transition: {
 				delay: animate_time+time,
 				duration: time*1.5
 			  } }
 		},
 		hover:{
 			black: {
-				animate:{opacity: canHover2||canHover3?0.5:0},
+				animate:{opacity: canHover2||canHover3||canHover4?0.5:0},
 				transition:{duration: time }
 			},
 			draft: {
 				animate:{
-				scale: canHover1? hoverscale:1, rotate: canHover1? rotate/2:(canHover2||canHover3?-rotate*2:0)
+				scale: canHover1? hoverscale:1, x:canHover3 ? -image_margin:(canHover2 ? -image_margin*2:0),
 				},
 				transtion:{
 					duration: time
@@ -79,26 +80,26 @@ function Drafts({time, image_size, margin, hoverscale, animate_time, once}) {
 
 	const draft2 = {
 		showtransition: {
-			hidden: { opacity: 0 },
-			show: { opacity: 1, transition: {
+			hidden: { opacity: 0, x:-(image_size.width/2+image_margin/2) },
+			show: { opacity: 1, x:-(image_size.width/2+image_margin/2), transition: {
 				duration: time
 			  } }
 		},
 		taketransition: {
 			hidden: { opacity: 1 },
-			show: { opacity: 1, x:-(image_size.width+margin)+image_size.width/5, y:-image_size.height/12, rotate:rotate, transition: {
+			show: { opacity: 1, x:(image_size.width/2+image_margin/2)-image_size.width-image_margin*2/2, transition: {
 				delay: animate_time+time,
 				duration: time*1.5*1.1
 			  } }
 		},
 		hover:{
 			black: {
-				animate:{opacity: canHover1||canHover3?0.5:0},
+				animate:{opacity: canHover1||canHover3||canHover4?0.5:0},
 				transition:{duration: time }
 			},
 			draft: {
 				animate:{
-					scale: canHover2? hoverscale:1, rotate: canHover2? -rotate/2:(canHover1?rotate:(canHover3?-rotate*2:0))
+					scale: canHover2? hoverscale:1, x:canHover4 ? -image_margin:(canHover3?-image_margin*2:(canHover2?image_margin:0)),
 				},
 				transtion:{
 					duration: time
@@ -115,26 +116,26 @@ function Drafts({time, image_size, margin, hoverscale, animate_time, once}) {
 
 	const draft3 = {
 		showtransition: {
-			hidden: { opacity: 0, x:(image_size.width+margin) },
-			show: { opacity: 1, x:(image_size.width+margin), transition: {
+			hidden: { opacity: 0, x:(image_size.width/2+image_margin/2) },
+			show: { opacity: 1, x:(image_size.width/2+image_margin/2), transition: {
 				duration: time
 			  } }
 		},
 		taketransition: {
 			hidden: { opacity: 1 },
-			show: { opacity: 1, x:-2*(image_size.width+margin)+2*image_size.width/5, y:-2*image_size.height/12, rotate:rotate*3, transition: {
+			show: { opacity: 1, x:-(image_size.width/2+image_margin/2)-image_size.width+image_margin*2/2, transition: {
 				delay: animate_time+time,
 				duration: time*1.5*1.2,
 			  } }
 		  },
 		hover:{
 			black: {
-				animate:{opacity: canHover1||canHover2?0.5:0},
+				animate:{opacity: canHover1||canHover2||canHover4?0.5:0}, 
 				transition:{duration: time }
 			},
 			draft: {
 				animate:{
-					scale: canHover3? hoverscale:1, rotate: canHover3? -rotate:(canHover1||canHover2?rotate:0)
+					scale: canHover3? hoverscale:1, x:canHover4 ? -image_margin*2:(canHover3?image_margin:0),
 				},
 				transtion:{
 					duration: time
@@ -151,16 +152,26 @@ function Drafts({time, image_size, margin, hoverscale, animate_time, once}) {
 
 	const draft4 = {
 		showtransition: {
-			hidden: { opacity: 0, x:image_size.width+margin, y:-image_size.height/2-image_size.height/12 },
-			show: { opacity: 1, x:image_size.width+margin, y:-image_size.height/2-image_size.height/12, transition: {
-				delay: animate_time+time*2,
+			hidden: { opacity: 0, x:((image_size.width/2)+image_margin+image_size.width+(image_margin/2)) },
+			show: { opacity: 1, x:((image_size.width/2)+image_margin+image_size.width+(image_margin/2)), transition: {
 				duration: time
 			  } }
 		},
+		taketransition: {
+			hidden: { opacity: 1 },
+			show: { opacity: 1, x:-((image_size.width/2)+image_margin+image_size.width+(image_margin/2))-image_size.width+image_margin*2*3/2, transition: {
+				delay: animate_time+time,
+				duration: time*1.5*1.2*1.2,
+			  } }
+		  },
 		hover:{
+			black: {
+				animate:{opacity: canHover1||canHover2||canHover3?0.5:0}, 
+				transition:{duration: time }
+			},
 			draft: {
 				animate:{
-					scale: canHover4? hoverscale:1
+					scale: canHover4? hoverscale:1,x:canHover4 ? image_margin:0,
 				},
 				transtion:{
 					duration: time
@@ -176,22 +187,14 @@ function Drafts({time, image_size, margin, hoverscale, animate_time, once}) {
 	}
 
 	const text= {
-		hidden: {opacity: 0,x:image_size.width+margin/2, y:-image_size.height*4/5+margin-margin/2 },
-		show: {opacity:1,x:image_size.width+margin/2, y:-image_size.height*4/5+margin,  transition : {
-			delay: draft3.taketransition.show.transition.delay+draft3.taketransition.show.transition.duration,
+		hidden: {opacity: 0,x:image_size.width, y:-margin/2 },
+		show: {opacity:1,x:image_size.width, y:0,  transition : {
+			delay: draft4.taketransition.show.transition.delay+draft4.taketransition.show.transition.duration,
 			duration: time,
 			onComplete: () => {setHover(true);setAnimate(false)},
 		}}
 	}
 
-	// const text= {
-	// 	hidden: {opacity: 0,x:margin/1.5, y:-image_size.height/5-margin/2 },
-	// 	show: {opacity:1,x:margin/1.5, y:-image_size.height/5,  transition : {
-	// 		delay: draft3.taketransition.show.transition.delay+draft3.taketransition.show.transition.duration,
-	// 		duration: time,
-	// 		onComplete: () => {setHover(true);setAnimate(false)},
-	// 	}}
-	// }
 
   return (
 	<Div wFull pt10>
@@ -206,14 +209,15 @@ function Drafts({time, image_size, margin, hoverscale, animate_time, once}) {
 		<Div flex justifyCenter itemsCenter>
 			<Div relative wFull>
 
-				{/* <DraftCenterAnchor draft={draft4} onMouseEnter={() => setHovered4(true)} onMouseLeave={() => setHovered4(false)} iphone_w={image_size.width} iphone_h={image_size.height} contentmarginWidth={image_size.contentmarginWidth} contentmarginHeight={image_size.contentmarginHeigth} buttonmargin={image_size.buttonmargin} content={
+				<DraftCenterAnchor draft={draft4} onMouseEnter={() => setHovered4(true)} onMouseLeave={() => setHovered4(false)} iphone_w={image_size.width} iphone_h={image_size.height} contentmarginWidth={image_size.contentmarginWidth} contentmarginHeight={image_size.contentmarginHeigth} buttonmargin={image_size.buttonmargin} content={
 						<>
 							<Div absolute imgTag src={IMAGES.appDraft4.initial}></Div>
 							<motion.div layout animate={draft4.hover.display.animate} transition={draft4.hover.display.transition}><Div absolute imgTag src={IMAGES.appDraft4.end}></Div></motion.div>
+							<IphoneBlackContent iphone_w={image_size.width} iphone_h={image_size.height} contentmarginWidth={image_size.contentmarginWidth} contentmarginHeight={image_size.contentmarginHeigth} animation={draft4.hover.black} />
 						</>
-				}/> */}
+				}/>
 
-				<DraftBottomAnchor draft={draft3} onMouseEnter={() => setHovered3(true)} onMouseLeave={() => setHovered3(false)} iphone_w={image_size.width} iphone_h={image_size.height} contentmarginWidth={image_size.contentmarginWidth} contentmarginHeight={image_size.contentmarginHeigth} buttonmargin={image_size.buttonmargin} content={
+				<DraftCenterAnchor draft={draft3} onMouseEnter={() => setHovered3(true)} onMouseLeave={() => setHovered3(false)} iphone_w={image_size.width} iphone_h={image_size.height} contentmarginWidth={image_size.contentmarginWidth} contentmarginHeight={image_size.contentmarginHeigth} buttonmargin={image_size.buttonmargin} content={
 						<>
 							<Div absolute imgTag src={IMAGES.appDraft3.initial}></Div>
 							<motion.div layout animate={draft3.hover.display3.animate} transition={draft3.hover.display3.transition}><Div absolute imgTag src={IMAGES.appDraft3.end}></Div></motion.div>
@@ -221,7 +225,7 @@ function Drafts({time, image_size, margin, hoverscale, animate_time, once}) {
 						</>
 				}/>
 
-				<DraftBottomAnchor draft={draft2} onMouseEnter={() => setHovered2(true)} onMouseLeave={() => setHovered2(false)} iphone_w={image_size.width} iphone_h={image_size.height} contentmarginWidth={image_size.contentmarginWidth} contentmarginHeight={image_size.contentmarginHeigth} buttonmargin={image_size.buttonmargin} content={
+				<DraftCenterAnchor draft={draft2} onMouseEnter={() => setHovered2(true)} onMouseLeave={() => setHovered2(false)} iphone_w={image_size.width} iphone_h={image_size.height} contentmarginWidth={image_size.contentmarginWidth} contentmarginHeight={image_size.contentmarginHeigth} buttonmargin={image_size.buttonmargin} content={
 						<>
 								<motion.div layout animate={draft2.hover.display2.animate} transition={draft2.hover.display2.transition}><Div absolute imgTag src={IMAGES.appDraft2.content}></Div></motion.div>
 								<Div absolute imgTag src={IMAGES.appDraft2.tool}></Div>
@@ -229,7 +233,7 @@ function Drafts({time, image_size, margin, hoverscale, animate_time, once}) {
 						</>
 				}/>
 
-				<DraftBottomAnchor draft={draft1} onMouseEnter={() => setHovered1(true)} onMouseLeave={() => setHovered1(false)} iphone_w={image_size.width} iphone_h={image_size.height} contentmarginWidth={image_size.contentmarginWidth} contentmarginHeight={image_size.contentmarginHeigth} buttonmargin={image_size.buttonmargin} content={
+				<DraftCenterAnchor draft={draft1} onMouseEnter={() => setHovered1(true)} onMouseLeave={() => setHovered1(false)} iphone_w={image_size.width} iphone_h={image_size.height} contentmarginWidth={image_size.contentmarginWidth} contentmarginHeight={image_size.contentmarginHeigth} buttonmargin={image_size.buttonmargin} content={
 						<>
 							<Div absolute imgTag src={IMAGES.appDraft1.bgback}></Div>
 							<motion.div layout animate={draft1.hover.display1_1.animate} transition={draft1.hover.display1_1.transition}><Div absolute imgTag src={IMAGES.appDraft1.content}></Div></motion.div>
@@ -244,8 +248,8 @@ function Drafts({time, image_size, margin, hoverscale, animate_time, once}) {
 				<motion.ul variants={text}>
 				<Div absolute _translateX1over2 _translateY1over2>
 					<Div flex flexCol w={300}>
-						<Div fontBold fontSize32 textCenter> 커뮤니티 포럼 </Div>
-						<Div textGray500 fontSize20 textCenter hFull>NFT별 프로필로 혜택 이벤트에 응모하고 익명으로 소통하기</Div>
+						<Div fontBold fontSize32 textCenter> 커뮤니티 피드 </Div>
+						<Div textGray500 fontSize20 textCenter hFull>피드에서 커뮤니티 내 다양한 홀더들과 편리하게 소통하고 팔로잉 피드에서 관심있는 이야기만 모아보세요.</Div>
 					</Div>
 				</Div></motion.ul>
 			</Div>
@@ -262,7 +266,7 @@ function Drafts({time, image_size, margin, hoverscale, animate_time, once}) {
 
 
 
-export default function Content1({time, image_size, margin, hoverscale, animate_time, once}) {
+export default function CommunityFeedDraft({time, image_size, margin, hoverscale, animate_time, once}) {
   return (<Div>
 	<Div selfCenter>
     <Drafts time={time} image_size={image_size} margin={margin} hoverscale={hoverscale} animate_time={animate_time} once={once} />

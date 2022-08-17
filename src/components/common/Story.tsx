@@ -95,7 +95,7 @@ export default function Story({ initialStory, mine, contractAddress = null }) {
 										<CheckCircleIcon height={20} width={20} scale={1} strokeWidth={0.5} />
 									</Div>
 								),
-								[StoryState.Loading]: <Spinner clx={"h-20 w-20"} fill={COLORS.PRIMARY} circleFill={COLORS.GRAY200} />,
+								[StoryState.Loading]: <Spinner clx={"h-20 w-20"} fill={COLORS.BW} circleFill={COLORS.GRAY200} />,
 							}[story.state]
 						}
 					</Div>

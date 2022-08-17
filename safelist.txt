@@ -39,6 +39,9 @@ text-danger
 text-danger-light
 text-info
 text-info-light
+text-bw
+text-bw-light
+text-bw-gradient
 border-0
 border-1
 border-2

@@ -4,7 +4,7 @@ import Div from "src/components/Div";
 import { IMAGES } from "src/modules/images";
 import EmptyBlock from "./EmptyBlock";
 import { IphoneBlackContent } from "./iphone";
-import { DraftCenterAnchor } from "./appcontentdescriptions";
+import { DraftCenterAnchor } from "./drafts";
 
 function Drafts({time, image_size, margin, hoverscale, animate_time, once}) {
 	const [isHovered, setHovered] = useState(false)
@@ -156,7 +156,7 @@ function Drafts({time, image_size, margin, hoverscale, animate_time, once}) {
 
 
 
-export default function Content3({time, image_size, margin, hoverscale, animate_time, once}) {
+export default function HolderVerificationDraft({time, image_size, margin, hoverscale, animate_time, once}) {
   return (<Div>
 	<Div selfCenter>
     <Drafts time={time} image_size={image_size} margin={margin} hoverscale={hoverscale} animate_time={animate_time} once={once} />

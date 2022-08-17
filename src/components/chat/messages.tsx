@@ -23,7 +23,7 @@ const Messages = ({ messages, currentNftId, numNfts }) => {
 								{!isConsecutive && <Div roundedLg imgTag src={avatar} h28 w28 />}
 							</Col>
 							<Col style={{ flex: 5, wordBreak: "break-all" }} flex flexRow {...(isMine && { flexRowReverse: true })} itemsEnd>
-								<Div bgGray100={!isMine} bgPrimary={isMine} textWhite={isMine} roundedXl px15 py5>
+								<Div bgGray100={!isMine} bgBW={isMine} textWhite={isMine} roundedXl px15 py5>
 									{text}
 								</Div>
 								<Div px10 textXs>

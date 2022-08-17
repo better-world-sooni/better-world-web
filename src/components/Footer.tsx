@@ -4,6 +4,7 @@ import useIsTablet from "src/hooks/useIsTablet";
 import Div from "./Div";
 import Row from "./Row";
 import Col from "./Col";
+import LINKS from "src/modules/links";
 
 export default function Footer({showLogo=true}) {
 	const isTablet = useIsTablet();
@@ -20,7 +21,7 @@ export default function Footer({showLogo=true}) {
 							<Row py5>
 								<Col auto>
 									<Div spanTag>BetterWorld from </Div>
-									<Div spanTag textSecondary aTag href={"https://soonilabs.com"}>
+									<Div spanTag textSecondary aTag href={LINKS.soonilabs}>
 										SOONI Labs
 									</Div>
 								</Col>
@@ -57,7 +58,7 @@ export default function Footer({showLogo=true}) {
 									</Div>{" "}
 									from{" "}
 								</Div>
-								<Div spanTag aTag href={"https://soonilabs.com"} fontBold>
+								<Div spanTag aTag href={LINKS.soonilabs} fontBold>
 									SOONI Labs
 								</Div>
 							</Col>

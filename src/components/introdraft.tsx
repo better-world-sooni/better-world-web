@@ -4,7 +4,7 @@ import Div from "src/components/Div";
 import { IMAGES } from "src/modules/images";
 
 
-export default function HeaderAnimatedMod({time, once, appstore, playstore}) {
+export default function IntroDraft({time, once, appstore, playstore}) {
 	const [canhref, sethref] = useState(false)
 	const container = {
 		hidden: {opacity:0},
@@ -41,7 +41,7 @@ export default function HeaderAnimatedMod({time, once, appstore, playstore}) {
 	}
 
     return (
-	<Div mb100 wFull hFull>
+	<Div wFull>
 		<motion.div
 		initial="hidden"
 		whileInView="show"
@@ -49,16 +49,19 @@ export default function HeaderAnimatedMod({time, once, appstore, playstore}) {
 		onViewportLeave={()=>sethref(false)}
 		>
 		<motion.ul variants={container}>
-		<Div hFull wFull mt100 mb100 py50>
-			<motion.li variants={text1Animation}><Div fontSize48 textCenter fontBold bgWhite roundedFull>
+		<Div relative wFull flex itemsCenter justifyCenter>
+			<Div wFull><Div imgTag src={IMAGES.mainbackground}/></Div>
+			<Div absolute hFull mb300 mt500 py50 px100>
+			<motion.li variants={text1Animation}><Div fontSize48 textCenter fontBold roundedFull whitespaceNowrap>
 				애장하는 PFP의{" "}
-				<Div spanTag style={{background: "-webkit-linear-gradient(-45deg, #AA37FF 30%, #4738FF 90%)",
-					WebkitBackgroundClip: "text",
-					WebkitTextFillColor: "transparent",}}>특권과 혜택</Div>
+				<Div spanTag textBWgradient>특권과 혜택</Div>
 				,
 			</Div></motion.li>
-			<motion.li variants={text2Animation}><Div fontSize48 textCenter mxAuto fontBold bgWhite roundedFull mt20>
-				지금, BetterWorld에서 간편하게 누려보세요.
+			<motion.li variants={text2Animation}><Div fontSize48 textCenter mxAuto fontBold roundedFull mt20>
+				<Div flex flexRow whitespaceNowrap itemsCenter justifyCenter>
+				지금
+				<Div mb5 ml10 mr3 selfCenter imgTag maxW={300} src={IMAGES.logoword.firstGradient}/>
+				에서 간편하게 누려보세요.</Div>
 			</Div></motion.li>
 			<motion.li variants={linkAnimation}>
 			<Div flex justifyCenter mt80 gapX={20}>
@@ -66,7 +69,7 @@ export default function HeaderAnimatedMod({time, once, appstore, playstore}) {
 			{canhref ?<Div imgTag h50 src={IMAGES.downloadOnGooglePlay} cursorPointer onClick={playstore}/>:<Div imgTag h50 src={IMAGES.downloadOnGooglePlay}/>}
 			</Div>
 			</motion.li>
-			{/* <Div absolute imgTag src={IMAGES.headerbg} wFull></Div> */}
+			</Div>
 		</Div>
 		</motion.ul>
 		</motion.div>

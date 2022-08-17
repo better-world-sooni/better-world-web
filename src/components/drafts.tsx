@@ -1,10 +1,10 @@
 import Div from "src/components/Div";
 import { motion } from "framer-motion";
-import Content1 from "./draft1";
-import Content2 from "./draft2";
-import Content3 from "./draft3";
+import CommunityFeedDraft from "./communityfeeddraft";
+import CommunityWalletDraft from "./communitywalletdraft";
+import HolderVerificationDraft from "./holderverificationdraft";
 import { Iphone } from "./iphone";
-import Content1modi from "./draft1_modi";
+
 
 const time=0.5
 
@@ -15,12 +15,12 @@ const animate_time = time*3
 const once=false
 
 
-export default function AppDescriptions() {
+export default function Drafts() {
   return (<Div flex flexCol>
 	<Div selfCenter>
-    <Content1modi time={time} image_size={image_size} margin={margin} hoverscale={1} animate_time={animate_time} once={once} />
-	<Content3 time={time} image_size={image_size} margin={margin} hoverscale={hoverscale} animate_time={animate_time} once={once} />
-	<Content2 time={time} image_size={image_size} margin={margin} hoverscale={hoverscale} animate_time={animate_time} once={once} />
+    <CommunityFeedDraft time={time} image_size={image_size} margin={margin} hoverscale={1} animate_time={animate_time} once={once} />
+	<HolderVerificationDraft time={time} image_size={image_size} margin={margin} hoverscale={hoverscale} animate_time={animate_time} once={once} />
+	<CommunityWalletDraft time={time} image_size={image_size} margin={margin} hoverscale={hoverscale} animate_time={animate_time} once={once} />
   	</Div></Div>);
 }
 

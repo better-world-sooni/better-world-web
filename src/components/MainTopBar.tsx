@@ -20,6 +20,7 @@ import { KeyIcon, QrcodeIcon, UserCircleIcon } from "@heroicons/react/solid";
 import { Tooltip } from "@mui/material";
 import { RootState } from "src/store/reducers/rootReducer";
 import { Oval } from "react-loader-spinner";
+import { MakeBrowserModal, MakeKaikasModal } from "./modals/CheckModal";
 
 const MainTopBar = ({ currentUser, currentNft }) => {
 	const { locale } = useRouter();
@@ -30,7 +31,12 @@ const MainTopBar = ({ currentUser, currentNft }) => {
 	const gotoOnboarding = () => {
 		href(urls.signup.index());
 	};
-	const loginWithKaikas = useLoginWithKaikas();
+
+	const {BrowserModal, openBrowserModal} = MakeBrowserModal()
+	const {KaikasModal, openKaikasModal} = MakeKaikasModal()
+
+	const loginWithKaikas = useLoginWithKaikas(()=>openBrowserModal(), ()=>openKaikasModal());
+
 	const handleGetQR = () => {
 		dispatch(
 			loginQRModalAction({
@@ -51,9 +57,7 @@ const MainTopBar = ({ currentUser, currentNft }) => {
 
 	function TopBarEntry({Content, onClick, tooltip}) {
 		return (
-			<Tooltip title={tooltip} placement="bottom" arrow><Div opacity40 selfCenter ml20 cursorPointer h32 w32 roundedFull style={{background: "-webkit-linear-gradient(-45deg, #AA37FF 30%, #4738FF 90%)",
-			WebkitBackgroundClip: "text",
-			WebkitTextFillColor: "transparent",}} onClick={onClick}>
+			<Tooltip title={tooltip} placement="bottom" arrow><Div opacity40 selfCenter ml20 cursorPointer h32 w32 roundedFull textBWgradient onClick={onClick}>
 				{Content}
 			  </Div></Tooltip>
 		)
@@ -61,6 +65,8 @@ const MainTopBar = ({ currentUser, currentNft }) => {
 
 	return (
 		<>
+			<BrowserModal/>
+			<KaikasModal/>
 			<BasicHead />
 			<SwitchAcountModal />
 			<EmailVerificationModal />
