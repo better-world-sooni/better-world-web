@@ -57,10 +57,10 @@ const CheckModalEntry=({Title, Label, CheckModalEnabled, HandleYes, HandleNo, ye
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-            {yesLabel && <Div w={100} textCenter bgBWLight py5 cursorPointer rounded clx={"hover:bg-bw hover:text-white hover:font-bold"} onClick={HandleYes}>
+            {yesLabel && <Div w={100} textCenter bgBWLight fontSize13 py5 cursorPointer rounded clx={"hover:bg-bw hover:text-white hover:font-bold"} onClick={HandleYes}>
                 {yesLabel}
             </Div>}
-            {noLabel && <Div w={100} textCenter py5 cursorPointer rounded clx={"hover:bg-gray-100 hover:font-bold"} onClick={HandleNo}>
+            {noLabel && <Div w={100} textCenter fontSize13 py5 cursorPointer rounded clx={"hover:bg-gray-100 hover:font-bold"} onClick={HandleNo}>
                 {noLabel}
             </Div>}
         </DialogActions>
@@ -79,12 +79,12 @@ export function MakePostModal(DeletePostAction) {
 }
 
 export function MakeBrowserModal() {
-  const {Modal:BrowserModal, openModal:openBrowserModal} = CheckModal("브라우저 설치", <Div><Div spanTag fontBold textBW cursorPointer aTag href={LINKS.installchrome}>Chrome</Div> 또는 <Div spanTag fontBold textBW cursorPointer aTag href={LINKS.installedge}>Edge</Div> 브라우저를 이용해주시기 바랍니다.</Div>, null, "확인")
+  const {Modal:BrowserModal, openModal:openBrowserModal} = CheckModal("브라우저 설치", <Div><Div spanTag fontBold textPrimary underline cursorPointer aTag href={LINKS.installchrome}>Chrome</Div> 또는 <Div spanTag fontBold textPrimary underline cursorPointer aTag href={LINKS.installedge}>Edge</Div> 브라우저를 이용해주시기 바랍니다.</Div>, null, "확인")
   return {BrowserModal, openBrowserModal}
 }
 
 export function MakeKaikasModal() {
-  const {Modal:KaikasModal, openModal:openKaikasModal} = CheckModal("카이카스 지갑 설치", <Div><Div spanTag fontBold textBW cursorPointer aTag href={LINKS.installkaikas}>카이카스 지갑</Div>을 설치하여 주시기 바랍니다. </Div>, null, "확인")
+  const {Modal:KaikasModal, openModal:openKaikasModal} = CheckModal("카이카스 지갑 설치", <Div><Div spanTag fontBold textPrimary underline cursorPointer aTag href={LINKS.installkaikas}>카이카스 지갑</Div>을 설치하여 주시기 바랍니다. </Div>, null, "확인")
   return {KaikasModal, openKaikasModal}
 }
 

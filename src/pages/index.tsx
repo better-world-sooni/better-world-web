@@ -105,7 +105,9 @@ function MobileMain({appstore, playstore}) {
 		  } }
 	}
 	return (
-		<Div wFull flex flexCol itemsCenter justifyCenter>
+		<>
+		<Div wFull></Div>
+		<Div wFull flex flexCol itemsCenter justifyCenter >
 			<motion.div
 			initial="hidden"
 			whileInView="show"
@@ -119,7 +121,7 @@ function MobileMain({appstore, playstore}) {
 							<Div absolute _translateY1over2 _translateX1over2><motion.li variants={bgAnimation}><Div imgTag h60 src={IMAGES.bwLogo.bg}/></motion.li></Div>
 							<Div absolute _translateY1over2 _translateX1over2><motion.li variants={contentAnimation}><Div imgTag h60 src={IMAGES.bwLogo.content}/></motion.li></Div>
 						</Div>
-						<motion.li variants={logotextAnimation}><Div mt5 imgTag h20 src={IMAGES.logoword.firstBlack}/></motion.li>
+						<motion.li variants={logotextAnimation}><Div mt5 imgTag h20 src={IMAGES.logoword.firstBlack} whitespaceNowrap/></motion.li>
 					</Div>
 						
 					<Div wFull flex flexCol itemsCenter justifyCenter>
@@ -160,7 +162,8 @@ function MobileMain({appstore, playstore}) {
 				</Div>
 				<br></br>© BetterWorld. ALL RIGHTS RESERVED</Div>
 				</Div>
-			</Div>		
+			</Div>
 		</Div>
+		</>
 	)
 }

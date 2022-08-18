@@ -49,7 +49,7 @@ export default function Footer({showLogo=true}) {
 					{showLogo && <Col auto p10>
 						<Div imgTag src={IMAGES.betterWorl_colorLogo} h50></Div>
 					</Col>}
-					<Col textSecondary py10>
+					<Col textBlack py10>
 						<Row py2>
 							<Col auto>
 								<Div spanTag>
