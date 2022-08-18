@@ -106,8 +106,9 @@ function MobileMain({appstore, playstore}) {
 	}
 	return (
 		<>
-		<Div wFull></Div>
-		<Div wFull flex flexCol itemsCenter justifyCenter >
+		<Div wFull/>
+		<Div wFull/>
+		<Div wFull >
 			<motion.div
 			initial="hidden"
 			whileInView="show"
@@ -115,7 +116,7 @@ function MobileMain({appstore, playstore}) {
 			onViewportLeave={()=>sethref(false)}
 			>
 			<motion.ul variants={container}>
-				<Div flex flexCol itemsCenter justifyCenter wFull hFull>
+				<Div itemsCenter justifyCenter wFull hFull>
 					<Div mt150 mb100 wFull flex flexCol itemsCenter justifyCenter>
 						<Div relative wFull h60 w60>
 							<Div absolute _translateY1over2 _translateX1over2><motion.li variants={bgAnimation}><Div imgTag h60 src={IMAGES.bwLogo.bg}/></motion.li></Div>
@@ -124,7 +125,7 @@ function MobileMain({appstore, playstore}) {
 						<motion.li variants={logotextAnimation}><Div mt5 imgTag h20 src={IMAGES.logoword.firstBlack} whitespaceNowrap/></motion.li>
 					</Div>
 						
-					<Div wFull flex flexCol itemsCenter justifyCenter>
+					<Div wFull itemsCenter justifyCenter>
 						<motion.li variants={text1Animation}><Div fontSize28 textCenter fontBold roundedFull whitespaceNowrap>
 							애장하는 PFP의{" "}
 							<Div spanTag textBWgradient>특권과 혜택</Div>
@@ -146,7 +147,7 @@ function MobileMain({appstore, playstore}) {
 						</Div>
 						</motion.li>
 					</Div>
-					<Div hFull wFull flex flexCol itemsCenter justifyCenter mb150 mt10 fontBold textGray400>
+					<Div hFull wFull itemsCenter justifyCenter mb150 mt10 fontBold textGray400>
 						<motion.li variants={informAnimation}><Div fontSize16 textGray800 textCenter mxAuto roundedFull>
 							회원가입은 PC를 이용해주세요.
 						</Div></motion.li>
@@ -154,14 +155,12 @@ function MobileMain({appstore, playstore}) {
 						
 				</Div>
 			</motion.ul></motion.div>
-			<Div wFull bgGray100 borderT1 flex flexCol itemsCenter justifyCenter textCenter fontSize10 textGray500>
-				<Div mt50 mb50>
+			<Div wFull bgGray100 borderT1 itemsCenter justifyCenter textCenter fontSize10 textGray500 py50>
 				<Div>BetterWorld from{" "}
 				<Div spanTag textGray700 aTag href={LINKS.soonilabs}>
 					SOONI Labs
 				</Div>
 				<br></br>© BetterWorld. ALL RIGHTS RESERVED</Div>
-				</Div>
 			</Div>
 		</Div>
 		</>
