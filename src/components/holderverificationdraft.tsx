@@ -4,7 +4,7 @@ import Div from "src/components/Div";
 import { IMAGES } from "src/modules/images";
 import EmptyBlock from "./EmptyBlock";
 import { IphoneBlackContent } from "./iphone";
-import { DraftCenterAnchor } from "./appcontentdescriptions";
+import { DraftCenterAnchor } from "./drafts";
 
 function Drafts({time, image_size, margin, hoverscale, animate_time, once}) {
 	const [isHovered, setHovered] = useState(false)
@@ -29,8 +29,8 @@ function Drafts({time, image_size, margin, hoverscale, animate_time, once}) {
 
 	const draft6 = {
 		showtransition: {
-			hidden: { opacity: 0, x:(image_size.width) },
-			show: { opacity: 1, x:(image_size.width), transition: {
+			hidden: { opacity: 0 },
+			show: { opacity: 1, transition: {
 				duration: time
 			  } }
 		},
@@ -58,8 +58,8 @@ function Drafts({time, image_size, margin, hoverscale, animate_time, once}) {
 
 	const draft7 = {
 		showtransition: {
-			hidden: { opacity: 0, x:(image_size.width) },
-			show: { opacity: 1, x:(image_size.width), transition: {
+			hidden: { opacity: 0 },
+			show: { opacity: 1, transition: {
 				duration: time
 			  } }
 		},
@@ -102,8 +102,8 @@ function Drafts({time, image_size, margin, hoverscale, animate_time, once}) {
 	}
 	
 	const text= {
-		hidden: {opacity: 0,x:-(image_size.width), y:-margin/2 },
-		show: {opacity:1,x:-(image_size.width), y:0, transition : {
+		hidden: {opacity: 0, y:-margin/2 },
+		show: {opacity:1, y:0, transition : {
 			delay: modifed_animate_time+time*1.2,
 			duration: time,
 			onComplete: () => {setHover(true);setAnimate(false)},
@@ -117,35 +117,40 @@ function Drafts({time, image_size, margin, hoverscale, animate_time, once}) {
       initial="hidden"
       whileInView="show"
 	  onViewportLeave={()=>setAnimate(false)}
-      viewport={{ once: once, amount:"all" }}
+      viewport={{ once: once, amount:0 }}
     >
 	<motion.ul variants={container}>
-		<Div flex justifyCenter itemsCenter>
-			<Div relative wFull>
-				<DraftCenterAnchor draft={draft6} onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)}iphone_w={image_size.width} iphone_h={image_size.height} contentmarginWidth={image_size.contentmarginWidth} contentmarginHeight={image_size.contentmarginHeigth} buttonmargin={image_size.buttonmargin} content={
-						<>
-							<Div absolute imgTag src={IMAGES.appDraft6.holder.end}></Div>
-
-						</>
-				}/>
-
-				<DraftCenterAnchor draft={draft7} onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)} iphone_w={image_size.width} iphone_h={image_size.height} contentmarginWidth={image_size.contentmarginWidth} contentmarginHeight={image_size.contentmarginHeigth} buttonmargin={image_size.buttonmargin} content={
-						<>
-							<Div absolute imgTag src={IMAGES.appDraft6.auth.initial}></Div>
-							<IphoneBlackContent iphone_w={image_size.width} iphone_h={image_size.height} contentmarginWidth={image_size.contentmarginWidth} contentmarginHeight={image_size.contentmarginHeigth} animation={draft7.hover.black} />
-							<motion.div layout animate={draft7.hover.display.animate} transition={draft7.hover.display.transition}><Div absolute imgTag src={IMAGES.appDraft6.auth.end}></Div></motion.div>
-						</>
-				}/>
-
-				<motion.ul variants={text}>
-				<Div absolute _translateX1over2 _translateY1over2>
-					<Div flex flexCol w={310}>
-						<Div fontBold fontSize32 textCenter> 간편한 홀더 인증 </Div>
-						<Div textGray500 fontSize20 textCenter hFull>나만의 홀더 QR을 이용해 오프라인에서 혜택을 누리고, 다른 커뮤니티원과 손쉽게 팔로우하세요.</Div>
-					</Div>
-				</Div></motion.ul>
+		<Div flex justifyCenter itemsCenter wFull>
+			<Div wFull flex flexRow justifyEnd itemsCenter>
+				<Div relative>
+					<motion.ul variants={text}>
+					<Div absolute _translateX1over2 _translateY1over2>
+						<Div flex flexCol w={310}>
+							<Div fontBold fontSize32 textCenter> 간편한 홀더 인증 </Div>
+							<Div textGray500 fontSize20 textCenter hFull>나만의 홀더 QR을 이용해 오프라인에서 혜택을 누리고, 다른 커뮤니티원과 손쉽게 팔로우하세요.</Div>
+						</Div>
+					</Div></motion.ul>
+				</Div>
+				<Div w={image_size.width}/>
 			</Div>
-			{/*  */}
+			<Div wFull flex flexRow justifyStart itemsCenter>
+				<Div w={image_size.width}/>
+				<Div relative>
+					<DraftCenterAnchor draft={draft6} onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)}iphone_w={image_size.width} iphone_h={image_size.height} contentmarginWidth={image_size.contentmarginWidth} contentmarginHeight={image_size.contentmarginHeigth} buttonmargin={image_size.buttonmargin} content={
+							<>
+								<Div absolute imgTag src={IMAGES.appDraft6.holder.end}></Div>
+
+							</>
+					}/>
+					<DraftCenterAnchor draft={draft7} onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)} iphone_w={image_size.width} iphone_h={image_size.height} contentmarginWidth={image_size.contentmarginWidth} contentmarginHeight={image_size.contentmarginHeigth} buttonmargin={image_size.buttonmargin} content={
+							<>
+								<Div absolute imgTag src={IMAGES.appDraft6.auth.initial}></Div>
+								<IphoneBlackContent iphone_w={image_size.width} iphone_h={image_size.height} contentmarginWidth={image_size.contentmarginWidth} contentmarginHeight={image_size.contentmarginHeigth} animation={draft7.hover.black} />
+								<motion.div layout animate={draft7.hover.display.animate} transition={draft7.hover.display.transition}><Div absolute imgTag src={IMAGES.appDraft6.auth.end}></Div></motion.div>
+							</>
+					}/>
+				</Div>
+			</Div>
 		</Div>
 	</motion.ul>
 	<EmptyBlock h={(image_size.height/2)*hoverscale+margin}/>
@@ -156,7 +161,7 @@ function Drafts({time, image_size, margin, hoverscale, animate_time, once}) {
 
 
 
-export default function Content3({time, image_size, margin, hoverscale, animate_time, once}) {
+export default function HolderVerificationDraft({time, image_size, margin, hoverscale, animate_time, once, width}) {
   return (<Div>
 	<Div selfCenter>
     <Drafts time={time} image_size={image_size} margin={margin} hoverscale={hoverscale} animate_time={animate_time} once={once} />

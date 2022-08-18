@@ -94,7 +94,7 @@ function AvatarAccount({ nft, current = false, onSuccess }) {
 			<Col />
 			<Col auto>
 				{loading ? (
-					<Spinner clx={"h-20 w-20"} fill={COLORS.PRIMARY} circleFill={COLORS.GRAY200} />
+					<Spinner clx={"h-20 w-20"} fill={COLORS.BW} circleFill={COLORS.GRAY200} />
 				) : current ? (
 					<CheckCircleIcon width={20} height={20} fill={COLORS.SUCCESS} />
 				) : // <SparklesIcon width={20} height={20} />

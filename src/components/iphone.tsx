@@ -6,7 +6,7 @@ export function Iphone({iphone_w, iphone_h, content, contentmarginWidth, content
 	return (
 	<Div w={iphone_w-buttonmargin*2} h={iphone_h} rounded45 shadow2xl>
 		<Div relative w={iphone_w} h={iphone_h} right={buttonmargin}>
-			<Div top={contentmarginHeight} left={contentmarginWidth} absolute w={iphone_w-contentmarginWidth*2} h={iphone_h-contentmarginHeight*2} rounded25 overflowHidden>
+			<Div top={contentmarginHeight} left={contentmarginWidth} absolute w={iphone_w-contentmarginWidth*2} h={iphone_h-contentmarginHeight*2} overflowHidden>
 				{content}
 			</Div>
 			<Div absolute w={iphone_w} h={iphone_h} imgTag src={IMAGES.iphon13}></Div>

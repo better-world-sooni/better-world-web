@@ -68,21 +68,21 @@ function UserList() {
 				</Div>
 				</Div>
 				{user_list &&(loading_status ? 
-				<Div fontSize15 fontBold selfEnd px10 py5 textWhite rounded10 bgPrimary>
-					<Oval height="14" width="14" color="blue" secondaryColor="#FFFFFF" strokeWidth="5" />
+				<Div fontSize15 fontBold selfEnd px10 py5 textWhite rounded10 bgBW>
+					<Oval height="14" width="14" color="#4738FF" secondaryColor="#FFFFFF" strokeWidth="5" />
 				</Div>
 			: 
 				<Tooltip title="업데이트" arrow>
-				<Div fontBold selfEnd px10 cursorPointer py5 bgPrimaryLight textPrimary rounded10 clx="hover:bg-primary hover:text-white" onClick={refetch}>
+				<Div fontBold selfEnd px10 cursorPointer py5 bgBWLight textBW rounded10 clx="hover:bg-bw hover:text-white" onClick={refetch}>
 				<RefreshIcon height={20} width={20} className="max-h-20 max-w-20" />
 				</Div>
 				</Tooltip>
 			)}
 			</Div></Div>
 		{loading &&	<Div fontBold mb100 textStart maxW={1100} mxAuto>
-		<Oval height="300" width="300" color="blue" secondaryColor="#FFFFFF" strokeWidth="100" /></Div>}
+		<Oval height="300" width="300" color="#4738FF" secondaryColor="#FFFFFF" strokeWidth="100" /></Div>}
 		{ user_list?.success && <UserArray user_list={user_list}/>}
-		{user_list?.success && <Div selfCenter><Pagination count={Math.ceil(user_list?.list?.total_length / page_size)} page={offset+1} showFirstButton showLastButton color="primary" onChange={handlePaginationOffsetChange}/></Div>}
+		{user_list?.success && <Div selfCenter><Pagination count={Math.ceil(user_list?.list?.total_length / page_size)} page={offset+1} showFirstButton showLastButton onChange={handlePaginationOffsetChange}/></Div>}
 		{error||(user_list&&(!user_list.success)) && 
 		<Div fontSize20 mb100 textStart maxW={1100} mxAuto>
 			오류가 발생하였습니다. 다시 시도하여 주세요.
@@ -120,7 +120,7 @@ function UserEntry({user}) {
               <Disclosure.Button className="w-full text-gray-400 hover:bg-gray-100 hover:text-gray-500">
 				<Div py12 px16 wFull flex flexRow cursorPointer clx={`${HandleOpen(open) ? "bg-gray-100 text-gray-500" : ""}`}>
 					<Div justifyItemsStart wFull flex flexRow>
-						<Div fontSize20 textBlack minW={120} maxW={120} mr10 textLeft fontBold overflowEllipsis overflowHidden whitespaceNowrap>{user.user_info.user_name ? user.user_info.user_name : user.user_info.user_nft_name}<br></br><Div fontSemibold fontSize13 overflowEllipsis overflowHidden whitespaceNowrap>{user.user_info.user_name ? user.user_info.user_nft_name : <EmptyBlock h={20} />}</Div></Div>
+						<Div fontSize20 textBlack minW={150} maxW={150} mr10 textLeft fontBold overflowEllipsis overflowHidden whitespaceNowrap>{user.user_info.user_name ? user.user_info.user_name : user.user_info.user_nft_name}<br></br><Div fontSemibold fontSize13 overflowEllipsis overflowHidden whitespaceNowrap>{user.user_info.user_name ? user.user_info.user_nft_name : <EmptyBlock h={20} />}</Div></Div>
 						<Div flex flexRow flexWrap>
 						<DataEntry name={"PFP 개수"} w={55} label={<CubeIcon height={20} width={20} className="max-h-20 max-w-20 mr-10" />} data={user.user_info.pfp_count}/>
 						<DataEntry name={"게시물 합"} w={55} label={<PencilAltIcon height={20} width={20} className="max-h-20 max-w-20 mr-10" />} data={user.user_info.posts}/>
@@ -164,7 +164,7 @@ function NftEntry({nft}) {
 					</Div>
 					<Div justifyItemsStart wFull flex flexRow>
 				
-					<Div fontSize20 selfCenter textBlack minW={120} maxW={120} mr25 textLeft fontBold><Div flex flexRow>
+					<Div fontSize20 selfCenter textBlack minW={150} maxW={150} mr25 textLeft fontBold><Div flex flexRow>
 						<Div overflowEllipsis overflowHidden whitespaceNowrap>{nft.name ? nft.name : nft.nft_name}</Div>
 						<Div selfCenter>{nft.main ? <SparklesIcon height={15} width={15} className="max-h-15 max-w-15 ml-10" />:" "}</Div>
 							</Div>
@@ -313,7 +313,7 @@ function SwitchToggle({checked, onChange, lock=false}) {
 		<Switch
 		checked={checked}
 		onChange={onChange}
-		className={`${checked ? (lock ? 'cursor-default bg-gray-600': 'cursor-pointer bg-primary') : (lock ? 'cursor-default bg-gray-400' : 'cursor-pointer bg-secondary')}
+		className={`${checked ? (lock ? 'cursor-default bg-gray-600': 'cursor-pointer bg-bw') : (lock ? 'cursor-default bg-gray-400' : 'cursor-pointer bg-secondary')}
 		relative inline-flex h-[24px] w-[42px] shrink-0 rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus-visible:ring-2  focus-visible:ring-white focus-visible:ring-opacity-75 ml-10`}
 					>
 					<span

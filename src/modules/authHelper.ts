@@ -5,6 +5,7 @@ import { apiHelper, apiHelperWithToken } from "./apiHelper";
 import apis from "./apis";
 import { PLATFORM } from "./constants";
 import { setJwt } from "./cookieHelper";
+import { browserName } from 'react-device-detect';
 
 async function createCurrentNftJwt(contract_address, token_id) {
     const res = await apiHelperWithToken(apis.auth.jwt._(), 'POST', {
@@ -22,11 +23,11 @@ export async function setCurrentNftJwt({contract_address, token_id}) {
     setJwt(jwt);
 }
 
-export const useLoginWithKaikas = () => {
+export const useLoginWithKaikas = (openBrowserModal=null, openKaikasModal=null) => {
     
     const { locale } = useRouter();
 	const dispatch = useDispatch();
-    
+
     return async () => {
         // @ts-ignore
         if (typeof window !== "undefined" && typeof window.klaytn !== "undefined") {
@@ -58,6 +59,8 @@ export const useLoginWithKaikas = () => {
                 }
             } catch (error) {dispatch(loginStatusAction({enabled:false}));}
         } else {
+            if (!(browserName=="Chrome"||browserName=="Edge")) openBrowserModal && openBrowserModal()
+            else openKaikasModal && openKaikasModal()
         }
     }
 };
