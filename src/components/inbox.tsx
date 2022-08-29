@@ -24,7 +24,7 @@ function Drafts({time, mountmargin, hoverscale, animate_time, once, textprops, m
 		}
 	}
 
-	const draft = {
+	const draft5 = {
 		hover:{
 			draft: {
 				animate:{
@@ -65,23 +65,23 @@ function Drafts({time, mountmargin, hoverscale, animate_time, once, textprops, m
 		<Div flex flexRow justifyCenter itemsCenter wFull>
 			<Div w={"50%"} flex flexRow justifyEnd itemsCenter>
 				<Div relative right={factorTovw(margin)}>
-				<DraftCenterAnchor draft={draft} onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)} content={
-						<>
-							<Div absolute wFull hFull imgTag src={IMAGES.appDraft5.initial}></Div>
-							<motion.div animate={draft.hover.display.animate} transition={draft.hover.display.transition} style={{position:'absolute', width:"100%", height:"100%"}}><Div wFull hFull imgTag src={IMAGES.appDraft5.end}></Div></motion.div>
-						</>
-				}/>
+					<motion.ul variants={text}>
+						<Div absolute _translateX1over2 _translateY1over2>
+							<Div flex flexCol>
+								<Div whitespaceNowrap {...textprops.title}> NFT 혜택 인박스 </Div>
+								<Div whitespaceNowrap {...textprops.content}>내가 보유한 NFT가 이렇게 많은 혜택을? <br/> 놓치고 있는 모든 혜택을 <br/>  한눈에 확인하고 받아가세요</Div>
+							</Div>
+						</Div></motion.ul>
 				</Div>
 			</Div>
 			<Div w={"50%"} flex flexRow justifyStart itemsCenter>
 				<Div relative left={factorTovw(margin)}>
-					<motion.ul variants={text}>
-					<Div absolute _translateX1over2 _translateY1over2>
-						<Div flex flexCol>
-							<Div whitespaceNowrap {...textprops.title}> 투명한 커뮤니티 자금 관리 </Div>
-							<Div whitespaceNowrap {...textprops.content}>커뮤니티 지갑 사용 내역을<br></br>한눈에 확인하고 관리하세요.</Div>
-						</Div>
-					</Div></motion.ul>
+					<DraftCenterAnchor draft={draft5} onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)} content={
+							<>
+								<Div absolute wFull hFull imgTag src={IMAGES.appDraft7.initial}></Div>
+								<motion.div animate={draft5.hover.display.animate} transition={draft5.hover.display.transition} style={{position:'absolute', width:"100%", height:"100%"}}><Div wFull hFull imgTag src={IMAGES.appDraft7.end}></Div></motion.div>
+							</>
+					}/>
 				</Div>
 			</Div>
 		</Div>
@@ -94,7 +94,7 @@ function Drafts({time, mountmargin, hoverscale, animate_time, once, textprops, m
 
 
 
-export default function CommunityWalletDraft({time, textprops, mountmargin, hoverscale, animate_time, once, margin}) {
+export default function InboxDraft({time, textprops, mountmargin, hoverscale, animate_time, once, margin}) {
   return (<Div>
 	<Div selfCenter>
     <Drafts time={time} mountmargin={mountmargin} textprops={textprops} hoverscale={hoverscale} animate_time={animate_time} once={once} margin={margin}/>
