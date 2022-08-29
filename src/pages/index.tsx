@@ -18,6 +18,7 @@ export default function Home({ currentUser, currentNft }) {
 	const playstore = () => {
 		href(LINKS.playstore);
 	};
+	const minW=700
 
 	if (isMobile) return (
 		<MobileMain appstore={appstore} playstore={playstore} />
@@ -25,11 +26,11 @@ export default function Home({ currentUser, currentNft }) {
 	return (
 		<>
 			<MainTopBar currentUser={currentUser} currentNft={currentNft} />
-			<Div wFull flex itemsCenter justifyCenter>
+			<Div flex itemsCenter justifyCenter minW={minW}>
 				<IntroDraft time={0.5} once={false} appstore={appstore} playstore={playstore}/>
 			</Div>
-			<Drafts/>
-			<Div h={700} wFull flex itemsCenter justifyCenter relative>
+			<Drafts minW={minW}/>
+			<Div h={700} flex itemsCenter justifyCenter relative minW={minW}>
 				<FooterDraft time={0.5} once={false} appstore={appstore} playstore={playstore}/>
 				<Div absolute bottom0 left0>
 					<Footer showLogo={false} />
