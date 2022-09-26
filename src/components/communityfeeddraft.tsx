@@ -17,7 +17,7 @@ function Drafts({time, mountmargin, hoverscale, animate_time, once, textprops, m
 	const canHover2 = isHovered2&&canHover
 	const canHover3 = isHovered3&&canHover
 	const canHover4 = isHovered4&&canHover
-	const animate_duration = canAnimate?{delay:animate_time/2, duration: animate_time/2}:{delay: time/2,duration: time/2 }
+	const animate_duration = canAnimate?{duration: animate_time/2}:{delay: time/2,duration: time/2 }
 
 	const image_margin=0.18
 	
@@ -38,7 +38,7 @@ function Drafts({time, mountmargin, hoverscale, animate_time, once, textprops, m
 		showtransition: {
 			hidden: { x:factorToPercent(margin/iPhoneWidth+image_margin*3-(1.5+image_margin*3/2)) },
 			show: { x:"0%", transition: {
-				delay : time*2+animate_time,
+				delay : time*2+animate_time/2,
 				duration: time*1.1
 			  } }
 		},
@@ -57,7 +57,7 @@ function Drafts({time, mountmargin, hoverscale, animate_time, once, textprops, m
 			},
 			display1_1:{
 				animate:{
-				y: canAnimate||canHover1? "-140%":"0%"
+					backgroundPositionY: canAnimate||canHover1? "100%":"0%"
 				},
 				transition:animate_duration
 			},
@@ -74,7 +74,7 @@ function Drafts({time, mountmargin, hoverscale, animate_time, once, textprops, m
 		showtransition: {
 			hidden: { x:factorToPercent(margin/iPhoneWidth+image_margin-(0.5+image_margin/2)) },
 			show: { x:"0%", transition: {
-				delay : time*2+animate_time,
+				delay : time*2+animate_time/2,
 				duration: time*1.1
 			  } }
 		},
@@ -93,7 +93,7 @@ function Drafts({time, mountmargin, hoverscale, animate_time, once, textprops, m
 			},
 			display2:{
 				animate:{
-					y: canAnimate||canHover2? "-95%":"-3%"
+					backgroundPositionY: canAnimate||canHover2? "100%":"0%"
 				},
 				transition:animate_duration
 			},
@@ -104,7 +104,7 @@ function Drafts({time, mountmargin, hoverscale, animate_time, once, textprops, m
 		showtransition: {
 			hidden: { x:factorToPercent(margin/iPhoneWidth-image_margin+(0.5+image_margin/2)) },
 			show: { x:"0%", transition: {
-				delay : time*2+animate_time,
+				delay : time*2+animate_time/2,
 				duration: time*1.1*1.1*1.1
 			  } }
 		},
@@ -134,7 +134,7 @@ function Drafts({time, mountmargin, hoverscale, animate_time, once, textprops, m
 		showtransition: {
 			hidden: { x:factorToPercent(margin/iPhoneWidth-image_margin*3+(1.5+image_margin*3/2)) },
 			show: { x:"0%", transition: {
-				delay : time*2+animate_time,
+				delay : time*2+animate_time/2,
 				duration: time*1.1*1.1*1.1
 			  },}
 		},
@@ -163,7 +163,7 @@ function Drafts({time, mountmargin, hoverscale, animate_time, once, textprops, m
 	const text= {
 		hidden: {opacity: 0, y:-mountmargin/2 },
 		show: {opacity:1, y:0, transition : {
-			delay: animate_time+time*3,
+			delay: animate_time+time*2,
 			duration: time,
 			onComplete: () => {setHover(true);setAnimate(false)},
 		}}
@@ -205,8 +205,8 @@ function Drafts({time, mountmargin, hoverscale, animate_time, once, textprops, m
 						<Div relative><Div absolute>
 						<DraftCenterAnchor draft={draft2} onMouseEnter={() => setHovered2(true)} onMouseLeave={() => setHovered2(false)} content={
 								<>
-										<motion.div animate={draft2.hover.display2.animate} transition={draft2.hover.display2.transition} style={{position:'absolute', width:"100%", height:"100%"}}><Div wFull imgTag src={IMAGES.appDraft2.content}></Div></motion.div>
-										<Div absolute wFull hFull imgTag src={IMAGES.appDraft2.tool}></Div>
+										<ContentImage animate={draft2.hover.display2.animate} transition={draft2.hover.display2.transition} src={IMAGES.appDraft2.content}/>
+										<ContentImage src={IMAGES.appDraft2.tool}/>
 										<IphoneBlackContent animation={draft2.hover.black} />
 								</>
 						}/>
@@ -214,10 +214,10 @@ function Drafts({time, mountmargin, hoverscale, animate_time, once, textprops, m
 						<Div relative><Div absolute>
 						<DraftCenterAnchor draft={draft1} onMouseEnter={() => setHovered1(true)} onMouseLeave={() => setHovered1(false)} content={
 								<>
-									<Div absolute wFull hFull imgTag src={IMAGES.appDraft1.bgback}></Div>
-									<motion.div animate={draft1.hover.display1_1.animate} transition={draft1.hover.display1_1.transition} style={{position:'absolute', width:"100%", height:"100%"}}><Div wFull imgTag src={IMAGES.appDraft1.content}></Div></motion.div>
-									<Div absolute wFull hFull imgTag src={IMAGES.appDraft1.bgfront1}></Div>
-									<motion.div animate={draft1.hover.display1_2.animate} transition={draft1.hover.display1_2.transition} style={{position:'absolute', width:"100%", height:"100%"}}><Div hFull wFull imgTag src={IMAGES.appDraft1.bgfront2}></Div></motion.div>
+									<ContentImage src={IMAGES.appDraft1.bgback}/>
+									<ContentImage animate={draft1.hover.display1_1.animate} transition={draft1.hover.display1_1.transition} src={IMAGES.appDraft1.content}/>
+									<ContentImage src={IMAGES.appDraft1.bgfront1}/>
+									<motion.div animate={draft1.hover.display1_2.animate} transition={draft1.hover.display1_2.transition} style={{position:'absolute', width:"100%", height:"100%"}}><Div wFull imgTag src={IMAGES.appDraft1.bgfront2}></Div></motion.div>
 									<IphoneBlackContent animation={draft1.hover.black} />
 								</>
 						}/>
@@ -230,8 +230,8 @@ function Drafts({time, mountmargin, hoverscale, animate_time, once, textprops, m
 					<motion.ul variants={text}>
 					<Div absolute _translateX1over2 _translateY1over2>
 						<Div flex flexCol>
-							<Div whitespaceNowrap {...textprops.title}> 커뮤니티 피드 </Div>
-							<Div whitespaceNowrap {...textprops.content}>피드에서 커뮤니티 내 다양한 홀더들과 <br />편리하게 소통하고 팔로잉 피드에서 <br /> 관심있는 이야기만 모아보세요.</Div>
+							<Div whitespaceNowrap {...textprops.title}> 소셜 피드 </Div>
+							<Div whitespaceNowrap {...textprops.content}>나만의 유일무이한 NFT 계정으로 <br/>다른 NFT 홀더들과 편리하게<br/>소통하고 교류하세요.</Div>
 						</Div>
 					</Div></motion.ul>
 				</Div>
@@ -243,7 +243,26 @@ function Drafts({time, mountmargin, hoverscale, animate_time, once, textprops, m
   );
 }
 
-
+const ContentImage = ({animate=null, transition=null, scrollProgress=null, src}) => {
+	return (
+		scrollProgress ? <motion.div style={{
+			position:"absolute",
+            height:"100%",
+            width:"100%",
+            backgroundImage: `url(${src})`,
+            backgroundSize: "cover",
+            backgroundPositionX: "center",
+			backgroundPositionY: scrollProgress,
+        }}/>: (animate&&transition ?<motion.div animate={animate} transition={transition} style={{
+			position:"absolute",
+            height:"100%",
+            width:"100%",
+            backgroundImage: `url(${src})`,
+            backgroundSize: "cover",
+            backgroundPositionX: "center",
+        }}/> : <Div absolute wFull imgTag src={src}/>)
+	)
+}
 
 
 export default function CommunityFeedDraft({time, textprops, mountmargin, hoverscale, animate_time, once, margin}) {

@@ -35,7 +35,7 @@ export default function Drafts({minW=0}) {
 	<InboxDraft margin={margin} time={time} mountmargin={mountmargin} textprops={textprops} hoverscale={hoverscale} animate_time={animate_time} once={once}/>
     <CommunityFeedDraft margin={margin} time={time} mountmargin={mountmargin} textprops={textprops} hoverscale={hoverscale} animate_time={animate_time} once={once}/>
 	<HolderVerificationDraft margin={margin} time={time} mountmargin={mountmargin} textprops={textprops} hoverscale={hoverscale} animate_time={animate_time} once={once}/>
-	<CommunityWalletDraft margin={margin} time={time} mountmargin={mountmargin} textprops={textprops} hoverscale={hoverscale} animate_time={animate_time} once={once}/>
+	{/* <CommunityWalletDraft margin={margin} time={time} mountmargin={mountmargin} textprops={textprops} hoverscale={hoverscale} animate_time={animate_time} once={once}/> */}
   	</Div></Div>);
 }
 

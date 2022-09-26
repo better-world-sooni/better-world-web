@@ -9,7 +9,7 @@ function Drafts({time, mountmargin, hoverscale, animate_time, once, textprops, m
 	const [canAnimate, setAnimate] = useState(false)
 	const [canHover, setHover] = useState(false)
 	const canHover5 = isHovered&&canHover
-	const animate_duration = canAnimate?{delay:animate_time/2, duration: animate_time/2}:{delay: time/2,duration: time/2 }
+	const animate_duration = canAnimate?{duration: animate_time/2}:{delay: time/2,duration: time/2 }
 	
 	const container = {
 		hidden: { opacity: 0,y : -mountmargin},
@@ -44,9 +44,9 @@ function Drafts({time, mountmargin, hoverscale, animate_time, once, textprops, m
 	}
 	
 	const text= {
-		hidden: {opacity: 0, y:-mountmargin/2 },
-		show: {opacity:1, y:0, transition : {
-			delay: animate_time+time*1.2,
+		hidden: {opacity: 1 },
+		show: {opacity:1, transition : {
+			delay: animate_time,
 			duration: time,
 			onComplete: () => {setHover(true);setAnimate(false)},
 		}}

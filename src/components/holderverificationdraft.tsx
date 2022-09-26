@@ -33,7 +33,6 @@ function Drafts({time, mountmargin, hoverscale, animate_time, once, textprops, m
 					scale: canAnimate||canHover5? 1-(hoverscale-1)*1.5:1
 				},
 				transtion:canAnimate?{
-					delay : modifed_animate_time/4,
 					duration: modifed_animate_time/4
 				}:{
 					delay : time/2,
@@ -56,7 +55,6 @@ function Drafts({time, mountmargin, hoverscale, animate_time, once, textprops, m
 					scale: canAnimate||canHover5? hoverscale:1, opacity : canAnimate||canHover5? 1:0, y:canAnimate||canHover5? "-10%":"10%"
 				},
 				transtion:canAnimate?{
-					delay : modifed_animate_time/4,
 					duration: modifed_animate_time/4
 				}:{
 					delay : time/2,
@@ -66,7 +64,7 @@ function Drafts({time, mountmargin, hoverscale, animate_time, once, textprops, m
 			black: {
 				animate:{opacity: canAnimate||canHover5? 0.5 : 0},
 				transition:canAnimate?{
-					delay : (modifed_animate_time/4)*2.5,
+					delay : (modifed_animate_time/4)*1.5,
 					duration: (modifed_animate_time/4)*0.5
 				}:{
 					delay : time*1.2,
@@ -78,7 +76,7 @@ function Drafts({time, mountmargin, hoverscale, animate_time, once, textprops, m
 					y: canAnimate||canHover5? "0%":"100%"
 				},
 				transition:canAnimate?{
-					delay : (modifed_animate_time/4)*2.5,
+					delay : (modifed_animate_time/4)*1.5,
 					duration: (modifed_animate_time/4)*0.5
 				}:{
 					delay : time*1.2,
@@ -89,9 +87,9 @@ function Drafts({time, mountmargin, hoverscale, animate_time, once, textprops, m
 	}
 	
 	const text= {
-		hidden: {opacity: 0, y:-mountmargin/2 },
-		show: {opacity:1, y:0, transition : {
-			delay: modifed_animate_time+time*1.2,
+		hidden: {opacity: 1 },
+		show: {opacity:1, transition : {
+			delay: modifed_animate_time,
 			duration: time,
 			onComplete: () => {setHover(true);setAnimate(false)},
 		}}
