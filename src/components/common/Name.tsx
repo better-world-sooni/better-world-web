@@ -119,7 +119,7 @@ export default function Name({ nftName, nftMetadatumName, mine, contractAddress 
 										<CheckCircleIcon height={20} width={20} scale={1} strokeWidth={0.5} />
 									</Div>
 								),
-								[NameState.Loading]: <Spinner clx={"h-20 w-20"} fill={COLORS.PRIMARY} circleFill={COLORS.GRAY200} />,
+								[NameState.Loading]: <Spinner clx={"h-20 w-20"} fill={COLORS.BW} circleFill={COLORS.GRAY200} />,
 							}[name.state]
 						}
 					</Div>

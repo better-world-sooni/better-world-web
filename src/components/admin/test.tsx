@@ -7,7 +7,7 @@ export default function TestAdmin() {
 	return (
 		<Div maxW={800} rounded1000 bgWhite bgOpacity90>
 		<Div fontSize20 textStart maxW={800} mxAuto fontSemibold>
-			<Div spanTag textPrimary>
+			<Div spanTag textBW>
 				TEST
 			</Div>
 			{" "}입니다.

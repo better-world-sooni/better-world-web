@@ -141,7 +141,7 @@ export default function NewPost({ currentNft, nftCollection = null }) {
 					<Col />
 					<Col auto>
 						<Div relative textBase onClick={uploadPost} cursorPointer>
-							{loading ? <Spinner clx={"w-20 h-20"} fill={COLORS.PRIMARY} circleFill={COLORS.GRAY200} /> : "게시하기"}
+							{loading ? <Spinner clx={"w-20 h-20"} fill={COLORS.BW} circleFill={COLORS.GRAY200} /> : "게시하기"}
 						</Div>
 					</Col>
 				</Row>
@@ -202,7 +202,7 @@ export default function NewPost({ currentNft, nftCollection = null }) {
 									>
 										{fileObject.loading && (
 											<Div wFull hFull absolute z10 top0 flex itemsCenter justifyCenter clx={"bg-grayOpacity-100"}>
-												<Spinner clx={"w-40 h-40"} fill={COLORS.PRIMARY} circleFill={COLORS.GRAY200} />
+												<Spinner clx={"w-40 h-40"} fill={COLORS.BW} circleFill={COLORS.GRAY200} />
 											</Div>
 										)}
 									</div>

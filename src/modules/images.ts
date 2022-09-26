@@ -15,6 +15,7 @@ const images = {
     webeDraft: '/images/webeDraft.png',
     webeDraft2: '/images/webeDraft2.png',
     webeDraft3: '/images/webeDraft3.png',
+    mainbackground: '/images/background.png',
     appDraft1: {
         bgback:'/images/appDraft1_1.png',
         bgfront1:'/images/appDraft1_2_1.png',
@@ -47,6 +48,10 @@ const images = {
             initial:'/images/appDraft6_3.png',
             end:'/images/appDraft6_4.png',
         }
+    },
+    appDraft7: {
+        initial:'/images/appDraft7_1.png',
+        end:'/images/appDraft7_2.png',
     },
     kaikas:"/images/kaikas.png",
     logoword:{

@@ -13,9 +13,9 @@ import { dehydrate } from 'react-query';
 import { InitialgetUserListQuery } from 'src/hooks/queries/admin/userlist'
 
 function Admin({currentUser, currentNft}) {
-
+	const dispatch = useDispatch();
 	if (!currentNft?.privilege)  return (<>Invalid Access</>);
-    const dispatch = useDispatch();
+    
     dispatch(currentNftAction({currentNft: currentNft}));
 	const frame = [
 		<AdminTemplete key={0} name={"Dashboard"} Comps={Dashboard}/>,
