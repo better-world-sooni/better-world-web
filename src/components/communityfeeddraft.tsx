@@ -17,7 +17,7 @@ function Drafts({time, mountmargin, hoverscale, animate_time, once, textprops, m
 	const canHover2 = isHovered2&&canHover
 	const canHover3 = isHovered3&&canHover
 	const canHover4 = isHovered4&&canHover
-	const animate_duration = canAnimate?{delay:animate_time/2, duration: animate_time/2}:{delay: time/2,duration: time/2 }
+	const animate_duration = canAnimate?{duration: animate_time/2}:{delay: time/2,duration: time/2 }
 
 	const image_margin=0.18
 	
@@ -38,7 +38,7 @@ function Drafts({time, mountmargin, hoverscale, animate_time, once, textprops, m
 		showtransition: {
 			hidden: { x:factorToPercent(margin/iPhoneWidth+image_margin*3-(1.5+image_margin*3/2)) },
 			show: { x:"0%", transition: {
-				delay : time*2+animate_time,
+				delay : time*2+animate_time/2,
 				duration: time*1.1
 			  } }
 		},
@@ -74,7 +74,7 @@ function Drafts({time, mountmargin, hoverscale, animate_time, once, textprops, m
 		showtransition: {
 			hidden: { x:factorToPercent(margin/iPhoneWidth+image_margin-(0.5+image_margin/2)) },
 			show: { x:"0%", transition: {
-				delay : time*2+animate_time,
+				delay : time*2+animate_time/2,
 				duration: time*1.1
 			  } }
 		},
@@ -104,7 +104,7 @@ function Drafts({time, mountmargin, hoverscale, animate_time, once, textprops, m
 		showtransition: {
 			hidden: { x:factorToPercent(margin/iPhoneWidth-image_margin+(0.5+image_margin/2)) },
 			show: { x:"0%", transition: {
-				delay : time*2+animate_time,
+				delay : time*2+animate_time/2,
 				duration: time*1.1*1.1*1.1
 			  } }
 		},
@@ -134,7 +134,7 @@ function Drafts({time, mountmargin, hoverscale, animate_time, once, textprops, m
 		showtransition: {
 			hidden: { x:factorToPercent(margin/iPhoneWidth-image_margin*3+(1.5+image_margin*3/2)) },
 			show: { x:"0%", transition: {
-				delay : time*2+animate_time,
+				delay : time*2+animate_time/2,
 				duration: time*1.1*1.1*1.1
 			  },}
 		},
@@ -163,7 +163,7 @@ function Drafts({time, mountmargin, hoverscale, animate_time, once, textprops, m
 	const text= {
 		hidden: {opacity: 0, y:-mountmargin/2 },
 		show: {opacity:1, y:0, transition : {
-			delay: animate_time+time*3,
+			delay: animate_time+time*2,
 			duration: time,
 			onComplete: () => {setHover(true);setAnimate(false)},
 		}}
@@ -230,8 +230,8 @@ function Drafts({time, mountmargin, hoverscale, animate_time, once, textprops, m
 					<motion.ul variants={text}>
 					<Div absolute _translateX1over2 _translateY1over2>
 						<Div flex flexCol>
-							<Div whitespaceNowrap {...textprops.title}> 커뮤니티 피드 </Div>
-							<Div whitespaceNowrap {...textprops.content}>피드에서 커뮤니티 내 다양한 홀더들과 <br />편리하게 소통하고 팔로잉 피드에서 <br /> 관심있는 이야기만 모아보세요.</Div>
+							<Div whitespaceNowrap {...textprops.title}> 소셜 피드 </Div>
+							<Div whitespaceNowrap {...textprops.content}>나만의 유일무이한 NFT 계정으로 <br/>다른 NFT 홀더들과 <br/>편리하게 소통하고 교류하세요.</Div>
 						</Div>
 					</Div></motion.ul>
 				</Div>
