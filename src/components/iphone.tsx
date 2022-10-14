@@ -1,22 +1,31 @@
 import { motion } from "framer-motion";
 import Div from "src/components/Div";
 import { IMAGES } from "src/modules/images";
+import { DivPropsType } from "src/types/DivPropsType";
 
-export function Iphone({iphone_w, iphone_h, content, contentmarginWidth, contentmarginHeight, buttonmargin}) {
+export const iphoneSize={contentmarginWidth:57/1180, contentmarginHeigth:55/2380, buttonmargin:9/1180, rounded:190/1180, contentWidth:1068/1180, contentHeight:2270/2380}
+
+
+const factorToPercent = (v)=> `${v*100}%`
+
+export const Iphone = (props: DivPropsType)=>{
 	return (
-	<Div w={iphone_w-buttonmargin*2} h={iphone_h} rounded45 shadow2xl>
-		<Div relative w={iphone_w} h={iphone_h} right={buttonmargin}>
-			<Div top={contentmarginHeight} left={contentmarginWidth} absolute w={iphone_w-contentmarginWidth*2} h={iphone_h-contentmarginHeight*2} rounded25 overflowHidden>
-				{content}
+		<Div {...props}>
+			<Div relative wFull>
+				<Div absolute px={factorToPercent(iphoneSize.buttonmargin)} w={factorToPercent(1)} h={factorToPercent(1)}>
+					<Div wFull hFull style={{borderRadius:factorToPercent(iphoneSize.rounded)}} shadow2xl/>
+				</Div>
+				<Div absolute style={{borderRadius:factorToPercent(iphoneSize.rounded), width:factorToPercent(1), height:factorToPercent(1)}} py={factorToPercent(1-iphoneSize.contentHeight)} px={factorToPercent((1-iphoneSize.contentWidth)/2-iphoneSize.buttonmargin/2)}>
+					<Div relative hFull wFull overflowHidden style={{borderRadius:"8%"}}>{props.children}</Div>
+				</Div>
+				<Div relative wFull imgTag src={IMAGES.iphon13}/>
 			</Div>
-			<Div absolute w={iphone_w} h={iphone_h} imgTag src={IMAGES.iphon13}></Div>
 		</Div>
-	</Div>
 	)
 }
 
-export function IphoneBlackContent({iphone_w, iphone_h, contentmarginWidth, contentmarginHeight, animation}) {
+export function IphoneBlackContent({animation}) {
 	return (
-		<motion.div layout animate={animation.animate} transition={animation.transition}><Div absolute w={iphone_w-contentmarginWidth*2} h={iphone_h-contentmarginHeight*2} bgBlack></Div></motion.div>
+		<motion.div animate={animation.animate} transition={animation.transition} style={{position:'absolute', width:"100%", height:"100%"}}><Div wFull hFull bgBlack/></motion.div>
 	)
 }

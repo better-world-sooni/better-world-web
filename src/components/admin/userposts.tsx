@@ -46,7 +46,7 @@ function ModalEntry({name, contract_address, token_id, closeModal}) {
 	const [LoadingButtonOn, setLoadingButton] = useState(false)
 	const loading_status = fetching&&!loading
 	const queryClient = useQueryClient()
-
+	console.log(post_list)
 	const refetchUserPost = (page_size, offset, search_key) => {
 		cancelUserPostListQuery(queryClient, contract_address, token_id);
 		dispatch(UserListPostAction({page_size:page_size, offset:offset, search_key:search_key}));
@@ -64,14 +64,14 @@ function ModalEntry({name, contract_address, token_id, closeModal}) {
 		<Div zIndex={-1000} wFull hFull flex itemsCenter justifyCenter>
             <Div wFull mb10 flex flexCol px30 py30>
 				<Div wFull flex flexRow py10 borderB1>
-					<Div wFull selfCenter fontBold fontSize30 selfStart textPrimary>
+					<Div wFull selfCenter fontBold fontSize30 selfStart textBW>
 						{name}<Div spanTag fontSemibold fontSize25 textBlack>
 								님의 게시글
 							</Div>
 					</Div>
 					<Div selfCenter>
 						<Tooltip title="창 닫기" arrow>
-							<Div fontBold selfEnd px10 cursorPointer py5 bgPrimaryLight textPrimary rounded10 clx="hover:bg-primary hover:text-white" onClick={closeModal}>
+							<Div fontBold selfEnd px10 cursorPointer py5 bgBWLight textBW rounded10 clx="hover:bg-bw hover:text-white" onClick={closeModal}>
 							닫기
 							</Div>
 						</Tooltip>
@@ -97,12 +97,12 @@ function ModalEntry({name, contract_address, token_id, closeModal}) {
 						</Div>
 						</Div>
 						{post_list &&(loading_status ? 
-						<Div fontSize15 fontBold selfEnd px10 py5 textWhite rounded10 bgPrimary>
-							<Oval height="14" width="14" color="blue" secondaryColor="#FFFFFF" strokeWidth="5" />
+						<Div fontSize15 fontBold selfEnd px10 py5 textWhite rounded10 bgBW>
+							<Oval height="14" width="14" color="#4738FF" secondaryColor="#FFFFFF" strokeWidth="5" />
 						</Div>
 					: 
 						<Tooltip title="업데이트" arrow>
-						<Div fontBold selfEnd px10 cursorPointer py5 bgPrimaryLight textPrimary rounded10 clx="hover:bg-primary hover:text-white" onClick={refetch}>
+						<Div fontBold selfEnd px10 cursorPointer py5 bgBWLight textBW rounded10 clx="hover:bg-bw hover:text-white" onClick={refetch}>
 						<RefreshIcon height={20} width={20} className="max-h-20 max-w-20" />
 						</Div>
 						</Tooltip>
@@ -112,7 +112,7 @@ function ModalEntry({name, contract_address, token_id, closeModal}) {
 					{post_list?.success && 
 					<Div selfCenter wFull flex flexCol>
 						<Div wFull selfCenter><MakePostList post_list={post_list}/></Div>
-						<Div selfCenter><Pagination count={Math.ceil(post_list?.list?.total_length / page_size)} page={offset+1} showFirstButton showLastButton color="primary" onChange={handlePaginationOffsetChange}/></Div>
+						<Div selfCenter><Pagination count={Math.ceil(post_list?.list?.total_length / page_size)} page={offset+1} showFirstButton showLastButton onChange={handlePaginationOffsetChange}/></Div>
 						</Div>}
 					{error||(post_list&&(!post_list.success)) && 
 					<Div selfCenter wFull flex flexCol>

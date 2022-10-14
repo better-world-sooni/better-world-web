@@ -49,6 +49,10 @@ const images = {
             end:'/images/appDraft6_4.png',
         }
     },
+    appDraft7: {
+        initial:'/images/appDraft7_1.png',
+        end:'/images/appDraft7_2.png',
+    },
     kaikas:"/images/kaikas.png",
     logoword:{
         firstBlack:'/images/words/word1.png',

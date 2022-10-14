@@ -5,7 +5,7 @@ import { IMAGES } from "src/modules/images";
 import EmptyBlock from "./EmptyBlock";
 
 
-export default function FooterAnimated({time, once, appstore, playstore}) {
+export default function FooterDraft({time, once, appstore, playstore}) {
 	const [canhref, sethref] = useState(false)
 	const container = {
 		hidden: {opacity:0},

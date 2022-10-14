@@ -106,14 +106,15 @@ export function PostDetails({post, showEntry=true, maxCommentLength=2, postModal
 
 
 
-function ContentDetails({post, loadImage=true, loadComment=true, maxCommentLength=2, CommentModal=null}) {
+function ContentDetails({post, loadMedia=true, loadComment=true, maxCommentLength=2, CommentModal=null}) {
 	return (
 		<Div flex flexCol>
 			<Div mt10 selfStart>
 				<TruncatedText text={post.content} maxLength={300}/>
 			</Div>
 			{post.reposted_post && <Div wFull selfCenter mt30><RepostDetails repost={post.reposted_post}/></Div>}
-			{loadImage && (post.image_uris.length > 0) && <Div selfCenter mt30><ImageSlide maxHeight={500} maxWidth={500} uris={post.image_uris} click={true}/></Div>}
+			{loadMedia && (post.image_uris.length > 0) && <Div selfCenter mt30><ImageSlide maxHeight={500} maxWidth={500} uris={post.image_uris} click={true}/></Div>}
+			{loadMedia && post.video_uri && <Div selfCenter mt30><ImageSlide maxHeight={500} maxWidth={500} uris={[post.video_uri]} click={false}/></Div>}
 			{(loadComment && post.comments_count!=0) &&<Div mt30 borderT1 borderGray400 ml50 mr50 px20 py20><TruncatedComment comments={post.comments} maxLength={maxCommentLength} CommentModal={CommentModal}/></Div>}
 		</Div>
 	)
@@ -201,7 +202,7 @@ function RepostDetails({repost}) {
 					<Div selfCenter mr10 textRight minW={150}>{getDate(repost.updated_at)}</Div>
 				</Div>
 				<Div px10 selfStart wFull> 
-					<ContentDetails post={repost} loadImage={false} loadComment={false}/>
+					<ContentDetails post={repost} loadMedia={false} loadComment={false}/>
 				</Div>
 			</Div>
 		</Div>
@@ -262,7 +263,7 @@ function CommentsDataEntry({post, w, labelsize}) {
 
 function RepostDataEntry({post, w, labelsize}) {
 	return (
-		<DataEntry name={"리포스트 수"} w={w} label={post.repost_count>0 ? <RefreshIcon height={labelsize} width={labelsize} className="max-h-20 max-w-20 mr-10 text-info" /> : <RefreshIcon height={labelsize} width={labelsize} className="max-h-20 max-w-20 mr-10" /> } data={post.repost_count}/>
+		<DataEntry name={"퍼가기 수"} w={w} label={post.repost_count>0 ? <RefreshIcon height={labelsize} width={labelsize} className="max-h-20 max-w-20 mr-10 text-info" /> : <RefreshIcon height={labelsize} width={labelsize} className="max-h-20 max-w-20 mr-10" /> } data={post.repost_count}/>
 	)
 }
 
