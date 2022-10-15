@@ -97,14 +97,25 @@ function MobileMain({ appstore, playstore }) {
       },
     },
   };
-
   const text2Animation = {
     hidden: { opacity: 0, y: -20 },
     show: {
       opacity: 1,
       y: 0,
       transition: {
-        delay: time * 4,
+        delay: time * 3.5,
+        duration: time,
+      },
+    },
+  };
+
+  const text3Animation = {
+    hidden: { opacity: 0, y: -20 },
+    show: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        delay: time * 4.5,
         duration: time,
       },
     },
@@ -115,7 +126,7 @@ function MobileMain({ appstore, playstore }) {
     show: {
       opacity: 1,
       transition: {
-        delay: time * 4.5,
+        delay: time * 5,
         duration: time,
         onComplete: () => sethref(true),
       },
@@ -161,28 +172,36 @@ function MobileMain({ appstore, playstore }) {
 
               <Div wFull itemsCenter justifyCenter>
                 <motion.li variants={text1Animation}>
-                  <Div fontSize28 textCenter fontBold roundedFull whitespaceNowrap>
-                    애장하는 PFP의{" "}
+                  <Div fontSize17 textCenter fontBold roundedFull whitespaceNowrap mb10>
+                    프로젝트 별로 흩어진 공지 정보를 모아서{" "}
                     <Div spanTag textBWgradient>
-                      특권과 혜택
+                      한눈에
                     </Div>
                     ,
                   </Div>
                 </motion.li>
                 <motion.li variants={text2Animation}>
-                  <Div fontSize28 textCenter mxAuto fontBold roundedFull mt5>
+                  <Div fontSize17 textCenter fontBold roundedFull whitespaceNowrap mb30>
+                    지갑 연결 한 번으로 홀더 커뮤니티 입장까지{" "}
+                    <Div spanTag textBWgradient>
+                      간편하게
+                    </Div>
+                    ,
+                  </Div>
+                </motion.li>
+                <motion.li variants={text3Animation}>
+                  <Div fontSize25 textCenter mxAuto fontBold roundedFull mt5>
                     <Div flex flexRow whitespaceNowrap itemsCenter justifyCenter>
-                      지금
-                      <Div mb2 ml10 mr3 selfCenter imgTag maxW={180} src={IMAGES.logoword.firstGradient} />
-                      에서
+                      <Div mb2 ml10 mr10 selfCenter imgTag maxH={25} src={IMAGES.logoword.firstGradient} />
+                      하나로
                     </Div>
                   </Div>
-                  <Div fontSize28 textCenter mxAuto fontBold roundedFull mt5>
-                    간편하게 누려보세요.
+                  <Div fontSize25 textCenter mxAuto fontBold roundedFull mt5>
+                    NFT 완전 정복
                   </Div>
                 </motion.li>
                 <motion.li variants={linkAnimation}>
-                  <Div mt20 flex justifyCenter gapX={10}>
+                  <Div mt40 flex justifyCenter gapX={10}>
                     {canhref ? (
                       <Div imgTag h35 src={IMAGES.downloadOnAppStore} cursorPointer onClick={appstore} />
                     ) : (
