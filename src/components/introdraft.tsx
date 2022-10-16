@@ -3,77 +3,118 @@ import { useState } from "react";
 import Div from "src/components/Div";
 import { IMAGES } from "src/modules/images";
 
+export default function IntroDraft({ time, once, appstore, playstore }) {
+  const [canhref, sethref] = useState(false);
+  const container = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: {
+        duration: time,
+      },
+    },
+  };
 
-export default function IntroDraft({time, once, appstore, playstore}) {
-	const [canhref, sethref] = useState(false)
-	const container = {
-		hidden: {opacity:0},
-		show: {
-		  opacity:1,
-		  transition: {
-			duration: time,
-		  }
-		}
-	}
+  const text1Animation = {
+    hidden: { opacity: 0, y: -20 },
+    show: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: time,
+      },
+    },
+  };
 
-	const text1Animation = {
-		hidden: {opacity:0, y:-20},
-		show: {opacity:1, y:0, transition: {
-			duration: time
-		  } }
-	}
+  const text2Animation = {
+    hidden: { opacity: 0, y: -20 },
+    show: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        delay: time * 0.5,
+        duration: time,
+      },
+    },
+  };
 
-	const text2Animation = {
-		hidden: {opacity:0, y:-20},
-		show: {opacity:1, y:0, transition: {
-			delay: time*1.5,
-			duration: time
-		  } }
-	}
+  const text3Animation = {
+    hidden: { opacity: 0, y: -20 },
+    show: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        delay: time * 2.0,
+        duration: time,
+      },
+    },
+  };
 
-	const linkAnimation = {
-		hidden: {opacity:0},
-		show: {opacity:1, transition: {
-			delay: time*2,
-			duration: time,
-			onComplete: () => sethref(true),
-		  } }
-	}
+  const linkAnimation = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: {
+        delay: time * 2.5,
+        duration: time,
+        onComplete: () => sethref(true),
+      },
+    },
+  };
 
-    return (
-	<Div wFull>
-		<motion.div
-		initial="hidden"
-		whileInView="show"
-		viewport={{ once: once, amount:0.5 }}
-		onViewportLeave={()=>sethref(false)}
-		>
-		<motion.ul variants={container}>
-		<Div relative wFull flex itemsCenter justifyCenter>
-			<Div wFull><Div imgTag src={IMAGES.mainbackground}/></Div>
-			<Div absolute hFull mb300 mt500 py50 px100>
-			<motion.li variants={text1Animation}><Div fontSize48 textCenter fontBold roundedFull whitespaceNowrap>
-				애장하는 PFP의{" "}
-				<Div spanTag textBWgradient>특권과 혜택</Div>
-				,
-			</Div></motion.li>
-			<motion.li variants={text2Animation}><Div fontSize48 textCenter mxAuto fontBold roundedFull mt20>
-				<Div flex flexRow whitespaceNowrap itemsCenter justifyCenter>
-				지금
-				<Div mb5 ml10 mr3 selfCenter imgTag maxW={300} src={IMAGES.logoword.firstGradient}/>
-				에서 간편하게 누려보세요.</Div>
-			</Div></motion.li>
-			<motion.li variants={linkAnimation}>
-			<Div flex justifyCenter mt80 gapX={20}>
-			{canhref ?<Div imgTag h50 src={IMAGES.downloadOnAppStore} cursorPointer onClick={appstore}/>:<Div imgTag h50 src={IMAGES.downloadOnAppStore}/>}
-			{canhref ?<Div imgTag h50 src={IMAGES.downloadOnGooglePlay} cursorPointer onClick={playstore}/>:<Div imgTag h50 src={IMAGES.downloadOnGooglePlay}/>}
-			</Div>
-			</motion.li>
-			</Div>
-		</Div>
-		</motion.ul>
-		</motion.div>
-	</Div>
-    )
+  return (
+    <Div wFull>
+      <motion.div initial="hidden" whileInView="show" viewport={{ once: once, amount: 0 }} onViewportLeave={() => sethref(false)}>
+        <motion.ul variants={container}>
+          <Div relative wFull flex itemsCenter justifyCenter>
+            <Div relative wFull top={"-6vw"}>
+              <Div imgTag src={IMAGES.mainbackground} />
+            </Div>
+            <Div absolute wFull hFull mb300 top={"10vw"} py50 px100 flex flexCol justifyStart>
+              <Div flex flexCol justifyCenter w={"55vw"}>
+                <motion.li variants={text1Animation}>
+                  <Div fontSize={"2.5vw"} textStart fontBold roundedFull whitespaceNowrap>
+                    프로젝트 별로 흩어진 공지 정보를 모아서{" "}
+                    <Div spanTag textBWgradient>
+                      한눈에
+                    </Div>
+                    ,
+                  </Div>
+                </motion.li>
+                <motion.li variants={text2Animation}>
+                  <Div fontSize={"2.5vw"} textStart fontBold roundedFull whitespaceNowrap>
+                    지갑 연결 한 번으로 홀더 커뮤니티 입장까지{" "}
+                    <Div spanTag textBWgradient>
+                      간편하게
+                    </Div>
+                    ,
+                  </Div>
+                </motion.li>
+                <motion.li variants={text3Animation}>
+                  <Div fontSize={"3.5vw"} textStart mxAuto fontBold roundedFull mt20 flex flexRow justifyStart whitespaceNowrap>
+                    <Div mb={"0.4vw"} selfCenter imgTag maxH={"3.5vw"} src={IMAGES.logoword.firstGradient} style={{ marginRight: "1.5vw" }} />
+                    하나로 NFT 완전 정복
+                  </Div>
+                </motion.li>
+                <motion.li variants={linkAnimation}>
+                  <Div flex flexRow justifyCenter style={{ marginTop: "5vw" }} gapX={"2vw"}>
+                    {canhref ? (
+                      <Div imgTag h={"3.5vw"} src={IMAGES.downloadOnAppStore} cursorPointer onClick={appstore} />
+                    ) : (
+                      <Div imgTag h={"3.5vw"} src={IMAGES.downloadOnAppStore} />
+                    )}
+                    {canhref ? (
+                      <Div imgTag h={"3.5vw"} src={IMAGES.downloadOnGooglePlay} cursorPointer onClick={playstore} />
+                    ) : (
+                      <Div imgTag h={"3.5vw"} src={IMAGES.downloadOnGooglePlay} />
+                    )}
+                  </Div>
+                </motion.li>
+              </Div>
+            </Div>
+          </Div>
+        </motion.ul>
+      </motion.div>
+    </Div>
+  );
 }
-
