@@ -16,7 +16,7 @@ function Admin({ currentUser, currentNft }) {
   const dispatch = useDispatch();
   if (!currentUser?.super_privilege) return <>Invalid Access</>;
 
-  dispatch(currentNftAction({ currentNft: currentNft }));
+  dispatch(currentNftAction({ currentNft: currentNft, currentUser: currentUser }));
   const frame = [<AdminTemplete key={0} name={"Dashboard"} Comps={Dashboard} />, <AdminTemplete key={1} name={"User List"} Comps={UserList} />];
 
   return (
