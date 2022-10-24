@@ -66,7 +66,6 @@ export function GetVideo({maxHeight, maxWidth, uri}) {
 }
 
 const Video = ({uri, maxWidth, maxHeight}) => {
-    console.log(uri)
     return (
             <Div className='player-wrapper'>
                 <ReactPlayer

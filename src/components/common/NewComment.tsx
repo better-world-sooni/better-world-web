@@ -78,7 +78,7 @@ export default function NewComment({ currentNftImage, postId, onSuccess, full = 
 					</Div>
 				</Col>
 				<Col flex itemsCenter justifyCenter auto pl0 textBase onClick={handlePostComment} cursorPointer textSm>
-					{loading ? <Spinner clx={"w-20 h-20"} fill={COLORS.PRIMARY} circleFill={COLORS.GRAY200} /> : "게시"}
+					{loading ? <Spinner clx={"w-20 h-20"} fill={COLORS.BW} circleFill={COLORS.GRAY200} /> : "게시"}
 				</Col>
 			</Row>
 		</Div>

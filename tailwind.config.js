@@ -52,6 +52,7 @@ const basicColors = {
   white: '#ffffff',
   danger: { DEFAULT: '#ff3051', light: 'rgba(255, 48, 81, 0.1)' },
   info: { DEFAULT: '#2a97ff', light: 'rgba(42, 151, 255, 0.1)' },
+  bw: {DEFAULT: '#4738FF', light: '#E6E3FF', gradient: 'linear-gradient(-45deg, #AA37FF 30%, #4738FF 90%)'},
 }
 
 const teensColors = {

@@ -4,26 +4,24 @@ import useIsTablet from "src/hooks/useIsTablet";
 import Div from "./Div";
 import Row from "./Row";
 import Col from "./Col";
+import LINKS from "src/modules/links";
 
-export default function Footer() {
-	const handleClickGomz = () => {
-		// href(urls.index);
-	};
+export default function Footer({showLogo=true}) {
 	const isTablet = useIsTablet();
 
 	if (isTablet) {
 		return (
-			<Div px20 bgWhite bgOpacity90 borderT1>
+			<Div wFull px20 bgWhite bgOpacity90 borderT1>
 				<Div mxAuto maxW={1100} py20>
 					<Row itemsCenter>
-						<Col auto p30 onClick={handleClickGomz}>
+						{showLogo && <Col auto p30>
 							<Div imgTag src={IMAGES.betterWorldBlueLogo} w100></Div>
-						</Col>
+						</Col>}
 						<Col py20 fontSize14>
 							<Row py5>
 								<Col auto>
-									<Div spanTag>WeBe from </Div>
-									<Div spanTag textSecondary aTag href={"https://soonilabs.com"}>
+									<Div spanTag>BetterWorld from </Div>
+									<Div spanTag textSecondary aTag href={LINKS.soonilabs}>
 										SOONI Labs
 									</Div>
 								</Col>
@@ -32,7 +30,7 @@ export default function Footer() {
 							<Row fontSize12>
 								<Col auto>
 									<Div spanTag>
-										COPYRIGHT ©<br></br>WeBe. ALL RIGHTS RESERVED
+										© BetterWorld. ALL RIGHTS RESERVED
 									</Div>
 								</Col>
 								<Col></Col>
@@ -48,10 +46,10 @@ export default function Footer() {
 		<Div px80>
 			<Div mxAuto maxW={1100} pb30>
 				<Row itemsCenter>
-					<Col auto p10 onClick={handleClickGomz}>
-						<Div imgTag src={IMAGES.betterWorldBold} h35></Div>
-					</Col>
-					<Col textSecondary py10>
+					{showLogo && <Col auto p10>
+						<Div imgTag src={IMAGES.betterWorl_colorLogo} h50></Div>
+					</Col>}
+					<Col textBlack py10>
 						<Row py2>
 							<Col auto>
 								<Div spanTag>
@@ -60,7 +58,7 @@ export default function Footer() {
 									</Div>{" "}
 									from{" "}
 								</Div>
-								<Div spanTag aTag href={"https://soonilabs.com"} fontBold>
+								<Div spanTag aTag href={LINKS.soonilabs} fontBold>
 									SOONI Labs
 								</Div>
 							</Col>

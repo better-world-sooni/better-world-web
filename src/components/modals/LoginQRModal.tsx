@@ -60,28 +60,26 @@ export default function LoginQRModal({ address }) {
 			<Div mx20 px30 my30 flex itemsCenter>
 				<Div>
 					<Div fontSize={24} textCenter fontBold>
-						임시 큐알
+						임시 QR
 					</Div>
 					<Div mxAuto my15>
 						{qrData ? (
 							<QRCodeSVG size={300} bgColor={"white"} level={"Q"} includeMargin={true} value={qrData.jwt} />
 						) : (
-							<Oval height="100" width="100" color="blue" secondaryColor="#0049EA" />
+							<Oval height="100" width="100" color="#4738FF" secondaryColor="#0049EA" />
 						)}
 					</Div>
 					{qrData && (
 						<Div
 							fontSize={24}
 							textCenter
-							textPrimary={ttl.minutes > 0}
-							textDanger={ttl.minutes <= 0}
 							fontBold
 							flex
 							itemsCenter
 							justifyCenter
 							gapX={10}
 						>
-							<Div>{ttl.minutes < 0 ? "유효기간 만료" : `잔여 ${ttl.minutes}분 ${ttl.seconds}초`}</Div>
+							<Div>{ttl.minutes < 0 ? <Div textDanger>유효기간 만료</Div> : <Div textBW>{`잔여 ${ttl.minutes}분 ${ttl.seconds}초`}</Div>}</Div>
 							<Div textWhite roundedFull p8 bgBlack cursorPointer onClick={fetchData}>
 								<RefreshIcon height={20} width={20} />
 							</Div>

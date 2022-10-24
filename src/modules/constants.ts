@@ -902,6 +902,7 @@ export const COLORS = {
     GRAY600: '#869ab8',
     GRAY700: '#4e5b73',
     BLACK: '#161c2d',
+    BW: '#4738FF',
 }
 
 export const KAIKAS = "KAIKAS"

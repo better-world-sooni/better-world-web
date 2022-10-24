@@ -10,6 +10,7 @@ export const getJwt = () => {
     return cookies.get('jwt')
 }
 export const setJwt = (jwt) => {
+    if(!jwt) return;
     const cookies = new Cookies();
     return cookies.set('jwt', jwt, COOKIE_OPT)
 }

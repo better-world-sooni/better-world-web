@@ -1,10 +1,11 @@
 import { useRouter } from "next/router";
 import { useDispatch } from "react-redux";
-import { loginAction } from "src/store/reducers/authReducer";
+import { loginAction, loginStatusAction } from "src/store/reducers/authReducer";
 import { apiHelper, apiHelperWithToken } from "./apiHelper";
 import apis from "./apis";
 import { PLATFORM } from "./constants";
 import { setJwt } from "./cookieHelper";
+import { browserName } from 'react-device-detect';
 
 async function createCurrentNftJwt(contract_address, token_id) {
     const res = await apiHelperWithToken(apis.auth.jwt._(), 'POST', {
@@ -22,15 +23,16 @@ export async function setCurrentNftJwt({contract_address, token_id}) {
     setJwt(jwt);
 }
 
-export const useLoginWithKaikas = () => {
+export const useLoginWithKaikas = (openBrowserModal=null, openKaikasModal=null) => {
     
     const { locale } = useRouter();
 	const dispatch = useDispatch();
-    
+
     return async () => {
         // @ts-ignore
         if (typeof window !== "undefined" && typeof window.klaytn !== "undefined") {
             const klaytn = window["klaytn"];
+            dispatch(loginStatusAction({enabled:true}));
             try {
                 const res = await klaytn.enable();
                 const selectedAddress = res[0];
@@ -55,8 +57,10 @@ export const useLoginWithKaikas = () => {
                         dispatch(loginAction(loginParams));
                     }
                 }
-            } catch (error) {}
+            } catch (error) {dispatch(loginStatusAction({enabled:false}));}
         } else {
+            if (!(browserName=="Chrome"||browserName=="Edge")) openBrowserModal && openBrowserModal()
+            else openKaikasModal && openKaikasModal()
         }
     }
 };
