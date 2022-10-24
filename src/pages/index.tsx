@@ -12,6 +12,7 @@ import { isMobile } from "react-device-detect";
 import LINKS from "src/modules/links";
 
 export default function Home({ currentUser, currentNft }) {
+  console.log(currentUser);
   const appstore = () => {
     href(LINKS.appstore);
   };
