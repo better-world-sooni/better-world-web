@@ -11,13 +11,19 @@ import { currentNftAction } from "src/store/reducers/adminReducer";
 import Joblist from "src/components/admin/joblist";
 import { dehydrate } from "react-query";
 import { InitialgetUserListQuery } from "src/hooks/queries/admin/userlist";
+import EventScreen from "src/components/admin/event";
+import { InitialgetEventsQuery } from "src/hooks/queries/admin/events";
 
 function Admin({ currentUser, currentNft }) {
   const dispatch = useDispatch();
   if (!currentUser?.super_privilege) return <>Invalid Access</>;
 
   dispatch(currentNftAction({ currentNft: currentNft, currentUser: currentUser }));
-  const frame = [<AdminTemplete key={0} name={"Dashboard"} Comps={Dashboard} />, <AdminTemplete key={1} name={"User List"} Comps={UserList} />];
+  const frame = [
+    <AdminTemplete key={0} name={"Dashboard"} Comps={Dashboard} />,
+    <AdminTemplete key={1} name={"Events"} Comps={EventScreen} />,
+    <AdminTemplete key={2} name={"User List"} Comps={UserList} />,
+  ];
 
   return (
     <>
@@ -32,6 +38,7 @@ function Admin({ currentUser, currentNft }) {
 
 Admin.getInitialProps = async (ctx: NextPageContext, queryClient) => {
   await InitialgetUserListQuery(queryClient, ctx);
+  await InitialgetEventsQuery(queryClient, ctx);
   return { dehydratedState: dehydrate(queryClient) };
 };
 
