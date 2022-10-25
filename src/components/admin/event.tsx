@@ -41,7 +41,7 @@ import DataEntry from "../common/DataEntry";
 import { ProfileImage } from "../common/ImageHelper";
 import SearchBar from "src/hooks/SearchBar";
 import { MakeSuperPrivilegeModal } from "../modals/CheckModal";
-import { getEventListQuery } from "src/hooks/queries/admin/events";
+import { cancelEventListQuery, getEventListQuery } from "src/hooks/queries/admin/events";
 import getDrawEventStatus from "../common/getDrawEventStatus";
 
 function EventScreen() {
@@ -62,7 +62,7 @@ function EventScreen() {
   const dispatch = useDispatch();
   const queryClient = useQueryClient();
   const refetchEventList = (page_size, offset, search_key) => {
-    cancelUserListQuery(queryClient);
+    cancelEventListQuery(queryClient);
     dispatch(EventListAction({ page_size: page_size, offset: offset, search_key: search_key }));
   };
   const handlePaginationOffsetChange = (event: React.ChangeEvent<unknown>, value: number) => {
@@ -143,7 +143,8 @@ function EventScreen() {
 }
 
 function EventArray({ events }) {
-  var list = [...events.events.events];
+  var list = events && events?.events && [...events?.events?.events];
+  if (list == null) return <></>;
   return list.length != 0 ? (
     <Div mb100 wFull bgWhite border1 bgOpacity90>
       {list.map((event, _) => (

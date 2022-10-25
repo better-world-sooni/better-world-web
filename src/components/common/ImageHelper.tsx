@@ -6,6 +6,7 @@ import Carousel from "re-carousel";
 import IndicatorDots from "./indicator-dots";
 import IndicatorButtons from "./indicator-buttons";
 import ReactPlayer from "react-player";
+import { ArrowCircleUpIcon } from "@heroicons/react/outline";
 
 export function ProfileImage({ width, height, nft, rounded = false, resize = false }) {
   const [loaded, setLoaded] = useState(false);
@@ -34,6 +35,70 @@ export function ProfileImage({ width, height, nft, rounded = false, resize = fal
         onLoad={() => setLoaded(true)}
         style={loaded ? { display: "block" } : { display: "none" }}
       ></Div>
+    </Div>
+  );
+}
+
+export function SizedImage({ width, height, uri, onClick = null }) {
+  const [loaded, setLoaded] = useState(false);
+  const [error, setError] = useState(false);
+  const [hover, setHover] = useState(false);
+  const img = new Image();
+  img.src = uri;
+  img.onload = () => setLoaded(true);
+  img.onerror = () => setError(true);
+  return (
+    <Div>
+      {!loaded ? (
+        error ? (
+          <Div
+            w={width}
+            h={height}
+            bgGray200
+            flex
+            flexRow
+            justifyCenter
+            cursorPointer
+            onMouseEnter={() => setHover(true)}
+            onMouseLeave={() => setHover(false)}
+            onClick={onClick}
+          >
+            <Div selfCenter>
+              <ArrowCircleUpIcon height={50} width={50} className={hover ? "text-gray-600" : "text-gray-400"} />
+            </Div>
+          </Div>
+        ) : (
+          <Skeleton variant="rectangular" width={width} height={height} />
+        )
+      ) : (
+        <Div
+          w={width}
+          h={height}
+          onMouseEnter={() => setHover(true)}
+          onMouseLeave={() => setHover(false)}
+          flex
+          flexRow
+          justifyCenter
+          cursorPointer
+          relative
+          onClick={onClick}
+          style={{
+            backgroundImage: `url(${uri})`,
+            backgroundSize: "cover",
+            backgroundPositionX: "center",
+            backgroundPositionY: "center",
+          }}
+        >
+          {hover && (
+            <>
+              <Div absolute style={{ width: "100%", height: "100%" }} bgBlack bgOpacity40 />
+              <Div selfCenter relative>
+                <ArrowCircleUpIcon height={50} width={50} className={"text-white"} />
+              </Div>
+            </>
+          )}
+        </Div>
+      )}
     </Div>
   );
 }

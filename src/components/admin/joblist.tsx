@@ -1,7 +1,7 @@
 import Div from "src/components/Div";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
-import { EventListAction, UserListAction } from "src/store/reducers/adminReducer";
+import { collectionsAction, EventListAction, UserListAction } from "src/store/reducers/adminReducer";
 import { defaultPageSize } from "src/hooks/queries/admin/userlist";
 
 export default function Joblist({ frame }) {
@@ -10,6 +10,7 @@ export default function Joblist({ frame }) {
   const defaultpatch = () => {
     dispatch(UserListAction({ page_size: defaultPageSize, offset: 0, search_key: "" }));
     dispatch(EventListAction({ page_size: defaultPageSize, offset: 0, search_key: "" }));
+    dispatch(collectionsAction({ page_size: defaultPageSize, offset: 0, search_key: "" }));
   };
   return (
     <Div hFull wFull px80 flex itemsStart justifyStart bgBlack auto bgWhite my60>

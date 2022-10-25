@@ -14,6 +14,10 @@ const querykeys = {
       _: (page_size: Number = null, offset: Number = null, search_key: String = null) =>
         page_size || offset || search_key ? ["events", "list", search_key, page_size, offset] : ["events", "list"],
     },
+    collections: {
+      _: (page_size: Number = null, offset: Number = null, search_key: String = null) =>
+        page_size || offset || search_key ? ["collections", "list", search_key, page_size, offset] : ["collections", "list"],
+    },
   },
 };
 
