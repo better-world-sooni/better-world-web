@@ -43,6 +43,26 @@ export function SizedImage({ width, height, uri, onClick = null }) {
   const [loaded, setLoaded] = useState(false);
   const [error, setError] = useState(false);
   const [hover, setHover] = useState(false);
+  if (uri == null) {
+    return (
+      <Div
+        w={width}
+        h={height}
+        bgGray200
+        flex
+        flexRow
+        justifyCenter
+        cursorPointer
+        onMouseEnter={() => setHover(true)}
+        onMouseLeave={() => setHover(false)}
+        onClick={onClick}
+      >
+        <Div selfCenter>
+          <ArrowCircleUpIcon height={50} width={50} className={hover ? "text-gray-600" : "text-gray-400"} />
+        </Div>
+      </Div>
+    );
+  }
   const img = new Image();
   img.src = uri;
   img.onload = () => setLoaded(true);

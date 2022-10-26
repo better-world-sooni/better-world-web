@@ -42,29 +42,29 @@ export function patchUserInfo(nft, queryClient, { story, name, privilege }) {
     name: name,
     privilege: privilege,
   };
-  return queryHelperMutationWithToken({
+  const mutation = queryHelperMutationWithToken({
     url: apis.admin.user._(),
     method: "PUT",
-    body: body,
     options: {
       onSuccess: () => queryClient.invalidateQueries(querykeys.admin.userlist._()),
     },
   });
+  return { ...mutation, mutate: () => mutation?.mutate(body) };
 }
 
 export function DeletePost(post_id, queryClient: QueryClient, contract_address, token_id) {
   const body = {
     post_id: post_id,
   };
-  return queryHelperMutationWithToken({
+  const mutation = queryHelperMutationWithToken({
     url: apis.admin.post._(),
     method: "DELETE",
-    body: body,
     options: {
       onSuccess: () =>
         queryClient.invalidateQueries(querykeys.admin.userlist._()) && queryClient.invalidateQueries(querykeys.admin.userlist.post(contract_address, token_id)),
     },
   });
+  return { ...mutation, mutate: () => mutation?.mutate(body) };
 }
 
 export function setSuperPrivilege(address, superPrivilege, queryClient: QueryClient) {
@@ -72,28 +72,28 @@ export function setSuperPrivilege(address, superPrivilege, queryClient: QueryCli
     address: address,
     super_privilege: superPrivilege,
   };
-  return queryHelperMutationWithToken({
+  const mutation = queryHelperMutationWithToken({
     url: apis.admin.user.setPrivilege(address, superPrivilege),
     method: "PUT",
-    body: body,
     options: {
       onSuccess: () => queryClient.invalidateQueries(querykeys.admin.userlist._()),
     },
   });
+  return { ...mutation, mutate: () => mutation?.mutate(body) };
 }
 
 export function DeleteComment(comment_id, queryClient: QueryClient, contract_address, token_id) {
   const body = {
     comment_id: comment_id,
   };
-  return queryHelperMutationWithToken({
+  const mutation = queryHelperMutationWithToken({
     url: apis.admin.comment._(),
     method: "DELETE",
-    body: body,
     options: {
       onSuccess: () => queryClient.invalidateQueries(querykeys.admin.userlist.post(contract_address, token_id)),
     },
   });
+  return { ...mutation, mutate: () => mutation?.mutate(body) };
 }
 
 export function getUserPostListQuery(contract_address, token_id, page_size: Number, offset: Number, search_key: String, onsettled: any) {

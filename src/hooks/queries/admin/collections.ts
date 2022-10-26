@@ -33,3 +33,20 @@ export function InitialgetCollectionsQuery(queryClient: QueryClient, ctx: NextPa
     url: apis.admin.collections.list(defaultPageSize, 0, ""),
   });
 }
+
+export function patchImageInfo(collection, queryClient) {
+  const body = (image_uri_key) => {
+    return {
+      contract_address: collection.contract_address,
+      image_uri_key: image_uri_key,
+    };
+  };
+  const mutation = queryHelperMutationWithToken({
+    url: apis.admin.collections._(),
+    method: "PUT",
+    options: {
+      onSuccess: () => queryClient.invalidateQueries(querykeys.admin.collections._()),
+    },
+  });
+  return { ...mutation, mutate: (image_uri_key) => mutation?.mutate(body(image_uri_key)) };
+}

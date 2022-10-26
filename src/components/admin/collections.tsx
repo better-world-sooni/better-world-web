@@ -5,7 +5,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "src/store/reducers/rootReducer";
 import { Disclosure, Transition, Switch } from "@headlessui/react";
 import { Oval } from "react-loader-spinner";
-import { ChevronUpIcon, RefreshIcon, UserCircleIcon, StarIcon } from "@heroicons/react/outline";
+import { ChevronUpIcon, RefreshIcon, UserCircleIcon, StarIcon, ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/outline";
 import Pagination from "@mui/material/Pagination";
 import { useDispatch } from "react-redux";
 import { collectionsAction } from "src/store/reducers/adminReducer";
@@ -16,13 +16,20 @@ import PaginationPageSizebox from "../common/paginationpagesizebox";
 import DataEntry from "../common/DataEntry";
 import { ProfileImage, SizedImage } from "../common/ImageHelper";
 import SearchBar from "src/hooks/SearchBar";
-import { cancelCollectionsListQuery, getCollectionsListQuery } from "src/hooks/queries/admin/collections";
+import { cancelCollectionsListQuery, getCollectionsListQuery, patchImageInfo } from "src/hooks/queries/admin/collections";
 import DefaultTransition from "../common/defaulttransition";
 import { motion } from "framer-motion";
 import useName, { useSymbol } from "src/hooks/useName";
 import EmptyBlock from "../EmptyBlock";
 import useStory from "src/hooks/useStory";
 import ReactTextareaAutosize from "react-textarea-autosize";
+import useUploadImageUriKey from "src/hooks/useUploadImageUriKey";
+import Spinner from "../common/Spinner";
+import { COLORS } from "src/modules/constants";
+import { createPresignedUrl, fileChecksum, uploadToPresignedUrl } from "src/modules/fileHelper";
+import { Slide } from "react-slideshow-image";
+import { apiHelperWithToken } from "src/modules/apiHelper";
+import apis from "src/modules/apis";
 
 function CollectionsScreen() {
   const { page_size, offset, search_key } = useSelector((state: RootState) => ({
@@ -205,8 +212,31 @@ function CollectionsDetails({ collection }) {
   const { name, nameHasChanged, nameError, handleChangeName } = useName(collection?.name);
   const { symbol, symbolHasChanged, symbolError, handleChangeSymbol } = useSymbol(collection?.symbol);
   const { story, storyHasChanged, storyError, handleChangeStory } = useStory(collection?.about);
+  const {
+    image: backgroundImage,
+    uploading,
+    handleAddImage,
+    getImageUriKey,
+    reLoadImage,
+  } = useUploadImageUriKey({
+    uri: collection?.background_image_uri,
+    attachedRecord: "nft_collection",
+  });
+  const queryClient = useQueryClient();
+  const { mutate } = patchImageInfo(collection, queryClient);
+  const save = async () => {
+    const backgroundImageUriKey = await getImageUriKey();
+    mutate(backgroundImageUriKey);
+  };
+
   return (
     <Div px30 py10 flex flexCol justifyCenter overflowHidden gapY={20}>
+      <Div px5 py10 bgBlack textWhite textCenter onClick={reLoadImage}>
+        Reload
+      </Div>
+      <Div px5 py10 bgBlack textWhite textCenter onClick={save}>
+        {uploading ? "Uploading..." : "Upload"}
+      </Div>
       <Div wFull flex flexRow justifyCenter gapX={20}>
         <Div selfCenter flex flexCol justifyCenter>
           <Div textCenter fontBold fontSize18>
@@ -221,7 +251,7 @@ function CollectionsDetails({ collection }) {
             Background
           </Div>
           <Div>
-            <SizedImage width={600} height={196} uri={collection?.background_image_uri} />
+            <SizedImage width={600} height={196} uri={backgroundImage} onClick={handleAddImage} />
           </Div>
         </Div>
       </Div>
