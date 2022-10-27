@@ -106,7 +106,8 @@ const apis = {
       _: () => apiV1(`/admin/nft_collection`),
     },
     post: {
-      list: (page_size, offset, search_key) => apiV1(`/admin/event/list${urlParams({ page_size, offset, search_key })}`),
+      list: (contract_address, token_id, page_size, offset, search_key) =>
+        apiV1(`/admin/post/list${urlParams({ contract_address, token_id, page_size, offset, search_key })}`),
       _: () => apiV1(`/admin/post`),
     },
     comment: {
