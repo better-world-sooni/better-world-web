@@ -13,7 +13,7 @@ export function ProfileImage({ width, height, nft, rounded = false, resize = fal
   const [loaded, setLoaded] = useState(false);
   const [error, setError] = useState(false);
   const source_uri = nft?.image_uri ? nft?.image_uri : nft?.nft_metadatum?.image_uri;
-  const uri = resize ? resizeImageUri(source_uri, width, height) : source_uri;
+  const uri = resize ? resizeImageUri(source_uri, 400, 400) : source_uri;
   if (uri == null) {
     return <Div w={width} h={height} bgGray200 flex flexRow rounded={rounded} justifyCenter cursorPointer></Div>;
   }
@@ -184,7 +184,7 @@ export function GetImage({ maxHeight, maxWidth, uri, click = false }) {
   ) : (
     <Div>
       {width > height ? (
-        <Div w={maxWidth} h={maxHeight} flex flexRow>
+        <Div w={maxWidth} flex flexRow>
           {click ? <Div selfCenter src={img.src} imgTag wFull cursorPointer onClick={handleClick}></Div> : <Div selfCenter src={img.src} imgTag wFull></Div>}
         </Div>
       ) : (

@@ -3,9 +3,9 @@ import { useState } from "react";
 import React from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "src/store/reducers/rootReducer";
-import { Disclosure, Transition, Switch } from "@headlessui/react";
+import { Disclosure } from "@headlessui/react";
 import { Oval } from "react-loader-spinner";
-import { ChevronUpIcon, RefreshIcon, UserCircleIcon, StarIcon, ChevronLeftIcon, ChevronRightIcon, CheckIcon } from "@heroicons/react/outline";
+import { ChevronUpIcon, RefreshIcon, UserCircleIcon, StarIcon, CheckIcon } from "@heroicons/react/outline";
 import Pagination from "@mui/material/Pagination";
 import { useDispatch } from "react-redux";
 import { collectionsAction } from "src/store/reducers/adminReducer";
@@ -19,17 +19,11 @@ import SearchBar from "src/hooks/SearchBar";
 import { cancelCollectionsListQuery, getCollectionsListQuery, patchImageInfo } from "src/hooks/queries/admin/collections";
 import DefaultTransition from "../common/defaulttransition";
 import { motion } from "framer-motion";
-import useName, { useSymbol } from "src/hooks/useName";
+import useName from "src/hooks/useName";
 import EmptyBlock from "../EmptyBlock";
 import useStory from "src/hooks/useStory";
 import ReactTextareaAutosize from "react-textarea-autosize";
 import useUploadImageUriKey from "src/hooks/useUploadImageUriKey";
-import Spinner from "../common/Spinner";
-import { COLORS } from "src/modules/constants";
-import { createPresignedUrl, fileChecksum, uploadToPresignedUrl } from "src/modules/fileHelper";
-import { Slide } from "react-slideshow-image";
-import { apiHelperWithToken } from "src/modules/apiHelper";
-import apis from "src/modules/apis";
 
 function CollectionsScreen() {
   const { page_size, offset, search_key } = useSelector((state: RootState) => ({
@@ -71,7 +65,7 @@ function CollectionsScreen() {
           </Div>
           <Div selfCenter>개씩 보기</Div>
           <Div selfCenter ml10>
-            <SearchBar w={300} placeholder={"Collections을 검색해보세요(이름/설명)"} initialText={search_key} handleSearch={handleSearchBarChange} />
+            <SearchBar w={300} placeholder={"Collections을 검색해보세요(이름/설명/심볼)"} initialText={search_key} handleSearch={handleSearchBarChange} />
           </Div>
         </Div>
         <Div selfCenter flex flexRow>
@@ -140,7 +134,7 @@ function CollectionsArray({ collections }) {
     </Div>
   ) : (
     <Div mb100 wFull bgWhite bgOpacity90>
-      <Div textCenter>Event가 존재하지 않습니다.</Div>
+      <Div textCenter>Collection이 존재하지 않습니다.</Div>
     </Div>
   );
 }
@@ -159,7 +153,7 @@ function CollectionEntry({ collection }) {
               <Div wFull flex flexRow justifyCenter selfCenter>
                 <Div wFull flex flexRow justifyStart gapX={20}>
                   <Div selfCenter>
-                    <ProfileImage width={40} height={40} nft={collection} rounded={true} />
+                    <ProfileImage width={40} height={40} nft={collection} rounded={true} resize={true} />
                   </Div>
                   <Div flex flexCol justifyStart selfCenter wFull>
                     <Div fontSize18 fontBold wFull overflowEllipsis overflowHidden whitespaceNowrap textLeft>
@@ -211,7 +205,6 @@ function CollectionEntry({ collection }) {
 function CollectionsDetails({ collection }) {
   const { name, nameHasChanged, nameError, handleChangeName } = useName(collection?.name, 10, 40);
   const { story, storyHasChanged, storyError, handleChangeStory } = useStory(collection?.about);
-  console.log(story);
   const { image, uploading, handleAddImage, getImageUriKey, reLoadImage, imageHasChanged } = useUploadImageUriKey({
     uri: collection?.image_uri,
     attachedRecord: "nft_collection",

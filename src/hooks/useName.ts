@@ -26,25 +26,3 @@ export default function useName(nft_name, split = 5, length = 20) {
 
   return { name, nameHasChanged, nameError, handleChangeName };
 }
-
-export function useSymbol(symbolName) {
-  const [symbol, symbolHasChanged, handleChangeText] = useEdittableText(symbolName);
-  const [symbolError, setSymbolError] = useState("");
-
-  const handleChangeSymbol = ({ target: { value } }) => {
-    const error = getSymbolError(value);
-    setSymbolError(error);
-    handleChangeText(value);
-  };
-  const getSymbolError = (value) => {
-    if (value.split(" ").length > 1) {
-      return "띄어쓰기 없이 입력해주세요";
-    }
-    if (value.length > 19) {
-      return "심볼의 길이는 스무 글자 미만여야 합니다.";
-    }
-    return "";
-  };
-
-  return { symbol, symbolHasChanged, symbolError, handleChangeSymbol };
-}

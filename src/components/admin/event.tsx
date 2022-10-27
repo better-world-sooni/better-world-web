@@ -3,46 +3,46 @@ import { useState } from "react";
 import React from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "src/store/reducers/rootReducer";
-import { Disclosure, Transition, Switch } from "@headlessui/react";
+import { Disclosure } from "@headlessui/react";
 import { Oval } from "react-loader-spinner";
 import {
-  ChevronDownIcon,
   ChevronUpIcon,
-  AdjustmentsIcon,
-  CubeIcon,
-  IdentificationIcon,
   PencilAltIcon,
-  LightBulbIcon,
-  HeartIcon,
-  SparklesIcon,
-  CogIcon,
   RefreshIcon,
   CheckIcon,
   EyeIcon,
   DocumentTextIcon,
+  TrashIcon,
+  PencilIcon,
+  ArrowRightIcon,
+  GlobeAltIcon,
 } from "@heroicons/react/outline";
-import useName from "src/hooks/useName";
-import useStory from "src/hooks/useStory";
-import useEdittableToggle from "src/hooks/useEdittableToggle";
-import EmptyBlock from "../EmptyBlock";
 import Pagination from "@mui/material/Pagination";
-import { cancelUserListQuery, getUserListQuery, patchUserInfo } from "src/hooks/queries/admin/userlist";
 import { useDispatch } from "react-redux";
-import { EventListAction, UserListAction, UserListPostAction } from "src/store/reducers/adminReducer";
+import { EventListAction } from "src/store/reducers/adminReducer";
 import { useQueryClient } from "react-query";
 import Tooltip from "@mui/material/Tooltip";
-import { defaultPageSize } from "src/hooks/queries/admin/userlist";
-import { UserPosttModalAction } from "src/store/reducers/modalReducer";
-import UserPostModal from "./userposts";
 import TimerText from "../common/timertext";
 import DefaultTransition from "../common/defaulttransition";
 import PaginationPageSizebox from "../common/paginationpagesizebox";
 import DataEntry from "../common/DataEntry";
-import { ProfileImage } from "../common/ImageHelper";
+import { ImageSlide, ProfileImage } from "../common/ImageHelper";
 import SearchBar from "src/hooks/SearchBar";
-import { MakeSuperPrivilegeModal } from "../modals/CheckModal";
 import { cancelEventListQuery, getEventListQuery } from "src/hooks/queries/admin/events";
 import getDrawEventStatus from "../common/getDrawEventStatus";
+import { motion } from "framer-motion";
+import TruncatedText from "../common/ModifiedTruncatedMarkdown";
+import { createdAtText, getDate } from "src/modules/timeHelper";
+import useLink from "src/hooks/useLink";
+import { FaBars, FaDiscord, FaTwitter } from "react-icons/fa";
+import { chain } from "lodash";
+
+enum EventApplicationInputType {
+  SELECT = 0,
+  CUSTOM_INPUT = 1,
+  TWITTER_ID = 2,
+  DISCORD_ID = 3,
+}
 
 function EventScreen() {
   const { page_size, offset, search_key } = useSelector((state: RootState) => ({
@@ -100,6 +100,9 @@ function EventScreen() {
             <Div spanTag textDanger>
               <TimerText condtion={!loading && LoadingButtonOn && error} text={"Update error"} seconds={2} closecontidion={setLoadingButton} />
             </Div>
+          </Div>
+          <Div mr10>
+            <NewEventIcon loading={false} onClick={null} />
           </Div>
           {events &&
             (loading_status ? (
@@ -159,41 +162,306 @@ function EventArray({ events }) {
 }
 
 function EventEntry({ event }) {
+  const { search_key } = useSelector((state: RootState) => ({
+    search_key: state.admin.EventListPage.search_key,
+  }));
+  const HandleOpen = (open) => open || search_key != "";
   return (
-    <Div px30 py10 cursorPointer flex flexRow justifyCenter border1 borderGray100 clx="hover:bg-gray-100">
-      <Div wFull flex flexCol justifyCenter selfCenter>
-        <Div wFull flex flexRow justifyStart gapX={10} mb10>
-          <EventStatus event={event} />
-          <Div flex flexRow wFull justifyEnd>
-            {event?.status != 1 && (
-              <DataEntry
-                name={"응모자 수"}
-                w={55}
-                label={<DocumentTextIcon height={20} width={20} className="max-h-20 max-w-20 mr-10" />}
-                data={event?.event_application_count}
-              />
-            )}
-            <DataEntry name={"조회 수"} w={55} label={<EyeIcon height={20} width={20} className="max-h-20 max-w-20 mr-10" />} data={event?.read_count} />
-          </Div>
-        </Div>
-        <Div wFull flex flexRow justifyStart gapX={20}>
-          <Div selfCenter>
-            <ProfileImage width={40} height={40} nft={event?.nft_collection} rounded={true} />
-          </Div>
-          <Div flex flexCol justifyStart selfCenter wFull>
-            <Div fontSize18 fontBold wFull overflowEllipsis overflowHidden whitespaceNowrap>
-              {event?.name}
+    <Disclosure as="div" className="w-full">
+      {({ open }) => (
+        <>
+          <Disclosure.Button className="w-full hover:bg-gray-100">
+            <Div px30 py10 cursorPointer flex flexRow justifyCenter border1 borderGray100 clx={`${HandleOpen(open) ? "bg-gray-100" : ""}`} overflowHidden>
+              <Div wFull flex flexCol justifyCenter selfCenter>
+                <Div wFull flex flexRow justifyStart gapX={10} mb10>
+                  <EventStatus event={event} />
+                  <Div flex flexRow wFull justifyEnd>
+                    {event?.has_application == true && (
+                      <DataEntry
+                        name={"응모자 수"}
+                        w={55}
+                        label={<DocumentTextIcon height={20} width={20} className="max-h-20 max-w-20 mr-10" />}
+                        data={event?.event_application_count}
+                      />
+                    )}
+                    <DataEntry
+                      name={"조회 수"}
+                      w={55}
+                      label={<EyeIcon height={20} width={20} className="max-h-20 max-w-20 mr-10" />}
+                      data={event?.read_count}
+                    />
+                  </Div>
+                </Div>
+                <Div wFull flex flexRow justifyStart gapX={20}>
+                  <Tooltip title={event?.nft_collection?.name} arrow>
+                    <Div selfCenter>
+                      <ProfileImage width={40} height={40} nft={event?.nft_collection} rounded={true} resize={true} />
+                    </Div>
+                  </Tooltip>
+                  <Div flex flexCol justifyStart selfCenter wFull>
+                    <Div fontSize18 fontBold wFull overflowEllipsis overflowHidden whitespaceNowrap textLeft>
+                      {event?.name}
+                    </Div>
+                  </Div>
+                  <Div selfCenter mr40>
+                    <Date updated_at={event?.created_at} />
+                  </Div>
+                </Div>
+              </Div>
+              <Div selfCenter>
+                <motion.div animate={{ rotate: HandleOpen(open) ? 180 : 0 }} transition={{ duration: 0.2 }}>
+                  <ChevronUpIcon height={20} width={20} className="text-gray-400" />
+                </motion.div>
+              </Div>
             </Div>
-            <Div fontSize12 wFull overflowEllipsis overflowHidden whitespaceNowrap>
-              {event?.giveaway_merchandise}
-            </Div>
-          </Div>
+          </Disclosure.Button>
+          <DefaultTransition
+            show={HandleOpen(open)}
+            content={
+              <Disclosure.Panel static className="bg-gray-100 border-b-2">
+                <EventDetails event={event} />
+              </Disclosure.Panel>
+            }
+          />
+        </>
+      )}
+    </Disclosure>
+  );
+}
+
+function EventDetails({ event }) {
+  return (
+    <Div px30 py10 flex flexCol justifyCenter gapY={20} textCenter>
+      <Div wFull flex flexRow justifyStart gapX={10}>
+        <Div selfCenter flex flexRow wFull jsutifyStart gapX={10} flexWrap gapY={10}>
+          {event?.has_application && <ApplicationLink event={event} />}
+          {event?.has_application && <EventOptions event={event} />}
         </Div>
+        <Div selfStart mr10 whitespaceNowrap mt3>
+          {getDate(event?.created_at)}
+        </Div>
+        <ModifyButton loading={false} onClick={false} />
+        <DeleteButton loading={false} openModal={false} />
       </Div>
-      <Div selfCenter>
-        <ChevronUpIcon height={20} width={20} className="text-gray-400" />
+      <Div wFull flex flexRow justifyCenter borderT1 py10 borderGray300>
+        <Div selfcenter wFull>
+          <TruncatedText text={event?.description} maxLength={1000} />
+        </Div>
+        {event?.image_uris && (
+          <Div>
+            <ImageSlide uris={event?.image_uris} maxHeight={300} maxWidth={300} click={false} />
+          </Div>
+        )}
       </Div>
     </Div>
+  );
+}
+
+function EventOptions({ event }) {
+  const drawEventOptions = event?.draw_event_options;
+  const Options =
+    drawEventOptions && drawEventOptions.length != 0
+      ? chain(drawEventOptions)
+          .groupBy("category")
+          .map((value, key) => {
+            const options = value.map((item) => ({ ...item }));
+            if (options.length == 1 && options[0].input_type == EventApplicationInputType.CUSTOM_INPUT)
+              return { name: key, inputType: EventApplicationInputType.CUSTOM_INPUT, options };
+            if (options.length == 1 && options[0].input_type == EventApplicationInputType.DISCORD_ID)
+              return { name: key, inputType: EventApplicationInputType.DISCORD_ID, options };
+            if (options.length == 1 && options[0].input_type == EventApplicationInputType.TWITTER_ID)
+              return { name: key, inputType: EventApplicationInputType.TWITTER_ID, options };
+            return { name: key, inputType: EventApplicationInputType.SELECT, options };
+          })
+          .value()
+      : null;
+  return <>{Options ? Options.map((value, index) => <EventOption option={value} key={index} />) : null}</>;
+}
+
+function EventOption({ option }) {
+  const [click, setClick] = useState(false);
+  const setToggleOptions = () => {
+    if (!canClick) return;
+    setClick(!click);
+  };
+  const canClick = option?.inputType == EventApplicationInputType.SELECT && option?.options && option?.options.length != 0;
+  return (
+    <Div relative>
+      <Div
+        selfStart
+        px10
+        py5
+        bgWhite={!click}
+        bgGray200={click}
+        rounded={!click}
+        roundedT={click}
+        textBlack
+        flex
+        flexRow
+        justifyCenter
+        relative
+        onClick={setToggleOptions}
+        cursorPointer={canClick}
+        clx={canClick && "hover:bg-gray-200"}
+      >
+        <Div relative selfCenter>
+          {option?.inputType == EventApplicationInputType.DISCORD_ID ? (
+            <FaDiscord size={18} />
+          ) : option?.inputType == EventApplicationInputType.TWITTER_ID ? (
+            <FaTwitter size={18} />
+          ) : option?.inputType == EventApplicationInputType.CUSTOM_INPUT ? (
+            <PencilAltIcon height={18} width={18} className="max-h-18 max-w-18" />
+          ) : (
+            <FaBars size={18} />
+          )}
+        </Div>
+        <Div relative selfCenter fontSize12 ml5 fontSemibold>
+          {option?.name}
+        </Div>
+        {canClick && (
+          <Div relative selfCenter fontSize12 ml5 fontSemibold>
+            <motion.div animate={{ rotate: click ? 180 : 0 }} transition={{ duration: 0.2 }}>
+              <ChevronUpIcon height={12} width={12} className="max-h-12 max-w-12" />
+            </motion.div>
+          </Div>
+        )}
+      </Div>
+      <DefaultTransition
+        show={click && canClick}
+        duration={0.2}
+        content={
+          <Div z100 absolute bgGray200 minWFull top={"100%"} roundedB px10 flex flexCol py5 gapY={3}>
+            {option?.options.map((value, index) => (
+              <Div key={index} breakAll relative textRight fontSize14 borderGray400 borderB1={index != option?.options.length - 1}>
+                {value?.name}
+              </Div>
+            ))}
+          </Div>
+        }
+      />
+    </Div>
+  );
+}
+
+function ApplicationLink({ event }) {
+  const { link, linkHasChanged, linkError, handleChangeLink, handleClickLink } = useLink(event?.application_link);
+  return (
+    event?.has_application &&
+    event?.application_link &&
+    (event?.draw_event_options == null || (event?.draw_event_options != null && event?.draw_event_options.length == 0)) && (
+      <>
+        <Div mt5 fontSemibold>
+          <GlobeAltIcon height={20} width={20} className="max-h-20 max-w-20" />
+        </Div>
+        <Div flex flexCol justifyStart gapY={5}>
+          <Div px10 py5 bgWhite roundedLg textBlack w300>
+            <input
+              placeholder="https://..."
+              value={link}
+              className={"self-center h-full w-full focus:outline-none focus:border-gray-400 bg-transparent rounded-md"}
+              style={{ boxShadow: "none", border: "none" }}
+              onChange={handleChangeLink}
+            ></input>
+          </Div>
+          <Div textLeft textDanger fontBold fontSize12 ml10 mb18={!linkError}>
+            <DefaultTransition show={linkError ? true : false} content={linkError} />
+          </Div>
+        </Div>
+        <DefaultTransition
+          show={!linkError}
+          content={
+            <Div selfStart px10 py5 bgInfo bgOpacity50 rounded10 textWhite cursorPointer clx="hover:bg-info" onClick={handleClickLink}>
+              {" "}
+              <ArrowRightIcon height={20} width={20} className="max-h-20 max-w-20" />
+            </Div>
+          }
+        />
+        <DefaultTransition
+          show={linkHasChanged && !linkError}
+          content={
+            false ? (
+              <Div fontBold px10 cursorPointer py5 bgGray600 rounded10>
+                <Oval height="14" width="14" color="gray" secondaryColor="#FFFFFF" strokeWidth="5" />
+              </Div>
+            ) : (
+              <Tooltip title="링크 변경" arrow>
+                <Div
+                  fontBold
+                  px10
+                  cursorPointer
+                  py5
+                  bgGray400
+                  rounded10
+                  clx="hover:bg-gray-600 hover:text-white"
+                  onClick={linkHasChanged && !linkError && null}
+                >
+                  <CheckIcon height={20} width={20} className="max-h-20 max-w-20" />
+                </Div>
+              </Tooltip>
+            )
+          }
+        />
+      </>
+    )
+  );
+}
+
+function Date({ updated_at }) {
+  return (
+    <Tooltip title={getDate(updated_at)} arrow>
+      <Div textRight whitespaceNowrap>
+        {" "}
+        {createdAtText(updated_at)}{" "}
+      </Div>
+    </Tooltip>
+  );
+}
+
+function NewEventIcon({ loading, onClick }) {
+  return loading ? (
+    <Div selfCenter px10 py5 bgBW bgOpacity50 rounded10 textWhite>
+      {" "}
+      <Oval height="14" width="14" color="white" secondaryColor="#FFFFFF" strokeWidth="5" />
+    </Div>
+  ) : (
+    <Tooltip title="새 글 작성" arrow>
+      <Div selfCenter px10 py5 bgOpacity50 rounded10 cursorPointer clx="text-black hover:bg-bw hover:text-white" onClick={onClick}>
+        {" "}
+        <PencilAltIcon height={20} width={20} className="max-h-20 max-w-20" />
+      </Div>
+    </Tooltip>
+  );
+}
+
+function ModifyButton({ loading, onClick }) {
+  return loading ? (
+    <Div selfStart px10 py5 bgBW bgOpacity50 rounded10 textWhite>
+      {" "}
+      <Oval height="14" width="14" color="white" secondaryColor="#FFFFFF" strokeWidth="5" />
+    </Div>
+  ) : (
+    <Tooltip title="수정" arrow>
+      <Div selfStart px10 py5 bgBW bgOpacity50 rounded10 textWhite cursorPointer clx="hover:bg-bw" onClick={onClick}>
+        {" "}
+        <PencilIcon height={20} width={20} className="max-h-20 max-w-20" />
+      </Div>
+    </Tooltip>
+  );
+}
+
+function DeleteButton({ loading, openModal }) {
+  return loading ? (
+    <Div selfStart px10 py5 bgDanger bgOpacity50 rounded10 textWhite>
+      {" "}
+      <Oval height="14" width="14" color="red" secondaryColor="#FFFFFF" strokeWidth="5" />
+    </Div>
+  ) : (
+    <Tooltip title="삭제" arrow>
+      <Div selfStart px10 py5 bgDanger bgOpacity50 rounded10 textWhite cursorPointer clx="hover:bg-danger" onClick={openModal}>
+        {" "}
+        <TrashIcon height={20} width={20} className="max-h-20 max-w-20" />
+      </Div>
+    </Tooltip>
   );
 }
 

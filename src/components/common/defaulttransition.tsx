@@ -1,9 +1,18 @@
-import { Transition } from "@headlessui/react";
+import { AnimatePresence, motion } from "framer-motion";
 
-export default function DefaultTransition({content, show, appear=true}) {
-	return (
-		<Transition show={show} enter="transition ease-out duration-100" enterFrom="transform opacity-0 scale-95" enterTo="transform opacity-100 scale-100" leave="transition ease-in duration-75" leaveFrom="transform opacity-100 scale-100" leaveTo="transform opacity-0 scale-95" >
-		{content}
-		</Transition>
-	);
+export default function DefaultTransition({ content, show, appear = true, duration = 0.1 }) {
+  const topBarAnimation = {
+    mount: { opacity: 1, scale: 1 },
+    unmount: { opacity: 0, scale: 0.95 },
+    transition: { duration: duration },
+  };
+  return (
+    <AnimatePresence>
+      {show && (
+        <motion.div initial={topBarAnimation.unmount} animate={topBarAnimation.mount} exit={topBarAnimation.unmount} transition={topBarAnimation.transition}>
+          {content}
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
 }

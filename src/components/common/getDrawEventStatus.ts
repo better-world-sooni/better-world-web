@@ -11,7 +11,7 @@ export default function getDrawEventStatus(event) {
       color: { bgWhite: true },
     };
   const status =
-    event.status == DrawEventStatus.ANNOUNCED
+    event.has_application == false
       ? {
           string: "공지",
           color: { bgBlack: true, textWhite: true },
@@ -21,7 +21,7 @@ export default function getDrawEventStatus(event) {
           color: { bgBW: true, textWhite: true },
         };
   const expires =
-    event.status == DrawEventStatus.ANNOUNCED
+    event.has_application == false
       ? null
       : event.status == DrawEventStatus.FINISHED || (event.expires_at && new Date(event.expires_at) < new Date())
       ? {
