@@ -35,10 +35,14 @@ export function InitialgetCollectionsQuery(queryClient: QueryClient, ctx: NextPa
 }
 
 export function patchImageInfo(collection, queryClient) {
-  const body = (image_uri_key) => {
+  const body = (bodyParam) => {
     return {
       contract_address: collection.contract_address,
-      image_uri_key: image_uri_key,
+      image_uri_key: bodyParam?.imageUriKey,
+      background_image_uri_key: bodyParam?.backgroundImageUriKey,
+      name: bodyParam?.name,
+      symbol: bodyParam?.symbol,
+      about: bodyParam?.story,
     };
   };
   const mutation = queryHelperMutationWithToken({
@@ -48,5 +52,5 @@ export function patchImageInfo(collection, queryClient) {
       onSuccess: () => queryClient.invalidateQueries(querykeys.admin.collections._()),
     },
   });
-  return { ...mutation, mutate: (image_uri_key) => mutation?.mutate(body(image_uri_key)) };
+  return { ...mutation, mutate: (bodyParam) => mutation?.mutate(body(bodyParam)) };
 }

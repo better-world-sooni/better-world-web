@@ -9,7 +9,7 @@ export default function useUploadImageUriKey({ uri, attachedRecord }) {
   } as any);
   const [uploading, setUploading] = useState(false);
   const { uploadFile } = useFileUpload({ attachedRecord });
-  const [openFileSelector, { filesContent, plainFiles, clear }] = useFilePicker({
+  const [openFileSelector, { filesContent, plainFiles, clear, errors }] = useFilePicker({
     readAs: "DataURL",
     accept: "image/*",
     multiple: false,

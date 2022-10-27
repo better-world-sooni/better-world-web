@@ -5,7 +5,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "src/store/reducers/rootReducer";
 import { Disclosure, Transition, Switch } from "@headlessui/react";
 import { Oval } from "react-loader-spinner";
-import { ChevronUpIcon, RefreshIcon, UserCircleIcon, StarIcon, ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/outline";
+import { ChevronUpIcon, RefreshIcon, UserCircleIcon, StarIcon, ChevronLeftIcon, ChevronRightIcon, CheckIcon } from "@heroicons/react/outline";
 import Pagination from "@mui/material/Pagination";
 import { useDispatch } from "react-redux";
 import { collectionsAction } from "src/store/reducers/adminReducer";
@@ -71,7 +71,7 @@ function CollectionsScreen() {
           </Div>
           <Div selfCenter>개씩 보기</Div>
           <Div selfCenter ml10>
-            <SearchBar w={250} placeholder={"Event를 검색해보세요."} initialText={search_key} handleSearch={handleSearchBarChange} />
+            <SearchBar w={300} placeholder={"Collections을 검색해보세요(이름/설명)"} initialText={search_key} handleSearch={handleSearchBarChange} />
           </Div>
         </Div>
         <Div selfCenter flex flexRow>
@@ -209,41 +209,56 @@ function CollectionEntry({ collection }) {
 }
 
 function CollectionsDetails({ collection }) {
-  const { name, nameHasChanged, nameError, handleChangeName } = useName(collection?.name);
-  const { symbol, symbolHasChanged, symbolError, handleChangeSymbol } = useSymbol(collection?.symbol);
+  const { name, nameHasChanged, nameError, handleChangeName } = useName(collection?.name, 10, 40);
   const { story, storyHasChanged, storyError, handleChangeStory } = useStory(collection?.about);
+  console.log(story);
+  const { image, uploading, handleAddImage, getImageUriKey, reLoadImage, imageHasChanged } = useUploadImageUriKey({
+    uri: collection?.image_uri,
+    attachedRecord: "nft_collection",
+  });
   const {
     image: backgroundImage,
-    uploading,
-    handleAddImage,
-    getImageUriKey,
-    reLoadImage,
+    uploading: backgroundImageUploading,
+    handleAddImage: handleAddBackgroundImage,
+    getImageUriKey: getBackgroundImageUriKey,
+    reLoadImage: reLoadBackgroundImage,
+    imageHasChanged: backgroundImageHasChanged,
   } = useUploadImageUriKey({
     uri: collection?.background_image_uri,
     attachedRecord: "nft_collection",
   });
   const queryClient = useQueryClient();
-  const { mutate } = patchImageInfo(collection, queryClient);
-  const save = async () => {
-    const backgroundImageUriKey = await getImageUriKey();
-    mutate(backgroundImageUriKey);
+  const { isLoading, mutate } = patchImageInfo(collection, queryClient);
+  const updateCollections = async () => {
+    const imageUriKey = imageHasChanged ? await getImageUriKey() : null;
+    const backgroundImageUriKey = backgroundImageHasChanged ? await getBackgroundImageUriKey() : null;
+    const body = {
+      imageUriKey,
+      backgroundImageUriKey,
+      name: nameHasChanged ? name : null,
+      story: storyHasChanged ? story : null,
+    };
+    mutate(body);
   };
-
+  const isSave = (backgroundImageHasChanged || imageHasChanged || nameHasChanged || storyHasChanged) && !nameError && !storyError;
+  const loading = isLoading || backgroundImageUploading || uploading;
   return (
     <Div px30 py10 flex flexCol justifyCenter overflowHidden gapY={20}>
-      <Div px5 py10 bgBlack textWhite textCenter onClick={reLoadImage}>
-        Reload
-      </Div>
-      <Div px5 py10 bgBlack textWhite textCenter onClick={save}>
-        {uploading ? "Uploading..." : "Upload"}
-      </Div>
       <Div wFull flex flexRow justifyCenter gapX={20}>
         <Div selfCenter flex flexCol justifyCenter>
           <Div textCenter fontBold fontSize18>
             Image
           </Div>
           <Div>
-            <SizedImage width={196} height={196} uri={collection?.image_uri} />
+            <SizedImage
+              width={196}
+              height={196}
+              uri={image}
+              onClick={!loading && handleAddImage}
+              imageHasChanged={!loading && imageHasChanged}
+              reload={!loading && reLoadImage}
+              loading={loading && uploading}
+            />
           </Div>
         </Div>
         <Div selfCenter flex flexCol justifyCenter>
@@ -251,7 +266,15 @@ function CollectionsDetails({ collection }) {
             Background
           </Div>
           <Div>
-            <SizedImage width={600} height={196} uri={backgroundImage} onClick={handleAddImage} />
+            <SizedImage
+              width={600}
+              height={196}
+              uri={backgroundImage}
+              onClick={!loading && handleAddBackgroundImage}
+              imageHasChanged={!loading && backgroundImageHasChanged}
+              reload={!loading && reLoadBackgroundImage}
+              loading={loading && backgroundImageUploading}
+            />
           </Div>
         </Div>
       </Div>
@@ -297,27 +320,24 @@ function CollectionsDetails({ collection }) {
             )}
           </Div>
         </Div>
-        <Div wFull flex flexRow justifyStart fontBold fontSize18>
-          <Div selfStart mr40>
-            Symbol
-          </Div>
-          <Div selfStart wFull>
-            <input
-              placeholder="Symbol"
-              value={symbol}
-              className={"px-5 ml-10 self-center w-full focus:outline-none focus:border-gray-400 bg-white rounded-md"}
-              style={{ width: "100%", boxShadow: "none", border: "none" }}
-              onChange={handleChangeSymbol}
-            ></input>
-            {symbolError ? (
-              <Div ml10 mt3 textDanger fontSize11>
-                {symbolError}
+      </Div>
+      <Div wFull flex flexRow justifyEnd mb={!isSave && 30}>
+        <DefaultTransition
+          show={isSave}
+          content={
+            loading ? (
+              <Div fontBold px10 cursorPointer py5 bgGray600 rounded10>
+                <Oval height="14" width="14" color="gray" secondaryColor="#FFFFFF" strokeWidth="5" />
               </Div>
             ) : (
-              <EmptyBlock h={20} />
-            )}
-          </Div>
-        </Div>
+              <Tooltip title="저장하기" arrow>
+                <Div fontBold px10 cursorPointer py5 bgGray400 rounded10 clx="hover:bg-gray-600 hover:text-white" onClick={isSave && updateCollections}>
+                  <CheckIcon height={20} width={20} className="max-h-20 max-w-20" />
+                </Div>
+              </Tooltip>
+            )
+          }
+        />
       </Div>
     </Div>
   );
