@@ -76,21 +76,6 @@ const propsToClx = (props) => {
 				styles.push(prop);
 			}
 		},
-
-		// BW Style
-		// textBW: () => addStyle(styles, "", { color:"#4738FF" }),
-		// textBWgradient: () => addStyle(styles, "", {background: "-webkit-linear-gradient(-45deg, #AA37FF 30%, #4738FF 90%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",}),
-		// bgBW: () => addStyle(styles, "", { background: "#4738FF" }),
-		// bgBWLight: () => addStyle(styles, "", { background: "#E6E3FF" }),
-		// bgBWgradient: () => addStyle(styles, "", { background: "linear-gradient(-45deg, #AA37FF 30%, #4738FF 90%)" }),
-		textBW: () => clxs.push("text-bw"),
-		textBWLight: () => clxs.push("text-bw-light"),
-		textBWgradient: () => addStyle(styles, "", {background: "-webkit-linear-gradient(-45deg, #AA37FF 30%, #4738FF 90%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",}),
-		bgBW: () => clxs.push("bg-bw"),
-		bgBWLight: () => clxs.push("bg-bw-light"),
-		bgBWgradient: () => addStyle(styles, "", { background: "linear-gradient(-45deg, #AA37FF 30%, #4738FF 90%)" }),
-
-
 		// style Sizing
 		w: (v) => addStyle(styles, v, { width: pixelOrValue(v) }),
 		minW: (v) => addStyle(styles, v, { minWidth: pixelOrValue(v) }),
@@ -1069,6 +1054,7 @@ const propsToClx = (props) => {
 		bgWarningLight: () => clxs.push("bg-warning-light"),
 		bgBlack: () => clxs.push("bg-black"),
 		bgWhite: () => clxs.push("bg-white"),
+		bgBW: () => clxs.push("bg-bw"),
 		// background opacity
 		bgOpacity0: () => clxs.push("bg-opacity-0"),
 		bgOpacity5: () => clxs.push("bg-opacity-5"),

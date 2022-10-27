@@ -98,9 +98,15 @@ const apis = {
       _: () => apiV1(`/admin/user`),
       setPrivilege: (address, superPrivilege) => apiV1(`/admin/user/super_privilege${urlParams({ address, superPrivilege })}`),
     },
+    events: {
+      list: (page_size, offset, search_key) => apiV1(`/admin/event/list${urlParams({ page_size, offset, search_key })}`),
+    },
+    collections: {
+      list: (page_size, offset, search_key) => apiV1(`/admin/nft_collection/list${urlParams({ page_size, offset, search_key })}`),
+      _: () => apiV1(`/admin/nft_collection`),
+    },
     post: {
-      list: (contract_address, token_id, page_size, offset, search_key) =>
-        apiV1(`/admin/post/list${urlParams({ contract_address, token_id, page_size, offset, search_key })}`),
+      list: (page_size, offset, search_key) => apiV1(`/admin/event/list${urlParams({ page_size, offset, search_key })}`),
       _: () => apiV1(`/admin/post`),
     },
     comment: {

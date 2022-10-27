@@ -138,7 +138,8 @@ function UserList() {
 }
 
 function UserArray({ user_list }) {
-  var list = [...user_list.list.users];
+  var list = user_list && [...user_list.list.users];
+  if (list == null) return <></>;
   return list.length != 0 ? (
     <Div mb100 wFull bgWhite border1 bgOpacity90>
       {list.map((user, _) => (
