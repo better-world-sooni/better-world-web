@@ -23,7 +23,7 @@ import useName from "src/hooks/useName";
 import EmptyBlock from "../EmptyBlock";
 import useStory from "src/hooks/useStory";
 import ReactTextareaAutosize from "react-textarea-autosize";
-import useUploadImageUriKey from "src/hooks/useUploadImageUriKey";
+import { useUploadImageUriKey } from "src/hooks/useUploadImageUriKey";
 import { debounce } from "lodash";
 
 function CollectionsScreen() {
@@ -232,15 +232,19 @@ function CollectionsDetails({ collection }) {
   const queryClient = useQueryClient();
   const { isLoading, mutate } = patchImageInfo(collection, queryClient);
   const updateCollections = async () => {
-    const imageUriKey = imageHasChanged ? await getImageUriKey() : null;
-    const backgroundImageUriKey = backgroundImageHasChanged ? await getBackgroundImageUriKey() : null;
-    const body = {
-      imageUriKey,
-      backgroundImageUriKey,
-      name: nameHasChanged ? name : null,
-      story: storyHasChanged ? story : null,
-    };
-    mutate(body);
+    try {
+      const imageUriKey = imageHasChanged ? await getImageUriKey() : null;
+      const backgroundImageUriKey = backgroundImageHasChanged ? await getBackgroundImageUriKey() : null;
+      const body = {
+        imageUriKey,
+        backgroundImageUriKey,
+        name: nameHasChanged ? name : null,
+        story: storyHasChanged ? story : null,
+      };
+      mutate(body);
+    } catch (e) {
+      return;
+    }
   };
   const isSave = (backgroundImageHasChanged || imageHasChanged || nameHasChanged || storyHasChanged) && !nameError && !storyError;
   const loading = isLoading || backgroundImageUploading || uploading;

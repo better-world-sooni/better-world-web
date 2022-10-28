@@ -240,6 +240,7 @@ function EventEntry({ event }) {
 }
 
 function EventDetails({ event }) {
+  const eventStatus = getDrawEventStatus(event);
   return (
     <Div px30 py10 flex flexCol justifyCenter gapY={20} textCenter>
       <Div wFull flex flexRow justifyStart gapX={10}>
@@ -253,6 +254,13 @@ function EventDetails({ event }) {
         <ModifyButton loading={false} onClick={false} />
         <DeleteButton loading={false} openModal={false} />
       </Div>
+      {event?.expires_at && (
+        <Div wFull flex flexRow justifyEnd>
+          <Div selfCenter whitespaceNowrap mt3 textDanger fontSemibold>
+            {eventStatus?.expires?.string == "마감" ? `${getDate(event?.expires_at)}에 마감하였습니다.` : `${getDate(event?.expires_at)}에 마감 예정입니다.`}
+          </Div>
+        </Div>
+      )}
       <Div wFull flex flexRow justifyCenter borderT1 py10 borderGray300>
         <Div selfcenter wFull>
           <TruncatedText text={event?.description} maxLength={1000} />
