@@ -1,4 +1,5 @@
 import { useState } from "react";
+import useLink from "./useLink";
 
 export enum EventApplicationInputType {
   SELECT = 0,
@@ -11,6 +12,7 @@ export type EventApplicationCategory = {
   name: string;
   options: string[];
   inputType: EventApplicationInputType;
+  index: number;
 };
 
 export enum EventType {
@@ -25,15 +27,38 @@ export default function useUploadDrawEvent({ initialHasApplication }) {
   const [name, setName] = useState("");
   const [discordLink, setDiscordLink] = useState("");
   const [description, setDescription] = useState("");
-  const [applicationLink, setApplicationLink] = useState("");
-  const [enableApplicationLink, setEnableApplicationLink] = useState(false);
+  const [index, setIndex] = useState(0);
+  const getIndex = () => {
+    const nextIndex = index + 1;
+    setIndex((prev) => prev + 1);
+    return nextIndex;
+  };
+  const {
+    link: applicationLink,
+    linkError: applicationLinkError,
+    handleChangeLink: handleChangeApplicationLink,
+    handleClickLink: handleClickApplicationLink,
+  } = useLink("");
+  const [enableApplicationLink, setEnableApplicationLink] = useState(true);
   const [expiresAt, setExpiresAt] = useState(null);
   const [applicationCategories, setApplicationCategories] = useState<EventApplicationCategory[]>([]);
   const [error, setError] = useState("");
-  const selectCollection = (name, contractAddress, imageUri) => setCollection({ name, contractAddress, imageUri });
+  const selectCollection = (name, contractAddress, imageUri) => {
+    setCollection({ name, contractAddress, imageUri });
+    setError("");
+  };
   // const { images, error, setError, handleAddImages, handleRemoveImage, uploadAllSelectedFiles } = useUploadDrawEvent({attachedRecord:"draw_event", fileLimit: 8})
-  const isSelectCollection = collection.contractAddress != null;
-  console.log("Collection : ", collection?.name, "\n종류 : ", type == EventType.NOTICE ? "공지" : "이벤트", "\n제목 : ", name);
+  const isSelectCollection = collection?.contractAddress != null;
+  console.log(
+    "Collection : ",
+    isSelectCollection ? collection?.name : "",
+    "\n종류 : ",
+    type == EventType.NOTICE ? "공지" : "이벤트",
+    "\n제목 : ",
+    name,
+    "\n내용 : ",
+    description
+  );
   const uploadDrawEvent = async ({ uploadSuccessCallback }) => {
     if (loading) {
       return;
@@ -54,6 +79,10 @@ export default function useUploadDrawEvent({ initialHasApplication }) {
       setError("응모 링크를 작성해주세요.");
       return;
     }
+    if (applicationLinkError) {
+      setError(applicationLinkError);
+      return;
+    }
     // if (images.length == 0) {
     //   setError("이미지를 추가해주세요.");
     //   return;
@@ -67,8 +96,8 @@ export default function useUploadDrawEvent({ initialHasApplication }) {
     setDiscordLink(text);
     setError("");
   };
-  const handleApplicationLinkChange = ({ target: { value: text } }) => {
-    setApplicationLink(text);
+  const handleApplicationLinkChange = (value) => {
+    handleChangeApplicationLink(value);
     setError("");
   };
   const toggleEnableApplicationLink = () => {
@@ -83,7 +112,7 @@ export default function useUploadDrawEvent({ initialHasApplication }) {
     setError("");
   };
   const handleAddApplicationCategory = (name, inputType) => {
-    setApplicationCategories([...applicationCategories, { name, options: [], inputType }]);
+    setApplicationCategories([...applicationCategories, { name, options: [], inputType, index: getIndex() }]);
   };
 
   const handleRemoveApplicationCategory = (index) => {
@@ -127,6 +156,8 @@ export default function useUploadDrawEvent({ initialHasApplication }) {
     toggleEnableApplicationLink,
     applicationLink,
     handleApplicationLinkChange,
+    handleClickApplicationLink,
+    applicationLinkError,
     expiresAt,
     setExpiresAt,
     name,

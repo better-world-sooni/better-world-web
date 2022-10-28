@@ -39,8 +39,8 @@ export function getAllCollectionsQuery() {
     key: querykeys.admin.collections.list(),
     url: apis.admin.collections.all(),
     options: {
-      refetchOnMount: false,
-      refetchInterval: false,
+      refetchOnMount: true,
+      refetchInterval: true,
       keepPreviousData: true,
       staleTime: Infinity,
       cacheTime: Infinity,

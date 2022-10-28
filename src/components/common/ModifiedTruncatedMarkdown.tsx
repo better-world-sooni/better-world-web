@@ -63,4 +63,8 @@ function TruncatedText({ text, maxLength }) {
   );
 }
 
+export function DefaultText({ text }) {
+  return <ReactMarkdown remarkPlugins={[remarkGfm]} children={text} />;
+}
+
 export default TruncatedText;

@@ -38,13 +38,7 @@ import { FaBars, FaDiscord, FaTwitter } from "react-icons/fa";
 import { chain, debounce } from "lodash";
 import NewEventModal from "./NewEventModal";
 import { newEventModalAction } from "src/store/reducers/modalReducer";
-
-enum EventApplicationInputType {
-  SELECT = 0,
-  CUSTOM_INPUT = 1,
-  TWITTER_ID = 2,
-  DISCORD_ID = 3,
-}
+import { EventApplicationInputType } from "src/hooks/useUploadDrawEvent";
 
 function EventScreen() {
   const { page_size, offset, search_key } = useSelector((state: RootState) => ({
