@@ -1,5 +1,5 @@
 import Div from "src/components/Div";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import React from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "src/store/reducers/rootReducer";
@@ -39,6 +39,7 @@ import DataEntry from "../common/DataEntry";
 import { ProfileImage } from "../common/ImageHelper";
 import SearchBar from "src/hooks/SearchBar";
 import { MakeSuperPrivilegeModal } from "../modals/CheckModal";
+import { debounce } from "lodash";
 
 function UserList() {
   const { page_size, offset, search_key } = useSelector((state: RootState) => ({
@@ -46,6 +47,7 @@ function UserList() {
     offset: state.admin.UserListPage.offset,
     search_key: state.admin.UserListPage.search_key,
   }));
+  const [searchKey, setSearchKey] = useState(search_key);
   const {
     isLoading: loading,
     isFetching: fetching,
@@ -67,8 +69,15 @@ function UserList() {
   const handlePaginationPageSizeChange = (page_size_input) => {
     if (page_size != page_size_input) refetchUserList(page_size_input, 0, search_key);
   };
+  const debounceRefetchUserList = useCallback(
+    debounce((searchKey) => {
+      refetchUserList(page_size, 0, searchKey);
+    }, 500),
+    [page_size]
+  );
   const handleSearchBarChange = (search_key_input) => {
-    refetchUserList(page_size, 0, search_key_input);
+    setSearchKey(search_key_input);
+    debounceRefetchUserList(search_key_input);
   };
   return (
     <Div flex flexCol>
@@ -79,7 +88,7 @@ function UserList() {
           </Div>
           <Div selfCenter>개씩 보기</Div>
           <Div selfCenter ml10>
-            <SearchBar w={250} placeholder={"원하는 NFT를 검색해보세요"} initialText={search_key} handleSearch={handleSearchBarChange} />
+            <SearchBar w={250} placeholder={"원하는 NFT를 검색해보세요"} initialText={searchKey} handleSearch={handleSearchBarChange} />
           </Div>
         </Div>
         <Div selfCenter flex flexRow>
@@ -478,7 +487,7 @@ function UserAddressPanel({ user_address, superPrivilege }) {
   );
 }
 
-function SwitchToggle({ checked, onChange, lock = false }) {
+export function SwitchToggle({ checked, onChange, lock = false }) {
   return (
     <Switch
       checked={checked}

@@ -1,5 +1,5 @@
 import Div from "src/components/Div";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import React from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "src/store/reducers/rootReducer";
@@ -24,6 +24,7 @@ import EmptyBlock from "../EmptyBlock";
 import useStory from "src/hooks/useStory";
 import ReactTextareaAutosize from "react-textarea-autosize";
 import useUploadImageUriKey from "src/hooks/useUploadImageUriKey";
+import { debounce } from "lodash";
 
 function CollectionsScreen() {
   const { page_size, offset, search_key } = useSelector((state: RootState) => ({
@@ -31,6 +32,7 @@ function CollectionsScreen() {
     offset: state.admin.collectionsPage.offset,
     search_key: state.admin.collectionsPage.search_key,
   }));
+  const [searchKey, setSearchKey] = useState(search_key);
   const {
     isLoading: loading,
     isFetching: fetching,
@@ -52,8 +54,15 @@ function CollectionsScreen() {
   const handlePaginationPageSizeChange = (page_size_input) => {
     if (page_size != page_size_input) refetchCollectionsList(page_size_input, 0, search_key);
   };
+  const debounceRefetchCollectionsList = useCallback(
+    debounce((searchKey) => {
+      refetchCollectionsList(page_size, 0, searchKey);
+    }, 500),
+    [page_size]
+  );
   const handleSearchBarChange = (search_key_input) => {
-    refetchCollectionsList(page_size, 0, search_key_input);
+    setSearchKey(search_key_input);
+    debounceRefetchCollectionsList(search_key_input);
   };
 
   return (
@@ -65,7 +74,7 @@ function CollectionsScreen() {
           </Div>
           <Div selfCenter>개씩 보기</Div>
           <Div selfCenter ml10>
-            <SearchBar w={300} placeholder={"Collections을 검색해보세요(이름/설명/심볼)"} initialText={search_key} handleSearch={handleSearchBarChange} />
+            <SearchBar w={300} placeholder={"Collections을 검색해보세요(이름/설명/심볼)"} initialText={searchKey} handleSearch={handleSearchBarChange} />
           </Div>
         </Div>
         <Div selfCenter flex flexRow>

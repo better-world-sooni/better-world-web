@@ -104,6 +104,7 @@ const apis = {
     collections: {
       list: (page_size, offset, search_key) => apiV1(`/admin/nft_collection/list${urlParams({ page_size, offset, search_key })}`),
       _: () => apiV1(`/admin/nft_collection`),
+      all: () => apiV1(`/admin/nft_collection/all`),
     },
     post: {
       list: (contract_address, token_id, page_size, offset, search_key) =>

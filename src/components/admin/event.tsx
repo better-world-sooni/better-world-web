@@ -1,5 +1,5 @@
 import Div from "src/components/Div";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import React from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "src/store/reducers/rootReducer";
@@ -35,7 +35,9 @@ import TruncatedText from "../common/ModifiedTruncatedMarkdown";
 import { createdAtText, getDate } from "src/modules/timeHelper";
 import useLink from "src/hooks/useLink";
 import { FaBars, FaDiscord, FaTwitter } from "react-icons/fa";
-import { chain } from "lodash";
+import { chain, debounce } from "lodash";
+import NewEventModal from "./NewEventModal";
+import { newEventModalAction } from "src/store/reducers/modalReducer";
 
 enum EventApplicationInputType {
   SELECT = 0,
@@ -50,6 +52,7 @@ function EventScreen() {
     offset: state.admin.EventListPage.offset,
     search_key: state.admin.EventListPage.search_key,
   }));
+  const [searchKey, setSearchKey] = useState(search_key);
   const {
     isLoading: loading,
     isFetching: fetching,
@@ -71,77 +74,90 @@ function EventScreen() {
   const handlePaginationPageSizeChange = (page_size_input) => {
     if (page_size != page_size_input) refetchEventList(page_size_input, 0, search_key);
   };
+  const debounceRefetchhEvenList = useCallback(
+    debounce((searchKey) => {
+      refetchEventList(page_size, 0, searchKey);
+    }, 500),
+    [page_size]
+  );
   const handleSearchBarChange = (search_key_input) => {
-    refetchEventList(page_size, 0, search_key_input);
+    setSearchKey(search_key_input);
+    debounceRefetchhEvenList(search_key_input);
+  };
+  const openModal = () => {
+    dispatch(newEventModalAction({ enabled: true }));
   };
 
   return (
-    <Div flex flexCol>
-      <Div mt15 mb10 selfCenter flex flexRow wFull>
-        <Div justifyItemsStart flex flexRow wFull>
-          <Div selfCenter>
-            <PaginationPageSizebox handlePaginationPageSizeChange={handlePaginationPageSizeChange} page_size={page_size} />
-          </Div>
-          <Div selfCenter>개씩 보기</Div>
-          <Div selfCenter ml10>
-            <SearchBar w={250} placeholder={"Event를 검색해보세요."} initialText={search_key} handleSearch={handleSearchBarChange} />
-          </Div>
-        </Div>
-        <Div selfCenter flex flexRow>
-          <Div minW={120} fontSize15 fontSemibold mr10 selfCenter>
-            <Div spanTag textSuccess>
-              <TimerText
-                condtion={!loading && LoadingButtonOn && !loading_status && !error}
-                text={"Update Complete"}
-                seconds={2}
-                closecontidion={setLoadingButton}
-              />
+    <>
+      <Div flex flexCol>
+        <Div mt15 mb10 selfCenter flex flexRow wFull>
+          <Div justifyItemsStart flex flexRow wFull>
+            <Div selfCenter>
+              <PaginationPageSizebox handlePaginationPageSizeChange={handlePaginationPageSizeChange} page_size={page_size} />
             </Div>
-            <Div spanTag textDanger>
-              <TimerText condtion={!loading && LoadingButtonOn && error} text={"Update error"} seconds={2} closecontidion={setLoadingButton} />
+            <Div selfCenter>개씩 보기</Div>
+            <Div selfCenter ml10>
+              <SearchBar w={250} placeholder={"Event를 검색해보세요."} initialText={searchKey} handleSearch={handleSearchBarChange} />
             </Div>
           </Div>
-          <Div mr10>
-            <NewEventIcon loading={false} onClick={null} />
-          </Div>
-          {events &&
-            (loading_status ? (
-              <Div fontSize15 fontBold selfEnd px10 py5 textWhite rounded10 bgBW>
-                <Oval height="14" width="14" color="#4738FF" secondaryColor="#FFFFFF" strokeWidth="5" />
+          <Div selfCenter flex flexRow>
+            <Div minW={120} fontSize15 fontSemibold mr10 selfCenter>
+              <Div spanTag textSuccess>
+                <TimerText
+                  condtion={!loading && LoadingButtonOn && !loading_status && !error}
+                  text={"Update Complete"}
+                  seconds={2}
+                  closecontidion={setLoadingButton}
+                />
               </Div>
-            ) : (
-              <Tooltip title="업데이트" arrow>
-                <Div fontBold selfEnd px10 cursorPointer py5 bgBWLight textBW rounded10 clx="hover:bg-bw hover:text-white" onClick={refetch}>
-                  <RefreshIcon height={20} width={20} className="max-h-20 max-w-20" />
+              <Div spanTag textDanger>
+                <TimerText condtion={!loading && LoadingButtonOn && error} text={"Update error"} seconds={2} closecontidion={setLoadingButton} />
+              </Div>
+            </Div>
+            <Div mr10>
+              <NewEventIcon loading={false} onClick={openModal} />
+            </Div>
+            {events &&
+              (loading_status ? (
+                <Div fontSize15 fontBold selfEnd px10 py5 textWhite rounded10 bgBW>
+                  <Oval height="14" width="14" color="#4738FF" secondaryColor="#FFFFFF" strokeWidth="5" />
                 </Div>
-              </Tooltip>
-            ))}
-        </Div>
-      </Div>
-      {loading && (
-        <Div fontBold mb100 textStart maxW={1100} mxAuto>
-          <Oval height="300" width="300" color="#4738FF" secondaryColor="#FFFFFF" strokeWidth="100" />
-        </Div>
-      )}
-      {events?.success && <EventArray events={events} />}
-      {events?.success && (
-        <Div selfCenter>
-          <Pagination
-            count={Math.ceil(events?.events?.event_count / page_size)}
-            page={offset + 1}
-            showFirstButton
-            showLastButton
-            onChange={handlePaginationOffsetChange}
-          />
-        </Div>
-      )}
-      {error ||
-        (events && !events.success && (
-          <Div fontSize20 mb100 textStart maxW={1100} mxAuto>
-            오류가 발생하였습니다. 다시 시도하여 주세요.
+              ) : (
+                <Tooltip title="업데이트" arrow>
+                  <Div fontBold selfEnd px10 cursorPointer py5 bgBWLight textBW rounded10 clx="hover:bg-bw hover:text-white" onClick={refetch}>
+                    <RefreshIcon height={20} width={20} className="max-h-20 max-w-20" />
+                  </Div>
+                </Tooltip>
+              ))}
           </Div>
-        ))}
-    </Div>
+        </Div>
+        {loading && (
+          <Div fontBold mb100 textStart maxW={1100} mxAuto>
+            <Oval height="300" width="300" color="#4738FF" secondaryColor="#FFFFFF" strokeWidth="100" />
+          </Div>
+        )}
+        {events?.success && <EventArray events={events} />}
+        {events?.success && (
+          <Div selfCenter>
+            <Pagination
+              count={Math.ceil(events?.events?.event_count / page_size)}
+              page={offset + 1}
+              showFirstButton
+              showLastButton
+              onChange={handlePaginationOffsetChange}
+            />
+          </Div>
+        )}
+        {error ||
+          (events && !events.success && (
+            <Div fontSize20 mb100 textStart maxW={1100} mxAuto>
+              오류가 발생하였습니다. 다시 시도하여 주세요.
+            </Div>
+          ))}
+      </Div>
+      <NewEventModal />
+    </>
   );
 }
 
@@ -280,9 +296,13 @@ function EventOptions({ event }) {
 
 function EventOption({ option }) {
   const [click, setClick] = useState(false);
-  const setToggleOptions = () => {
+  const onHoverOptions = () => {
     if (!canClick) return;
-    setClick(!click);
+    setClick(true);
+  };
+  const onLeaveOptions = () => {
+    if (!canClick) return;
+    setClick(false);
   };
   const canClick = option?.inputType == EventApplicationInputType.SELECT && option?.options && option?.options.length != 0;
   return (
@@ -300,7 +320,8 @@ function EventOption({ option }) {
         flexRow
         justifyCenter
         relative
-        onClick={setToggleOptions}
+        onMouseEnter={onHoverOptions}
+        onMouseLeave={onLeaveOptions}
         cursorPointer={canClick}
         clx={canClick && "hover:bg-gray-200"}
       >
@@ -330,7 +351,25 @@ function EventOption({ option }) {
         show={click && canClick}
         duration={0.2}
         content={
-          <Div z100 absolute bgGray200 minWFull top={"100%"} roundedB px10 flex flexCol py5 gapY={3}>
+          <Div
+            onMouseEnter={onHoverOptions}
+            onMouseLeave={onLeaveOptions}
+            cursorPointer
+            z100
+            absolute
+            bgGray200
+            overflowYScroll
+            noScrollBar
+            style={{ maxHeight: "500%" }}
+            minWFull
+            top={"100%"}
+            roundedB
+            px10
+            flex
+            flexCol
+            py5
+            gapY={3}
+          >
             {option?.options.map((value, index) => (
               <Div key={index} breakAll relative textRight fontSize14 borderGray400 borderB1={index != option?.options.length - 1}>
                 {value?.name}

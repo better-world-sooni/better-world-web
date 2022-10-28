@@ -33,3 +33,30 @@ export function InitialgetEventsQuery(queryClient: QueryClient, ctx: NextPageCon
     url: apis.admin.events.list(defaultPageSize, 0, ""),
   });
 }
+
+export function getAllCollectionsQuery() {
+  return queryHelperWithToken({
+    key: querykeys.admin.collections.list(),
+    url: apis.admin.collections.all(),
+    options: {
+      refetchOnMount: false,
+      refetchInterval: false,
+      keepPreviousData: true,
+      staleTime: Infinity,
+      cacheTime: Infinity,
+    },
+  });
+}
+
+export function InitialgetAllCollectionsQuery(queryClient: QueryClient, ctx: NextPageContext) {
+  return queryHelperInitialPropsWithJwtFromContext({
+    key: querykeys.admin.collections.list(),
+    queryClient: queryClient,
+    ctx: ctx,
+    url: apis.admin.collections.all(),
+    options: {
+      staleTime: Infinity,
+      cacheTime: Infinity,
+    },
+  });
+}
