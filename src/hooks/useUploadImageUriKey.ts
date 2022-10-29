@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import useFileUpload from "./useFileUpload";
+import useFileUpload, { FileUploadReturnType } from "./useFileUpload";
 import { useFilePicker } from "use-file-picker";
 
 export function useUploadImageUriKey({ uri, attachedRecord }) {
@@ -53,13 +53,26 @@ type ImageType = {
   url: string;
   file: File;
   loading: boolean;
+  key: number;
 };
 
-export function useUploadImageUriKeys({ attachedRecord, maxFileLength }) {
+type ImageTypeOutput = {
+  url: string;
+  loading: boolean;
+  key: number;
+};
+
+export function useUploadImageUriKeys({ attachedRecord, fileLimit }) {
   const [images, setImages] = useState<ImageType[]>([]);
   const { uploadFile } = useFileUpload({ attachedRecord });
-  const imagesLeft = maxFileLength - images.length;
+  const imagesLeft = fileLimit - images.length;
   const changedIndex = useRef<number>(-1);
+  const key = useRef<number>(0);
+  const getKey = () => {
+    const nextKey = key.current;
+    key.current += 1;
+    return nextKey;
+  };
   const [openFileSelector, { filesContent, plainFiles, clear }] = useFilePicker({
     readAs: "DataURL",
     accept: "image/*",
@@ -76,14 +89,14 @@ export function useUploadImageUriKeys({ attachedRecord, maxFileLength }) {
   useEffect(() => {
     if (filesContent.length == 0) return;
     if (filesContent.length > imagesLeft) {
-      alert(`최대 ${imagesLeft}개의 이미지를 선택하실 수 있습니다.`);
+      alert(`최대 ${imagesLeft}개의 이미지를 선택하실 수 있습니다.\n현재 ${images.length}개 선태됨.`);
       clear();
       return;
     }
-    const newImages = filesContent.map((value, index) => <ImageType>{ url: value?.content, file: plainFiles[index], loading: false });
+    const newImages = filesContent.map((value, index) => <ImageType>{ url: value?.content, file: plainFiles[index], loading: false, key: getKey() });
     setImages([...images, ...newImages]);
     clear();
-  }, [filesContent || plainFiles]);
+  }, [plainFiles]);
 
   const handleRemoveImage = (index: number) => {
     const newImage = images.slice(0, index).concat(images.slice(index + 1));
@@ -95,17 +108,17 @@ export function useUploadImageUriKeys({ attachedRecord, maxFileLength }) {
     openOneFileSelector();
   };
   useEffect(() => {
-    if (filesContent.length == 0) return;
+    if (fileContent.length == 0) return;
     setImages((prevSelectedImages) =>
       setSelectedImagesImageAtIndex(prevSelectedImages, changedIndex.current, {
-        url: fileContent[changedIndex.current]?.content,
-        file: plainFiles[changedIndex.current],
+        url: fileContent[0]?.content,
+        file: planFile[0],
         loading: false,
+        key: prevSelectedImages[changedIndex.current].key,
       })
     );
     clearOne();
-    changedIndex.current = -1;
-  }, [fileContent || planFile]);
+  }, [planFile]);
 
   const getImageUriKeys = async () => {
     try {
@@ -118,14 +131,14 @@ export function useUploadImageUriKeys({ attachedRecord, maxFileLength }) {
   };
   const getImageUriKeyAtIndex = async (index: number) => {
     setImages((prevSelectedImages) => setSelectedImageLoadingAtIndex(prevSelectedImages, index, true));
-    const res = await uploadFile(images[index].file);
+    const res = await uploadFile(images[index].file, FileUploadReturnType.BlobSignedId);
     setImages((prevSelectedImages) => setSelectedImageLoadingAtIndex(prevSelectedImages, index, false));
     return res;
   };
-
   const setSelectedImagesImageAtIndex = (prevSelectedImages: ImageType[], index: number, image: ImageType) => {
     const newSelectedImages = [...prevSelectedImages];
     newSelectedImages[index] = image;
+    changedIndex.current = -1;
     return newSelectedImages;
   };
 
@@ -134,7 +147,7 @@ export function useUploadImageUriKeys({ attachedRecord, maxFileLength }) {
     newSelectedImages[index].loading = bool;
     return newSelectedImages;
   };
-  const imageUrl = images.map((value) => value.url);
+  const imageUrls = images.map((value) => <ImageTypeOutput>{ url: value?.url, loading: value?.loading, key: value?.key });
 
-  return { imageUrl, handleAddImages, handleChangeImage, handleRemoveImage, getImageUriKeys };
+  return { imageUrls, handleAddImages, handleChangeImage, handleRemoveImage, getImageUriKeys };
 }

@@ -1,5 +1,7 @@
 import { useState } from "react";
+import { uploadDrawEventQuery } from "./queries/admin/events";
 import useLink from "./useLink";
+import { useUploadImageUriKeys } from "./useUploadImageUriKey";
 
 export enum EventApplicationInputType {
   SELECT = 0,
@@ -20,7 +22,7 @@ export enum EventType {
   EVENT = 1,
 }
 
-export default function useUploadDrawEvent({ initialHasApplication }) {
+export default function useUploadDrawEvent({ queryClient, uploadSuccessCallback = null }) {
   const [collection, setCollection] = useState({ name: null, contractAddress: null, imageUri: null });
   const [loading, setLoading] = useState(false);
   const [type, setType] = useState(EventType.NOTICE);
@@ -47,20 +49,24 @@ export default function useUploadDrawEvent({ initialHasApplication }) {
     setCollection({ name, contractAddress, imageUri });
     setError("");
   };
-  // const { images, error, setError, handleAddImages, handleRemoveImage, uploadAllSelectedFiles } = useUploadDrawEvent({attachedRecord:"draw_event", fileLimit: 8})
+  const fileLimit = 8;
+  const { imageUrls, handleAddImages, handleChangeImage, handleRemoveImage, getImageUriKeys } = useUploadImageUriKeys({
+    attachedRecord: "draw_event",
+    fileLimit: fileLimit,
+  });
+  const { isLoading, mutate } = uploadDrawEventQuery(queryClient);
   const isSelectCollection = collection?.contractAddress != null;
-  console.log(
-    "Collection : ",
-    isSelectCollection ? collection?.name : "",
-    "\n종류 : ",
-    type == EventType.NOTICE ? "공지" : "이벤트",
-    "\n제목 : ",
-    name,
-    "\n내용 : ",
-    description
+  const canUploadDrawEvent = !(
+    !isSelectCollection ||
+    !name ||
+    !description ||
+    (type == EventType.EVENT && enableApplicationLink && (applicationLinkError || applicationLink == "")) ||
+    imageUrls.length == 0 ||
+    imageUrls.length > fileLimit
   );
-  const uploadDrawEvent = async ({ uploadSuccessCallback }) => {
-    if (loading) {
+
+  const uploadDrawEvent = async () => {
+    if (loading || isLoading) {
       return;
     }
     if (!isSelectCollection) {
@@ -75,20 +81,53 @@ export default function useUploadDrawEvent({ initialHasApplication }) {
       setError("설명을 작성해주세요.");
       return;
     }
-    if (initialHasApplication && enableApplicationLink && !applicationLink) {
-      setError("응모 링크를 작성해주세요.");
-      return;
-    }
-    if (applicationLinkError) {
+    if (type == EventType.EVENT && enableApplicationLink && (applicationLinkError || applicationLink == "")) {
       setError(applicationLinkError);
       return;
     }
-    // if (images.length == 0) {
-    //   setError("이미지를 추가해주세요.");
-    //   return;
-    // }
+    if (imageUrls.length == 0) {
+      setError("이미지를 추가해주세요.");
+      return;
+    }
+    if (imageUrls.length > fileLimit) {
+      setError("이미지는 8장 이하여야 합니다.");
+      return;
+    }
     setLoading(true);
-    uploadSuccessCallback();
+    const keys = await getImageUriKeys();
+    if (keys == null) {
+      setLoading(false);
+      return;
+    }
+    const applicationOptions = applicationCategories
+      .map((applicationCategory) => {
+        if (applicationCategory.inputType !== EventApplicationInputType.SELECT)
+          return {
+            name: applicationCategory.name,
+            category: applicationCategory.name,
+            input_type: applicationCategory.inputType,
+          };
+        return applicationCategory.options.map((applicationOption) => {
+          return {
+            name: applicationOption,
+            category: applicationCategory.name,
+            input_type: applicationCategory.inputType,
+          };
+        });
+      })
+      .flat();
+    const body = {
+      contract_address: collection.contractAddress,
+      name,
+      description,
+      images: keys,
+      expires_at: expiresAt,
+      has_application: type == EventType.EVENT,
+      application_link: enableApplicationLink ? applicationLink : null,
+      discord_link: discordLink ? discordLink : null,
+      draw_event_options_attributes: !enableApplicationLink ? applicationOptions : [],
+    };
+    mutate(body);
     setLoading(false);
     setError("");
   };
@@ -144,7 +183,8 @@ export default function useUploadDrawEvent({ initialHasApplication }) {
     collection,
     selectCollection,
     error,
-    loading,
+    loading: loading || isLoading,
+    canUploadDrawEvent,
     discordLink,
     handleDiscordLinkChange,
     applicationCategories,
@@ -165,5 +205,10 @@ export default function useUploadDrawEvent({ initialHasApplication }) {
     description,
     handleDescriptionChange,
     uploadDrawEvent,
+    imageUrls,
+    handleAddImages,
+    handleChangeImage,
+    handleRemoveImage,
+    fileLimit,
   };
 }

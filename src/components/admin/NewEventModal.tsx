@@ -5,29 +5,17 @@ import { RootState } from "src/store/reducers/rootReducer";
 import { newEventModalAction } from "src/store/reducers/modalReducer";
 import Tooltip from "@mui/material/Tooltip";
 import { getAllCollectionsQuery } from "src/hooks/queries/admin/events";
-import { ProfileImage } from "../common/ImageHelper";
+import { ProfileImage, UploadImage } from "../common/ImageHelper";
 import { useState } from "react";
 import DefaultTransition from "../common/defaulttransition";
-import {
-  ArrowRightIcon,
-  CheckIcon,
-  ChevronDownIcon,
-  ChevronUpIcon,
-  GlobeAltIcon,
-  MinusIcon,
-  PencilAltIcon,
-  PlusIcon,
-  SearchIcon,
-} from "@heroicons/react/outline";
-import { SwitchToggle } from "./userlist";
-import useEdittableText from "src/hooks/useEdittableText";
-import useEdittableToggle from "src/hooks/useEdittableToggle";
+import { ArrowRightIcon, CheckIcon, ChevronDownIcon, GlobeAltIcon, MinusIcon, PencilAltIcon, PlusIcon, SearchIcon } from "@heroicons/react/outline";
 import useUploadDrawEvent, { EventApplicationInputType, EventType } from "src/hooks/useUploadDrawEvent";
 import ReactTextareaAutosize from "react-textarea-autosize";
 import { DefaultText } from "../common/ModifiedTruncatedMarkdown";
-import useLink from "src/hooks/useLink";
 import { FaBars, FaDiscord, FaTwitter } from "react-icons/fa";
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
+import { useQueryClient } from "react-query";
+import { Oval } from "react-loader-spinner";
 
 export default function NewEventModal({}) {
   const { enabled } = useSelector((state: RootState) => ({
@@ -46,6 +34,7 @@ export default function NewEventModal({}) {
 }
 
 function EventDetails({ closeModal }) {
+  const queryClient = useQueryClient();
   const {
     collection,
     selectCollection,
@@ -53,6 +42,7 @@ function EventDetails({ closeModal }) {
     setType,
     error,
     loading,
+    canUploadDrawEvent,
     applicationCategories,
     handleAddApplicationCategory,
     handleRemoveApplicationCategory,
@@ -72,8 +62,13 @@ function EventDetails({ closeModal }) {
     handleNameChange,
     description,
     handleDescriptionChange,
+    imageUrls,
+    handleAddImages,
+    handleChangeImage,
+    handleRemoveImage,
+    fileLimit,
     uploadDrawEvent,
-  } = useUploadDrawEvent({ initialHasApplication: true });
+  } = useUploadDrawEvent({ queryClient, uploadSuccessCallback: closeModal });
   return (
     <Div zIndex={-1000} wFull hFull flex itemsCenter justifyCenter>
       <Div wFull mb10 flex flexCol px30 py30>
@@ -92,21 +87,46 @@ function EventDetails({ closeModal }) {
         <Div mt10 px10 wFull selfCenter flex flexCol justifyCneter border1 gapY={10} minH={"50vh"} maxH={"60vh"} overflowHidden>
           <Div flex flexRow gapX={5}>
             <Div selfCenter justifyStart>
-              <SelectCollection collection={collection} selectCollection={selectCollection} />
+              <SelectCollection collection={collection} selectCollection={selectCollection} loading={loading} />
             </Div>
             <Div selfCenter justifyEnd>
-              <SelectEventType type={type} setType={setType} />
+              <SelectEventType type={type} setType={setType} loading={loading} />
             </Div>
             <Div selfCenter wFull px10 py5>
-              <Title name={name} handleNameChange={handleNameChange} />
+              <Title
+                name={name}
+                handleNameChange={
+                  !loading
+                    ? handleNameChange
+                    : () => {
+                        return;
+                      }
+                }
+              />
             </Div>
           </Div>
           <Div gapY={10} overflowYScroll noScrollBar hFull>
             <Div wFull flex flexRow gapX={5} borderB1>
-              <Descriptions description={description} handleDescriptionChange={handleDescriptionChange} />
+              <Descriptions
+                description={description}
+                handleDescriptionChange={
+                  !loading
+                    ? handleDescriptionChange
+                    : () => {
+                        return;
+                      }
+                }
+              />
             </Div>
 
-            <Images />
+            <Images
+              imageUrls={imageUrls}
+              handleAddImages={handleAddImages}
+              handleChangeImage={handleChangeImage}
+              handleRemoveImage={handleRemoveImage}
+              fileLimit={fileLimit}
+              loading={loading}
+            />
             <DefaultTransition
               show={type == EventType.EVENT}
               content={
@@ -124,27 +144,65 @@ function EventDetails({ closeModal }) {
                   handleRemoveApplicationOption={handleRemoveApplicationOption}
                   expiresAt={expiresAt}
                   setExpiresAt={setExpiresAt}
+                  loading={loading}
                 />
               }
             />
           </Div>
         </Div>
         <Div wFull flex flexRow justifyEnd mt30>
-          <Div selfCenter>
-            <Tooltip title="이벤트 업로드" arrow>
-              <Div fontBold bgOpacity80 bgBW selfEnd px10 cursorPointer py5 bgBWLight textWhite rounded10 clx="hover:bg-bw" onClick={closeModal}>
-                업로드
-              </Div>
-            </Tooltip>
-          </Div>
+          {canUploadDrawEvent && (
+            <Div selfCenter>
+              {loading ? (
+                <Div fontBold bgBW selfEnd px10 py5 bgBWLight textWhite rounded10>
+                  <Oval height="14" width="14" color="#4738FF" secondaryColor="#FFFFFF" strokeWidth="5" />
+                </Div>
+              ) : (
+                <Tooltip title="이벤트 업로드" arrow>
+                  <Div fontBold bgOpacity80 bgBW selfEnd px10 cursorPointer py5 bgBWLight textWhite rounded10 clx="hover:bg-bw" onClick={uploadDrawEvent}>
+                    업로드
+                  </Div>
+                </Tooltip>
+              )}
+            </Div>
+          )}
         </Div>
       </Div>
     </Div>
   );
 }
 
-function Images({}) {
-  return <></>;
+function Images({ imageUrls, handleAddImages, handleChangeImage, handleRemoveImage, fileLimit, loading }) {
+  const size = 150;
+  const animation = {
+    mount: { opacity: 1, scale: 1 },
+    unmount: { opacity: 0, scale: 0.95 },
+    transition: { duration: 0.2 },
+  };
+  return (
+    <Div wFull flex flexRow overflowXScroll relative gapX={20} py20>
+      <AnimatePresence>
+        {imageUrls.map((image, index) => (
+          <motion.div key={image?.key} initial={animation.unmount} animate={animation.mount} exit={animation.unmount} transition={animation.transition}>
+            <UploadImage
+              width={size}
+              height={size}
+              uri={image?.url}
+              onClick={() => handleChangeImage(index)}
+              onRemove={() => handleRemoveImage(index)}
+              enable={!loading}
+              loading={image?.loading}
+            />
+          </motion.div>
+        ))}
+        {imageUrls.length < fileLimit && !loading && (
+          <motion.div initial={animation.unmount} animate={animation.mount} exit={animation.unmount} transition={animation.transition}>
+            <UploadImage width={size} height={size} uri={null} onClick={handleAddImages} loading={false} enable={!loading} />
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </Div>
+  );
 }
 
 function Options({
@@ -163,26 +221,33 @@ function Options({
 
   expiresAt,
   setExpiresAt,
+
+  loading,
 }) {
-  console.log(applicationCategories);
   return (
     <Div wFull flex flexCol justifyCenter mt20 gapY={20}>
       <Div wFull flex flexRow justifyStart gapX={20}>
-        <SelectApplication enableApplicationLink={enableApplicationLink} toggleEnableApplicationLink={toggleEnableApplicationLink} />
+        <SelectApplication enableApplicationLink={enableApplicationLink} toggleEnableApplicationLink={toggleEnableApplicationLink} loading={loading} />
         {enableApplicationLink && (
           <DefaultTransition
             show={enableApplicationLink}
             content={
               <ApplicationLink
                 applicationLink={applicationLink}
-                handleApplicationLinkChange={handleApplicationLinkChange}
+                handleApplicationLinkChange={
+                  !loading
+                    ? handleApplicationLinkChange
+                    : () => {
+                        return;
+                      }
+                }
                 handleClickApplicationLink={handleClickApplicationLink}
                 applicationLinkError={applicationLinkError}
               />
             }
           />
         )}
-        {!enableApplicationLink && (
+        {!enableApplicationLink && !loading && (
           <DefaultTransition show={!enableApplicationLink} content={<AddOptions handleAddApplicationCategory={handleAddApplicationCategory} />} />
         )}
       </Div>
@@ -191,17 +256,20 @@ function Options({
           show={!enableApplicationLink}
           content={
             <Div selfCenter flex flexRow wFull jsutifyStart gapX={10} flexWrap gapY={10}>
-              {applicationCategories
-                ? applicationCategories.map((value, index) => (
-                    <ModifyOption
-                      option={value}
-                      onClick={() => handleRemoveApplicationCategory(index)}
-                      key={value?.index}
-                      handleAddApplicationOption={(optionName) => handleAddApplicationOption(index, optionName)}
-                      handleRemoveApplicationOption={(optionIndex) => handleRemoveApplicationOption(index, optionIndex)}
-                    />
-                  ))
-                : null}
+              <AnimatePresence>
+                {applicationCategories
+                  ? applicationCategories.map((value, index) => (
+                      <ModifyOption
+                        option={value}
+                        onClick={() => handleRemoveApplicationCategory(index)}
+                        key={value?.index}
+                        handleAddApplicationOption={(optionName) => handleAddApplicationOption(index, optionName)}
+                        handleRemoveApplicationOption={(optionIndex) => handleRemoveApplicationOption(index, optionIndex)}
+                        loading={loading}
+                      />
+                    ))
+                  : null}
+              </AnimatePresence>
             </Div>
           }
         />
@@ -210,49 +278,53 @@ function Options({
   );
 }
 
-function ModifyOption({ option, onClick, handleAddApplicationOption, handleRemoveApplicationOption }) {
+function ModifyOption({ option, onClick, handleAddApplicationOption, handleRemoveApplicationOption, loading }) {
   const [click, setClick] = useState(false);
   const canClick = option?.inputType == EventApplicationInputType.SELECT;
   const [optionInput, handleChangeOptionInputText] = useState("");
   const handleChangeOptionInput = ({ target: { value } }) => {
     handleChangeOptionInputText(value);
   };
+  const animation = {
+    mount: { opacity: 1, scale: 1 },
+    unmount: { opacity: 0, scale: 0.95 },
+    transition: { duration: 0.2 },
+  };
   return (
-    <DefaultTransition
-      show={true}
-      content={
-        <Div relative>
-          <Div
-            selfStart
-            px10
-            py5
-            bgGray100={!click}
-            bgGray200={click}
-            rounded={!click}
-            roundedT={click}
-            textBlack
-            flex
-            flexRow
-            justifyCenter
-            relative
-            onClick={!canClick ? () => onClick() : () => setClick(!click)}
-            cursorPointer
-            clx={"hover:bg-gray-200"}
-          >
-            <Div relative selfCenter>
-              {option?.inputType == EventApplicationInputType.DISCORD_ID ? (
-                <FaDiscord size={18} />
-              ) : option?.inputType == EventApplicationInputType.TWITTER_ID ? (
-                <FaTwitter size={18} />
-              ) : option?.inputType == EventApplicationInputType.CUSTOM_INPUT ? (
-                <PencilAltIcon height={18} width={18} className="max-h-18 max-w-18" />
-              ) : (
-                <FaBars size={18} />
-              )}
-            </Div>
-            <Div relative selfCenter fontSize12 ml5 fontSemibold>
-              {option?.name}
-            </Div>
+    <motion.div initial={animation.unmount} animate={animation.mount} exit={animation.unmount} transition={animation.transition}>
+      <Div relative>
+        <Div
+          selfStart
+          px10
+          py5
+          bgGray100={!click}
+          bgGray200={click}
+          rounded={!click}
+          roundedT={click}
+          textBlack
+          flex
+          flexRow
+          justifyCenter
+          relative
+          onClick={!loading && (!canClick ? () => onClick() : () => setClick(!click))}
+          cursorPointer={!loading}
+          clx={!loading && "hover:bg-gray-200"}
+        >
+          <Div relative selfCenter>
+            {option?.inputType == EventApplicationInputType.DISCORD_ID ? (
+              <FaDiscord size={18} />
+            ) : option?.inputType == EventApplicationInputType.TWITTER_ID ? (
+              <FaTwitter size={18} />
+            ) : option?.inputType == EventApplicationInputType.CUSTOM_INPUT ? (
+              <PencilAltIcon height={18} width={18} className="max-h-18 max-w-18" />
+            ) : (
+              <FaBars size={18} />
+            )}
+          </Div>
+          <Div relative selfCenter fontSize12 ml5 fontSemibold>
+            {option?.name}
+          </Div>
+          {!loading && (
             <Div relative selfCenter fontSize12 ml5 fontSemibold onClick={canClick && !click && onClick} px5 py5>
               {!click ? (
                 <MinusIcon height={12} width={12} className="max-h-12 max-w-12" />
@@ -260,12 +332,28 @@ function ModifyOption({ option, onClick, handleAddApplicationOption, handleRemov
                 <ChevronDownIcon height={12} width={12} className="max-h-12 max-w-12" />
               )}
             </Div>
-          </Div>
-          <DefaultTransition
-            show={click && canClick}
-            duration={0.2}
-            content={
-              <Div cursorPointer z100 bgGray200 overflowYScroll noScrollBar style={{ maxHeight: "500%" }} minWFull roundedB px10 flex flexCol py5 gapY={3}>
+          )}
+        </Div>
+        <DefaultTransition
+          show={click && canClick}
+          duration={0.2}
+          content={
+            <Div
+              cursorPointer={!loading}
+              z100
+              bgGray200
+              overflowYScroll
+              noScrollBar
+              style={{ maxHeight: "500%" }}
+              minWFull
+              roundedB
+              px10
+              flex
+              flexCol
+              py5
+              gapY={3}
+            >
+              {!loading && (
                 <Div wFull textLeft fontSize12 borderGray400 flex flexRow selfCenter gapY={2} gapX={5} justifyStart>
                   <Div wFull textLeft>
                     <input
@@ -293,36 +381,38 @@ function ModifyOption({ option, onClick, handleAddApplicationOption, handleRemov
                     <PlusIcon height={12} width={12} className="max-h-12 max-w-12" />
                   </Div>
                 </Div>
-                {option?.options.map((value, index) => (
-                  <Div
-                    key={`${value}-${index}`}
-                    relative
-                    textRight
-                    wFull
-                    fontSize12
-                    borderGray400
-                    borderB1={index != option?.options.length - 1}
-                    onClick={() => handleRemoveApplicationOption(index)}
-                    flex
-                    flexRow
-                    selfCenter
-                    gapY={2}
-                    gapX={5}
-                  >
-                    <Div wFull textLeft>
-                      {value}
-                    </Div>
+              )}
+              {option?.options.map((value, index) => (
+                <Div
+                  key={`${value}-${index}`}
+                  relative
+                  textRight
+                  wFull
+                  fontSize12
+                  borderGray400
+                  borderB1={index != option?.options.length - 1}
+                  onClick={!loading && (() => handleRemoveApplicationOption(index))}
+                  flex
+                  flexRow
+                  selfCenter
+                  gapY={2}
+                  gapX={5}
+                >
+                  <Div wFull textLeft>
+                    {value}
+                  </Div>
+                  {!loading && (
                     <Div selfCenter fontSize12 ml5 fontSemibold textRight>
                       <MinusIcon height={12} width={12} className="max-h-12 max-w-12" />
                     </Div>
-                  </Div>
-                ))}
-              </Div>
-            }
-          />
-        </Div>
-      }
-    />
+                  )}
+                </Div>
+              ))}
+            </Div>
+          }
+        />
+      </Div>
+    </motion.div>
   );
 }
 
@@ -510,7 +600,7 @@ function Title({ name, handleNameChange }) {
   );
 }
 
-function SelectApplication({ enableApplicationLink, toggleEnableApplicationLink }) {
+function SelectApplication({ enableApplicationLink, toggleEnableApplicationLink, loading }) {
   return (
     <Div selfStart>
       <SelectEntry
@@ -520,12 +610,13 @@ function SelectApplication({ enableApplicationLink, toggleEnableApplicationLink 
         clickSecond={toggleEnableApplicationLink}
         isFirst={enableApplicationLink}
         isSecond={!enableApplicationLink}
+        enable={!loading}
       />
     </Div>
   );
 }
 
-function SelectEventType({ type, setType }) {
+function SelectEventType({ type, setType, loading }) {
   return (
     <SelectEntry
       firstText={"공지"}
@@ -534,24 +625,25 @@ function SelectEventType({ type, setType }) {
       clickSecond={() => setType(EventType.EVENT)}
       isFirst={type == EventType.NOTICE}
       isSecond={type == EventType.EVENT}
+      enable={!loading}
     />
   );
 }
 
-function SelectEntry({ firstText, secondText, clickFirst, clickSecond, isFirst, isSecond }) {
+function SelectEntry({ firstText, secondText, clickFirst, clickSecond, isFirst, isSecond, enable }) {
   return (
-    <Div clx="bg-bw-light" cursorPointer rounded flex flexRow fontSize14 fontSemibold overflowHidden selfCenter>
-      <Div px10 py5 selfCenter bgBW={isFirst} textWhite={isFirst} onClick={clickFirst} whitespaceNowrap>
+    <Div clx="bg-bw-light" cursorPointer={enable} rounded flex flexRow fontSize14 fontSemibold overflowHidden selfCenter>
+      <Div px10 py5 selfCenter bgBW={isFirst} textWhite={isFirst} onClick={enable && clickFirst} whitespaceNowrap>
         {firstText}
       </Div>
-      <Div px10 py5 selfCenter bgBW={isSecond} textWhite={isSecond} onClick={clickSecond} whitespaceNowrap>
+      <Div px10 py5 selfCenter bgBW={isSecond} textWhite={isSecond} onClick={enable && clickSecond} whitespaceNowrap>
         {secondText}
       </Div>
     </Div>
   );
 }
 
-function SelectCollection({ collection, selectCollection }) {
+function SelectCollection({ collection, selectCollection, loading }) {
   const { isError: error, data: collectionList } = getAllCollectionsQuery();
   const [click, setClick] = useState(false);
   const [searchKey, setSearchKey] = useState("");
@@ -592,9 +684,9 @@ function SelectCollection({ collection, selectCollection }) {
         bgGray100={click}
         rounded={!click}
         roundedB={click}
-        cursorPointer
-        onClick={onClick}
-        clx="hover:bg-gray-100"
+        cursorPointer={!loading}
+        onClick={!loading && onClick}
+        clx={!loading && "hover:bg-gray-100"}
       >
         <ProfileImage width={50} height={50} nft={{ image_uri: collection?.imageUri }} rounded={true} resize={true} />
         <Div w={250} selfCenter fontSemibold textStart overflowEllipsis overflowHidden whitespaceNowrap>

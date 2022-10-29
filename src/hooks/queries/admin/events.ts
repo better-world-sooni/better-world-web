@@ -3,7 +3,7 @@ import querykeys from "src/hooks/queries/querykeys";
 import { useCallback } from "react";
 import { QueryClient } from "react-query";
 import { NextPageContext } from "next";
-import { queryHelperInitialPropsWithJwtFromContext, queryHelperWithToken } from "../queryHelper";
+import { queryHelperInitialPropsWithJwtFromContext, queryHelperMutationWithToken, queryHelperWithToken } from "../queryHelper";
 
 export const defaultPageSize = 50;
 
@@ -59,4 +59,18 @@ export function InitialgetAllCollectionsQuery(queryClient: QueryClient, ctx: Nex
       cacheTime: Infinity,
     },
   });
+}
+
+export function uploadDrawEventQuery(queryClient, uploadSuccessCallback = null) {
+  const mutation = queryHelperMutationWithToken({
+    url: apis.admin.events._(),
+    method: "POST",
+    options: {
+      onSettled: () => {
+        queryClient.invalidateQueries(querykeys.admin.events._());
+        uploadSuccessCallback && uploadSuccessCallback();
+      },
+    },
+  });
+  return { ...mutation, mutate: (body) => mutation?.mutate(body) };
 }
