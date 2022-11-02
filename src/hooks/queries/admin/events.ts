@@ -74,3 +74,17 @@ export function uploadDrawEventQuery(queryClient, uploadSuccessCallback = null) 
   });
   return { ...mutation, mutate: (body) => mutation?.mutate(body) };
 }
+
+export function DeleteEvent(event_id, queryClient: QueryClient) {
+  const body = {
+    event_id: event_id,
+  };
+  const mutation = queryHelperMutationWithToken({
+    url: apis.admin.events._(),
+    method: "DELETE",
+    options: {
+      onSuccess: () => queryClient.invalidateQueries(querykeys.admin.events._()),
+    },
+  });
+  return { ...mutation, mutate: () => mutation?.mutate(body) };
+}

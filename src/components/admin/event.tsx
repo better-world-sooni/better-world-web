@@ -39,6 +39,7 @@ import { chain, debounce } from "lodash";
 import NewEventModal from "./NewEventModal";
 import { newEventModalAction } from "src/store/reducers/modalReducer";
 import { EventApplicationInputType } from "src/hooks/useUploadDrawEvent";
+import { DeleteEventModal } from "../modals/CheckModal";
 
 function EventScreen() {
   const { page_size, offset, search_key } = useSelector((state: RootState) => ({
@@ -240,38 +241,42 @@ function EventEntry({ event }) {
 }
 
 function EventDetails({ event }) {
+  const queryClient = useQueryClient();
+  const { Modal, openModal, isLoading } = DeleteEventModal(event?.id, queryClient);
   const eventStatus = getDrawEventStatus(event);
   return (
-    <Div px30 py10 flex flexCol justifyCenter gapY={20} textCenter>
-      <Div wFull flex flexRow justifyStart gapX={10}>
-        <Div selfCenter flex flexRow wFull jsutifyStart gapX={10} flexWrap gapY={10}>
-          {event?.has_application && <ApplicationLink event={event} />}
-          {event?.has_application && <EventOptions event={event} />}
-        </Div>
-        <Div selfStart mr10 whitespaceNowrap mt3>
-          {getDate(event?.created_at)}
-        </Div>
-        <ModifyButton loading={false} onClick={false} />
-        <DeleteButton loading={false} openModal={false} />
-      </Div>
-      {event?.expires_at && (
-        <Div wFull flex flexRow justifyEnd>
-          <Div selfCenter whitespaceNowrap mt3 textDanger fontSemibold>
-            {eventStatus?.expires?.string == "마감" ? `${getDate(event?.expires_at)}에 마감하였습니다.` : `${getDate(event?.expires_at)}에 마감 예정입니다.`}
+    <>
+      <Modal />
+      <Div px30 py10 flex flexCol justifyCenter gapY={20} textCenter>
+        <Div wFull flex flexRow justifyStart gapX={10}>
+          <Div selfCenter flex flexRow wFull jsutifyStart gapX={10} flexWrap gapY={10}>
+            {event?.has_application && <ApplicationLink event={event} />}
+            {event?.has_application && <EventOptions event={event} />}
           </Div>
+          <Div selfStart mr10 whitespaceNowrap mt3>
+            {getDate(event?.created_at)}
+          </Div>
+          <DeleteButton loading={isLoading} openModal={openModal} />
         </Div>
-      )}
-      <Div wFull flex flexRow justifyCenter borderT1 py10 borderGray300>
-        <Div selfcenter wFull>
-          <TruncatedText text={event?.description} maxLength={1000} />
-        </Div>
-        {event?.image_uris && (
-          <Div>
-            <ImageSlide uris={event?.image_uris} maxHeight={300} maxWidth={300} click={false} />
+        {event?.expires_at && (
+          <Div wFull flex flexRow justifyEnd>
+            <Div selfCenter whitespaceNowrap mt3 textDanger fontSemibold>
+              {eventStatus?.expires?.string == "마감" ? `${getDate(event?.expires_at)}에 마감하였습니다.` : `${getDate(event?.expires_at)}에 마감 예정입니다.`}
+            </Div>
           </Div>
         )}
+        <Div wFull flex flexRow justifyCenter borderT1 py10 borderGray300>
+          <Div selfcenter wFull textLeft>
+            <TruncatedText text={event?.description} maxLength={1000} />
+          </Div>
+          {event?.image_uris && (
+            <Div>
+              <ImageSlide uris={event?.image_uris} maxHeight={300} maxWidth={300} click={false} />
+            </Div>
+          )}
+        </Div>
       </Div>
-    </Div>
+    </>
   );
 }
 

@@ -576,8 +576,8 @@ function Descriptions({ description, handleDescriptionChange }) {
           style={{ boxShadow: "none", border: "none", resize: "none", width: "100%", padding: 0, background: "transparent" }}
         />
       </Div>
-      <Div wFull textCenter>
-        <Div wFull flex flexRow justifyCenter fontSize15 fontSemibold>
+      <Div wFull textLeft>
+        <Div wFull textCenter flex flexRow justifyCenter fontSize15 fontSemibold>
           View
         </Div>
         <Div wFull textGray400={description == ""}>

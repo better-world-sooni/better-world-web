@@ -7,6 +7,7 @@ import { DialogTitle } from "@mui/material";
 import { useState } from "react";
 import LINKS from "src/modules/links";
 import { setSuperPrivilege } from "src/hooks/queries/admin/userlist";
+import { DeleteEvent } from "src/hooks/queries/admin/events";
 
 const CheckModal = (Title = "", Label, YesAction = null, yesLabel = "예", NoAction = null, noLabel = "") => {
   const [CheckModalEnabled, setCheckModalEnabled] = useState(false);
@@ -74,6 +75,10 @@ export function MakeSuperPrivilegeModal(address, superPrivilege, queryClient) {
   return { ...CheckModal("Super Privilege 권한 부여", "이 계정에 Super Privilege 권한을 부여할까요?", mutate, "예", null, "아니오"), isLoading, mutate };
 }
 
+export function DeleteEventModal(eventId, queryClient) {
+  const { isLoading, mutate } = DeleteEvent(eventId, queryClient);
+  return { ...CheckModal("이벤트 삭제", "이 이벤트를 삭제할까요? 이 작업은 되돌릴 수 없습니다", mutate, "예", null, "아니오"), isLoading, mutate };
+}
 export function MakePostModal(DeletePostAction) {
   const { isLoading, mutate } = DeletePostAction();
   return { ...CheckModal("게시물 삭제", "이 게시물을 삭제할까요? 이 작업은 되돌릴 수 없습니다.", mutate, "예", null, "아니오"), isLoading };

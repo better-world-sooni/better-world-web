@@ -54,7 +54,7 @@ export default function useUploadDrawEvent({ queryClient, uploadSuccessCallback 
     attachedRecord: "draw_event",
     fileLimit: fileLimit,
   });
-  const { isLoading, mutate } = uploadDrawEventQuery(queryClient);
+  const { isLoading, mutate } = uploadDrawEventQuery(queryClient, uploadSuccessCallback);
   const isSelectCollection = collection?.contractAddress != null;
   const canUploadDrawEvent = !(
     !isSelectCollection ||
