@@ -28,8 +28,8 @@ import PaginationPageSizebox from "../common/paginationpagesizebox";
 import DataEntry from "../common/DataEntry";
 import { ImageSlide, ProfileImage } from "../common/ImageHelper";
 import SearchBar from "src/hooks/SearchBar";
-import { cancelEventListQuery, getEventListQuery } from "src/hooks/queries/admin/events";
-import getDrawEventStatus from "../common/getDrawEventStatus";
+import { cancelEventListQuery, getEventListQuery, setStatus } from "src/hooks/queries/admin/events";
+import getDrawEventStatus, { DrawEventStatus } from "../common/getDrawEventStatus";
 import { motion } from "framer-motion";
 import TruncatedText from "../common/ModifiedTruncatedMarkdown";
 import { createdAtText, getDate } from "src/modules/timeHelper";
@@ -176,7 +176,7 @@ function EventEntry({ event }) {
   const { search_key } = useSelector((state: RootState) => ({
     search_key: state.admin.EventListPage.search_key,
   }));
-  const HandleOpen = (open) => open || search_key != "";
+  const HandleOpen = (open) => open;
   return (
     <Disclosure as="div" className="w-full">
       {({ open }) => (
@@ -187,7 +187,7 @@ function EventEntry({ event }) {
                 <Div wFull flex flexRow justifyStart gapX={10} mb10>
                   <EventStatus event={event} />
                   <Div flex flexRow wFull justifyEnd>
-                    {event?.has_application == true && (
+                    {event?.has_application == true && !event?.application_link && (
                       <DataEntry
                         name={"응모자 수"}
                         w={55}
@@ -258,15 +258,28 @@ function EventDetails({ event }) {
           </Div>
           <DeleteButton loading={isLoading} openModal={openModal} />
         </Div>
-        {event?.expires_at && (
-          <Div wFull flex flexRow justifyEnd>
-            <Div selfCenter whitespaceNowrap mt3 textDanger fontSemibold>
-              {eventStatus?.expires?.string == "마감" ? `${getDate(event?.expires_at)}에 마감하였습니다.` : `${getDate(event?.expires_at)}에 마감 예정입니다.`}
+        {event?.has_application && (
+          <Div wFull flex flexRow justifyCenter>
+            <Div>
+              <ChangeStatus event={event} />
             </Div>
+            <Div wFull />
+            {event?.expires_at && (
+              <Div selfCenter whitespaceNowrap mt3 textDanger fontSemibold>
+                {eventStatus?.status?.string == "마감"
+                  ? `${getDate(event?.expires_at, "YYYY.MM.DD HH:mm")}에 마감하였습니다.`
+                  : `${getDate(event?.expires_at, "YYYY.MM.DD HH:mm")}에 마감 예정입니다.`}
+              </Div>
+            )}
           </Div>
         )}
         <Div wFull flex flexRow justifyCenter borderT1 py10 borderGray300>
-          <Div selfcenter wFull textLeft>
+          <Div selfcenter wFull textLeft flex flexCol gapY={10}>
+            {event?.discord_link && (
+              <Div flex flexRow justifyStart>
+                <DiscordLink event={event} />
+              </Div>
+            )}
             <TruncatedText text={event?.description} maxLength={1000} />
           </Div>
           {event?.image_uris && (
@@ -390,64 +403,53 @@ function EventOption({ option }) {
 }
 
 function ApplicationLink({ event }) {
-  const { link, linkHasChanged, linkError, handleChangeLink, handleClickLink } = useLink(event?.application_link);
+  const { link, linkError, handleClickLink } = useLink(event?.application_link);
   return (
     event?.has_application &&
     event?.application_link &&
     (event?.draw_event_options == null || (event?.draw_event_options != null && event?.draw_event_options.length == 0)) && (
-      <>
-        <Div mt5 fontSemibold>
-          <GlobeAltIcon height={20} width={20} className="max-h-20 max-w-20" />
+      <Div selfCenter flex flexRow gapX={20}>
+        <Div selfCenter fontSemibold>
+          응모 링크
         </Div>
-        <Div flex flexCol justifyStart gapY={5}>
-          <Div px10 py5 bgWhite roundedLg textBlack w300>
-            <input
-              placeholder="https://..."
-              value={link}
-              className={"self-center h-full w-full focus:outline-none focus:border-gray-400 bg-transparent rounded-md"}
-              style={{ boxShadow: "none", border: "none" }}
-              onChange={handleChangeLink}
-            ></input>
-          </Div>
-          <Div textLeft textDanger fontBold fontSize12 ml10 mb18={!linkError}>
-            <DefaultTransition show={linkError ? true : false} content={linkError} />
-          </Div>
+        <Div selfCenter flex flexCol justifyStart gapY={5}>
+          {link}
         </Div>
         <DefaultTransition
           show={!linkError}
           content={
-            <Div selfStart px10 py5 bgInfo bgOpacity50 rounded10 textWhite cursorPointer clx="hover:bg-info" onClick={handleClickLink}>
+            <Div selfCenter px10 py5 bgInfo bgOpacity50 rounded10 textWhite cursorPointer clx="hover:bg-info" onClick={handleClickLink}>
               {" "}
-              <ArrowRightIcon height={20} width={20} className="max-h-20 max-w-20" />
+              <ArrowRightIcon height={15} width={20} className="max-h-20 max-w-20" />
             </Div>
           }
         />
+      </Div>
+    )
+  );
+}
+
+function DiscordLink({ event }) {
+  const { link, linkError, handleClickLink } = useLink(event?.discord_link);
+  return (
+    link && (
+      <Div selfCenter flex flexRow gapX={20}>
+        <Div selfCenter fontSemibold>
+          본문 링크
+        </Div>
+        <Div selfCenter flex flexCol justifyStart gapY={5}>
+          {link}
+        </Div>
         <DefaultTransition
-          show={linkHasChanged && !linkError}
+          show={!linkError}
           content={
-            false ? (
-              <Div fontBold px10 cursorPointer py5 bgGray600 rounded10>
-                <Oval height="14" width="14" color="gray" secondaryColor="#FFFFFF" strokeWidth="5" />
-              </Div>
-            ) : (
-              <Tooltip title="링크 변경" arrow>
-                <Div
-                  fontBold
-                  px10
-                  cursorPointer
-                  py5
-                  bgGray400
-                  rounded10
-                  clx="hover:bg-gray-600 hover:text-white"
-                  onClick={linkHasChanged && !linkError && null}
-                >
-                  <CheckIcon height={20} width={20} className="max-h-20 max-w-20" />
-                </Div>
-              </Tooltip>
-            )
+            <Div selfCenter px10 py5 bgInfo bgOpacity50 rounded10 textWhite cursorPointer clx="hover:bg-info" onClick={handleClickLink}>
+              {" "}
+              <ArrowRightIcon height={15} width={20} className="max-h-20 max-w-20" />
+            </Div>
           }
         />
-      </>
+      </Div>
     )
   );
 }
@@ -522,9 +524,46 @@ function EventStatus({ event }) {
   };
   return (
     <>
+      {eventStatus?.category && <Theme status={eventStatus?.category} />}
       {eventStatus?.status && <Theme status={eventStatus?.status} />}
       {eventStatus?.expires && <Theme status={eventStatus?.expires} />}
     </>
+  );
+}
+
+function ChangeStatus({ event }) {
+  const eventId = event?.id;
+  const queryClient = useQueryClient();
+  const { mutate, isLoading } = setStatus(eventId, queryClient);
+  return (
+    <SelectEntry
+      firstText={"진행 중"}
+      secondText={"당첨 발표"}
+      thirdText={"마감"}
+      clickFirst={() => mutate(DrawEventStatus.IN_PROGRESS)}
+      clickSecond={() => mutate(DrawEventStatus.ANNOUNCED)}
+      clickThird={() => mutate(DrawEventStatus.FINISHED)}
+      isFirst={event?.status == DrawEventStatus.IN_PROGRESS}
+      isSecond={event?.status == DrawEventStatus.ANNOUNCED}
+      isThird={event?.status == DrawEventStatus.FINISHED}
+      enable={!isLoading}
+    />
+  );
+}
+
+function SelectEntry({ firstText, secondText, thirdText, clickFirst, clickSecond, clickThird, isFirst, isSecond, isThird, enable }) {
+  return (
+    <Div clx="bg-bw-light" cursorPointer={enable} rounded flex flexRow fontSize14 fontSemibold overflowHidden selfCenter>
+      <Div px10 py5 selfCenter bgBW={isFirst} textWhite={isFirst} onClick={enable && clickFirst} whitespaceNowrap>
+        {firstText}
+      </Div>
+      <Div px10 py5 selfCenter bgBW={isSecond} textWhite={isSecond} onClick={enable && clickSecond} whitespaceNowrap>
+        {secondText}
+      </Div>
+      <Div px10 py5 selfCenter bgBW={isThird} textWhite={isThird} onClick={enable && clickThird} whitespaceNowrap>
+        {thirdText}
+      </Div>
+    </Div>
   );
 }
 

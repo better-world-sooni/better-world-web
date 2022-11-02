@@ -152,7 +152,7 @@ function CollectionEntry({ collection }) {
   const { search_key } = useSelector((state: RootState) => ({
     search_key: state.admin.collectionsPage.search_key,
   }));
-  const HandleOpen = (open) => open || search_key != "";
+  const HandleOpen = (open) => open;
   return (
     <Disclosure as="div" className="w-full">
       {({ open }) => (

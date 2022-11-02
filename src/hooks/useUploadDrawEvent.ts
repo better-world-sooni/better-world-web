@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { uploadDrawEventQuery } from "./queries/admin/events";
 import useLink from "./useLink";
 import { useUploadImageUriKeys } from "./useUploadImageUriKey";
@@ -27,14 +27,19 @@ export default function useUploadDrawEvent({ queryClient, uploadSuccessCallback 
   const [loading, setLoading] = useState(false);
   const [type, setType] = useState(EventType.NOTICE);
   const [name, setName] = useState("");
-  const [discordLink, setDiscordLink] = useState("");
   const [description, setDescription] = useState("");
-  const [index, setIndex] = useState(0);
+  const index = useRef<number>(0);
   const getIndex = () => {
-    const nextIndex = index + 1;
-    setIndex((prev) => prev + 1);
+    const nextIndex = index.current;
+    index.current += 1;
     return nextIndex;
   };
+  const {
+    link: discordLink,
+    linkError: discordLinkError,
+    handleChangeLink: handleChangeDiscordLink,
+    handleClickLink: handleClickDiscordLink,
+  } = useLink("", true);
   const {
     link: applicationLink,
     linkError: applicationLinkError,
@@ -42,7 +47,8 @@ export default function useUploadDrawEvent({ queryClient, uploadSuccessCallback 
     handleClickLink: handleClickApplicationLink,
   } = useLink("");
   const [enableApplicationLink, setEnableApplicationLink] = useState(true);
-  const [expiresAt, setExpiresAt] = useState(null);
+  const [eanbleExpires, setEnableExpires] = useState(false);
+  const [expiresAt, setExpiresAt] = useState(new Date());
   const [applicationCategories, setApplicationCategories] = useState<EventApplicationCategory[]>([]);
   const [error, setError] = useState("");
   const selectCollection = (name, contractAddress, imageUri) => {
@@ -62,7 +68,8 @@ export default function useUploadDrawEvent({ queryClient, uploadSuccessCallback 
     !description ||
     (type == EventType.EVENT && enableApplicationLink && (applicationLinkError || applicationLink == "")) ||
     imageUrls.length == 0 ||
-    imageUrls.length > fileLimit
+    imageUrls.length > fileLimit ||
+    discordLinkError
   );
 
   const uploadDrawEvent = async () => {
@@ -83,6 +90,11 @@ export default function useUploadDrawEvent({ queryClient, uploadSuccessCallback 
     }
     if (type == EventType.EVENT && enableApplicationLink && (applicationLinkError || applicationLink == "")) {
       setError(applicationLinkError);
+      return;
+    }
+
+    if (discordLinkError) {
+      setError(discordLinkError);
       return;
     }
     if (imageUrls.length == 0) {
@@ -121,22 +133,22 @@ export default function useUploadDrawEvent({ queryClient, uploadSuccessCallback 
       name,
       description,
       images: keys,
-      expires_at: expiresAt,
+      expires_at: type == EventType.EVENT && eanbleExpires ? expiresAt : null,
       has_application: type == EventType.EVENT,
-      application_link: enableApplicationLink ? applicationLink : null,
-      discord_link: discordLink ? discordLink : null,
-      draw_event_options_attributes: !enableApplicationLink ? applicationOptions : [],
+      application_link: type == EventType.EVENT && enableApplicationLink ? applicationLink : null,
+      discord_link: discordLink != "" ? discordLink : null,
+      draw_event_options_attributes: type == EventType.EVENT && !enableApplicationLink ? applicationOptions : [],
     };
     mutate(body);
     setLoading(false);
     setError("");
   };
-  const handleDiscordLinkChange = ({ target: { value: text } }) => {
-    setDiscordLink(text);
-    setError("");
-  };
   const handleApplicationLinkChange = (value) => {
     handleChangeApplicationLink(value);
+    setError("");
+  };
+  const handleDiscordLinkChange = (value) => {
+    handleChangeDiscordLink(value);
     setError("");
   };
   const toggleEnableApplicationLink = () => {
@@ -187,6 +199,8 @@ export default function useUploadDrawEvent({ queryClient, uploadSuccessCallback 
     canUploadDrawEvent,
     discordLink,
     handleDiscordLinkChange,
+    handleClickDiscordLink,
+    discordLinkError,
     applicationCategories,
     handleAddApplicationCategory,
     handleRemoveApplicationCategory,
@@ -199,6 +213,8 @@ export default function useUploadDrawEvent({ queryClient, uploadSuccessCallback 
     handleClickApplicationLink,
     applicationLinkError,
     expiresAt,
+    eanbleExpires,
+    setEnableExpires,
     setExpiresAt,
     name,
     handleNameChange,

@@ -16,6 +16,10 @@ import { FaBars, FaDiscord, FaTwitter } from "react-icons/fa";
 import { AnimatePresence, motion } from "framer-motion";
 import { useQueryClient } from "react-query";
 import { Oval } from "react-loader-spinner";
+import DatePicker from "react-datepicker";
+import { ko } from "date-fns/locale";
+
+import "react-datepicker/dist/react-datepicker.css";
 
 export default function NewEventModal({}) {
   const { enabled } = useSelector((state: RootState) => ({
@@ -52,6 +56,8 @@ function EventDetails({ closeModal }) {
     toggleEnableApplicationLink,
     discordLink,
     handleDiscordLinkChange,
+    handleClickDiscordLink,
+    discordLinkError,
     applicationLink,
     handleApplicationLinkChange,
     handleClickApplicationLink,
@@ -68,6 +74,8 @@ function EventDetails({ closeModal }) {
     handleRemoveImage,
     fileLimit,
     uploadDrawEvent,
+    eanbleExpires,
+    setEnableExpires,
   } = useUploadDrawEvent({ queryClient, uploadSuccessCallback: closeModal });
   return (
     <Div zIndex={-1000} wFull hFull flex itemsCenter justifyCenter>
@@ -104,6 +112,20 @@ function EventDetails({ closeModal }) {
                 }
               />
             </Div>
+          </Div>
+          <Div wFull flex flexRow justifyStart>
+            <DiscordLink
+              discordLink={discordLink}
+              handleDiscordLinkChange={
+                !loading
+                  ? handleDiscordLinkChange
+                  : () => {
+                      return;
+                    }
+              }
+              handleClickDiscordLink={handleClickDiscordLink}
+              discordLinkError={discordLinkError}
+            />
           </Div>
           <Div gapY={10} overflowYScroll noScrollBar hFull>
             <Div wFull flex flexRow gapX={5} borderB1>
@@ -145,6 +167,8 @@ function EventDetails({ closeModal }) {
                   expiresAt={expiresAt}
                   setExpiresAt={setExpiresAt}
                   loading={loading}
+                  eanbleExpires={eanbleExpires}
+                  setEnableExpires={setEnableExpires}
                 />
               }
             />
@@ -221,11 +245,32 @@ function Options({
 
   expiresAt,
   setExpiresAt,
+  eanbleExpires,
+  setEnableExpires,
 
   loading,
 }) {
   return (
     <Div wFull flex flexCol justifyCenter mt20 gapY={20}>
+      <Div wFull flex flexRow justifyStart gapX={20}>
+        <SelectExpires enableExpires={eanbleExpires} toggleExpires={() => setEnableExpires((prev) => !prev)} loading={loading} />
+        {eanbleExpires && (
+          <Div selfCenter w300>
+            <DatePicker
+              className={"self-center h-full w-full focus:outline-none focus:border-gray-400 bg-transparent rounded-md border-none"}
+              selected={expiresAt}
+              onChange={!loading && ((date) => setExpiresAt(date))}
+              showTimeSelect
+              timeFormat="HH:mm"
+              timeIntervals={15}
+              locale={ko}
+              minDate={new Date()}
+              timeCaption="time"
+              dateFormat="yyyy/MM/dd aa h:mm "
+            />
+          </Div>
+        )}
+      </Div>
       <Div wFull flex flexRow justifyStart gapX={20}>
         <SelectApplication enableApplicationLink={enableApplicationLink} toggleEnableApplicationLink={toggleEnableApplicationLink} loading={loading} />
         {enableApplicationLink && (
@@ -290,6 +335,12 @@ function ModifyOption({ option, onClick, handleAddApplicationOption, handleRemov
     unmount: { opacity: 0, scale: 0.95 },
     transition: { duration: 0.2 },
   };
+  const onEnterOptions = (e) => {
+    if (e.key === "Enter" && optionInput != "") {
+      handleAddApplicationOption(optionInput);
+      handleChangeOptionInputText("");
+    }
+  };
   return (
     <motion.div initial={animation.unmount} animate={animation.mount} exit={animation.unmount} transition={animation.transition}>
       <Div relative>
@@ -338,21 +389,7 @@ function ModifyOption({ option, onClick, handleAddApplicationOption, handleRemov
           show={click && canClick}
           duration={0.2}
           content={
-            <Div
-              cursorPointer={!loading}
-              z100
-              bgGray200
-              overflowYScroll
-              noScrollBar
-              style={{ maxHeight: "500%" }}
-              minWFull
-              roundedB
-              px10
-              flex
-              flexCol
-              py5
-              gapY={3}
-            >
+            <Div cursorPointer={!loading} z100 bgGray200 absolute breakAll style={{ maxHeight: "500%" }} minWFull roundedB px10 flex flexCol py5 gapY={3}>
               {!loading && (
                 <Div wFull textLeft fontSize12 borderGray400 flex flexRow selfCenter gapY={2} gapX={5} justifyStart>
                   <Div wFull textLeft>
@@ -362,6 +399,7 @@ function ModifyOption({ option, onClick, handleAddApplicationOption, handleRemov
                       className={"self-center h-full w-full focus:outline-none focus:border-gray-400 bg-transparent rounded-md"}
                       style={{ boxShadow: "none", border: "none" }}
                       onChange={handleChangeOptionInput}
+                      onKeyPress={onEnterOptions}
                     ></input>
                   </Div>
                   <Div
@@ -382,32 +420,34 @@ function ModifyOption({ option, onClick, handleAddApplicationOption, handleRemov
                   </Div>
                 </Div>
               )}
-              {option?.options.map((value, index) => (
-                <Div
-                  key={`${value}-${index}`}
-                  relative
-                  textRight
-                  wFull
-                  fontSize12
-                  borderGray400
-                  borderB1={index != option?.options.length - 1}
-                  onClick={!loading && (() => handleRemoveApplicationOption(index))}
-                  flex
-                  flexRow
-                  selfCenter
-                  gapY={2}
-                  gapX={5}
-                >
-                  <Div wFull textLeft>
-                    {value}
-                  </Div>
-                  {!loading && (
-                    <Div selfCenter fontSize12 ml5 fontSemibold textRight>
-                      <MinusIcon height={12} width={12} className="max-h-12 max-w-12" />
+              <Div overflowYScroll noScrollBar>
+                {option?.options.map((value, index) => (
+                  <Div
+                    key={`${value}-${index}`}
+                    relative
+                    textRight
+                    wFull
+                    fontSize12
+                    borderGray400
+                    borderB1={index != option?.options.length - 1}
+                    onClick={!loading && (() => handleRemoveApplicationOption(index))}
+                    flex
+                    flexRow
+                    selfCenter
+                    gapY={2}
+                    gapX={5}
+                  >
+                    <Div wFull textLeft>
+                      {value}
                     </Div>
-                  )}
-                </Div>
-              ))}
+                    {!loading && (
+                      <Div selfCenter fontSize12 ml5 fontSemibold textRight>
+                        <MinusIcon height={12} width={12} className="max-h-12 max-w-12" />
+                      </Div>
+                    )}
+                  </Div>
+                ))}
+              </Div>
             </Div>
           }
         />
@@ -424,6 +464,18 @@ function AddOptions({ handleAddApplicationCategory }) {
   };
   const handleChangeSelect = ({ target: { value } }) => {
     handleChangeSelectText(value);
+  };
+  const onEnterCustomInput = (e) => {
+    if (e.key === "Enter" && cutomInput != "") {
+      handleChangeCustomInputText("");
+      handleAddApplicationCategory(cutomInput, EventApplicationInputType.CUSTOM_INPUT);
+    }
+  };
+  const onEnterCategories = (e) => {
+    if (e.key === "Enter" && select != "") {
+      handleChangeSelectText("");
+      handleAddApplicationCategory(select, EventApplicationInputType.SELECT);
+    }
   };
   return (
     <Div flex flexRow justifyStart gapX={10}>
@@ -465,6 +517,7 @@ function AddOptions({ handleAddApplicationCategory }) {
               className={"self-center h-full w-full focus:outline-none focus:border-gray-400 bg-transparent rounded-md"}
               style={{ boxShadow: "none", border: "none" }}
               onChange={handleChangeCustomInput}
+              onKeyPress={onEnterCustomInput}
             ></input>
           </Div>
           <Div
@@ -500,6 +553,7 @@ function AddOptions({ handleAddApplicationCategory }) {
               className={"self-center h-full w-full focus:outline-none focus:border-gray-400 bg-transparent rounded-md"}
               style={{ boxShadow: "none", border: "none" }}
               onChange={handleChangeSelect}
+              onKeyPress={onEnterCategories}
             ></input>
           </Div>
           <Div
@@ -560,6 +614,39 @@ function ApplicationLink({ applicationLink, handleApplicationLinkChange, handleC
   );
 }
 
+function DiscordLink({ discordLink, handleDiscordLinkChange, handleClickDiscordLink, discordLinkError }) {
+  return (
+    <Div selfCenter flex flexRow gapX={10}>
+      <Div mt5 fontSemibold>
+        본문 링크
+      </Div>
+      <Div flex flexCol justifyStart gapY={5}>
+        <Div px10 py5 bgWhite roundedLg textBlack w500>
+          <input
+            placeholder="https://..."
+            value={discordLink}
+            className={"self-center h-full w-full focus:outline-none focus:border-gray-400 bg-transparent rounded-md"}
+            style={{ boxShadow: "none", border: "none" }}
+            onChange={handleDiscordLinkChange}
+          ></input>
+        </Div>
+        <Div textLeft textDanger fontBold fontSize12 ml10 mb18={!discordLinkError}>
+          <DefaultTransition show={discordLinkError ? true : false} content={discordLinkError} />
+        </Div>
+      </Div>
+      <DefaultTransition
+        show={!discordLinkError}
+        content={
+          <Div selfStart px10 py5 bgInfo bgOpacity50 rounded10 textWhite cursorPointer clx="hover:bg-info" onClick={handleClickDiscordLink}>
+            {" "}
+            <ArrowRightIcon height={20} width={20} className="max-h-20 max-w-20" />
+          </Div>
+        }
+      />
+    </Div>
+  );
+}
+
 function Descriptions({ description, handleDescriptionChange }) {
   return (
     <>
@@ -610,6 +697,22 @@ function SelectApplication({ enableApplicationLink, toggleEnableApplicationLink,
         clickSecond={toggleEnableApplicationLink}
         isFirst={enableApplicationLink}
         isSecond={!enableApplicationLink}
+        enable={!loading}
+      />
+    </Div>
+  );
+}
+
+function SelectExpires({ enableExpires, toggleExpires, loading }) {
+  return (
+    <Div selfCenter>
+      <SelectEntry
+        firstText={"마감 기한 설정"}
+        secondText={"미설정"}
+        clickFirst={toggleExpires}
+        clickSecond={toggleExpires}
+        isFirst={enableExpires}
+        isSecond={!enableExpires}
         enable={!loading}
       />
     </Div>

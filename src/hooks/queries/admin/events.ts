@@ -88,3 +88,20 @@ export function DeleteEvent(event_id, queryClient: QueryClient) {
   });
   return { ...mutation, mutate: () => mutation?.mutate(body) };
 }
+
+export function setStatus(eventId, queryClient: QueryClient) {
+  const body = (status) => {
+    return {
+      event_id: eventId,
+      status: status,
+    };
+  };
+  const mutation = queryHelperMutationWithToken({
+    url: apis.admin.events._(),
+    method: "PUT",
+    options: {
+      onSuccess: () => queryClient.invalidateQueries(querykeys.admin.events._()),
+    },
+  });
+  return { ...mutation, mutate: (status) => mutation?.mutate(body(status)) };
+}
