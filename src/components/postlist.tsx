@@ -21,8 +21,9 @@ import DataEntry, { DataEntryWithoutMargin } from "./common/DataEntry";
 import { createdAtText, getDate } from "src/modules/timeHelper";
 import { ImageSlide, ProfileImage } from "./common/ImageHelper";
 import { ReactMarkdown } from "react-markdown/lib/react-markdown";
-import ModifiledTruncatedMarkdown from "./common/ModifiedTruncatedMarkdown";
+import { ModifiledTruncatedMarkdown } from "./common/ModifiedTruncatedMarkdown";
 import { MakeCommentModal, MakePostModal } from "./modals/CheckModal";
+import remarkGfm from "remark-gfm";
 
 export default function PostList({ post_list, showEntry = false, maxCommentLength = 2, DeletePostAction = null, DeleteCommentAction = null }) {
   const postModal = (comment_id) => MakePostModal(() => DeletePostAction(comment_id));
@@ -182,7 +183,7 @@ function TruncatedText({ text, maxLength }) {
     <Div textBase>
       {full ? (
         <Div breakAll>
-          <ReactMarkdown children={text}></ReactMarkdown>
+          <ReactMarkdown remarkPlugins={[remarkGfm]} children={text} />
           <Div onClick={() => setfull(false)} cursorPointer fontBold>
             간략히
           </Div>

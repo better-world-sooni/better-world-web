@@ -1,11 +1,11 @@
 import Div from "src/components/Div";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import React from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "src/store/reducers/rootReducer";
-import { Disclosure, Transition, Switch } from "@headlessui/react";
+import { Disclosure } from "@headlessui/react";
 import { Oval } from "react-loader-spinner";
-import { ChevronUpIcon, RefreshIcon, UserCircleIcon, StarIcon, ChevronLeftIcon, ChevronRightIcon, CheckIcon } from "@heroicons/react/outline";
+import { ChevronUpIcon, RefreshIcon, UserCircleIcon, StarIcon, CheckIcon } from "@heroicons/react/outline";
 import Pagination from "@mui/material/Pagination";
 import { useDispatch } from "react-redux";
 import { collectionsAction } from "src/store/reducers/adminReducer";
@@ -19,17 +19,12 @@ import SearchBar from "src/hooks/SearchBar";
 import { cancelCollectionsListQuery, getCollectionsListQuery, patchImageInfo } from "src/hooks/queries/admin/collections";
 import DefaultTransition from "../common/defaulttransition";
 import { motion } from "framer-motion";
-import useName, { useSymbol } from "src/hooks/useName";
+import useName from "src/hooks/useName";
 import EmptyBlock from "../EmptyBlock";
 import useStory from "src/hooks/useStory";
 import ReactTextareaAutosize from "react-textarea-autosize";
-import useUploadImageUriKey from "src/hooks/useUploadImageUriKey";
-import Spinner from "../common/Spinner";
-import { COLORS } from "src/modules/constants";
-import { createPresignedUrl, fileChecksum, uploadToPresignedUrl } from "src/modules/fileHelper";
-import { Slide } from "react-slideshow-image";
-import { apiHelperWithToken } from "src/modules/apiHelper";
-import apis from "src/modules/apis";
+import { useUploadImageUriKey } from "src/hooks/useUploadImageUriKey";
+import { debounce } from "lodash";
 
 function CollectionsScreen() {
   const { page_size, offset, search_key } = useSelector((state: RootState) => ({
@@ -37,6 +32,7 @@ function CollectionsScreen() {
     offset: state.admin.collectionsPage.offset,
     search_key: state.admin.collectionsPage.search_key,
   }));
+  const [searchKey, setSearchKey] = useState(search_key);
   const {
     isLoading: loading,
     isFetching: fetching,
@@ -58,8 +54,15 @@ function CollectionsScreen() {
   const handlePaginationPageSizeChange = (page_size_input) => {
     if (page_size != page_size_input) refetchCollectionsList(page_size_input, 0, search_key);
   };
+  const debounceRefetchCollectionsList = useCallback(
+    debounce((searchKey) => {
+      refetchCollectionsList(page_size, 0, searchKey);
+    }, 500),
+    [page_size]
+  );
   const handleSearchBarChange = (search_key_input) => {
-    refetchCollectionsList(page_size, 0, search_key_input);
+    setSearchKey(search_key_input);
+    debounceRefetchCollectionsList(search_key_input);
   };
 
   return (
@@ -71,7 +74,7 @@ function CollectionsScreen() {
           </Div>
           <Div selfCenter>개씩 보기</Div>
           <Div selfCenter ml10>
-            <SearchBar w={300} placeholder={"Collections을 검색해보세요(이름/설명)"} initialText={search_key} handleSearch={handleSearchBarChange} />
+            <SearchBar w={300} placeholder={"Collections을 검색해보세요(이름/설명/심볼)"} initialText={searchKey} handleSearch={handleSearchBarChange} />
           </Div>
         </Div>
         <Div selfCenter flex flexRow>
@@ -140,7 +143,7 @@ function CollectionsArray({ collections }) {
     </Div>
   ) : (
     <Div mb100 wFull bgWhite bgOpacity90>
-      <Div textCenter>Event가 존재하지 않습니다.</Div>
+      <Div textCenter>Collection이 존재하지 않습니다.</Div>
     </Div>
   );
 }
@@ -149,7 +152,7 @@ function CollectionEntry({ collection }) {
   const { search_key } = useSelector((state: RootState) => ({
     search_key: state.admin.collectionsPage.search_key,
   }));
-  const HandleOpen = (open) => open || search_key != "";
+  const HandleOpen = (open) => open;
   return (
     <Disclosure as="div" className="w-full">
       {({ open }) => (
@@ -159,7 +162,7 @@ function CollectionEntry({ collection }) {
               <Div wFull flex flexRow justifyCenter selfCenter>
                 <Div wFull flex flexRow justifyStart gapX={20}>
                   <Div selfCenter>
-                    <ProfileImage width={40} height={40} nft={collection} rounded={true} />
+                    <ProfileImage width={40} height={40} nft={collection} rounded={true} resize={true} />
                   </Div>
                   <Div flex flexCol justifyStart selfCenter wFull>
                     <Div fontSize18 fontBold wFull overflowEllipsis overflowHidden whitespaceNowrap textLeft>
@@ -211,7 +214,6 @@ function CollectionEntry({ collection }) {
 function CollectionsDetails({ collection }) {
   const { name, nameHasChanged, nameError, handleChangeName } = useName(collection?.name, 10, 40);
   const { story, storyHasChanged, storyError, handleChangeStory } = useStory(collection?.about);
-  console.log(story);
   const { image, uploading, handleAddImage, getImageUriKey, reLoadImage, imageHasChanged } = useUploadImageUriKey({
     uri: collection?.image_uri,
     attachedRecord: "nft_collection",
@@ -230,15 +232,19 @@ function CollectionsDetails({ collection }) {
   const queryClient = useQueryClient();
   const { isLoading, mutate } = patchImageInfo(collection, queryClient);
   const updateCollections = async () => {
-    const imageUriKey = imageHasChanged ? await getImageUriKey() : null;
-    const backgroundImageUriKey = backgroundImageHasChanged ? await getBackgroundImageUriKey() : null;
-    const body = {
-      imageUriKey,
-      backgroundImageUriKey,
-      name: nameHasChanged ? name : null,
-      story: storyHasChanged ? story : null,
-    };
-    mutate(body);
+    try {
+      const imageUriKey = imageHasChanged ? await getImageUriKey() : null;
+      const backgroundImageUriKey = backgroundImageHasChanged ? await getBackgroundImageUriKey() : null;
+      const body = {
+        imageUriKey,
+        backgroundImageUriKey,
+        name: nameHasChanged ? name : null,
+        story: storyHasChanged ? story : null,
+      };
+      mutate(body);
+    } catch (e) {
+      return;
+    }
   };
   const isSave = (backgroundImageHasChanged || imageHasChanged || nameHasChanged || storyHasChanged) && !nameError && !storyError;
   const loading = isLoading || backgroundImageUploading || uploading;

@@ -34,7 +34,7 @@ export default function useFileUpload({ attachedRecord }) {
     if (res.status == 200) return res.url;
     return "";
   };
-  const uploadFile = async (file, returnType = FileUploadReturnType.Key) => {
+  const uploadFile = async (file: File, returnType = FileUploadReturnType.Key) => {
     let blob = null;
     const checksum = await fileChecksum(file);
     const data = await createPresignedUrl(file.name, file.type, file.size, checksum, attachedRecord);

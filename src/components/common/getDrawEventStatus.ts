@@ -10,8 +10,9 @@ export default function getDrawEventStatus(event) {
       string: "불러오는중",
       color: { bgWhite: true },
     };
-  const status =
-    event.status == DrawEventStatus.ANNOUNCED
+
+  const category =
+    event.has_application == false
       ? {
           string: "공지",
           color: { bgBlack: true, textWhite: true },
@@ -20,19 +21,35 @@ export default function getDrawEventStatus(event) {
           string: "이벤트",
           color: { bgBW: true, textWhite: true },
         };
+
+  const status =
+    event.has_application == true
+      ? event?.status == DrawEventStatus.IN_PROGRESS
+        ? {
+            string: "진행 중",
+            color: { bgGray600: true, textWhite: true, w80: true },
+          }
+        : event?.status == DrawEventStatus.ANNOUNCED
+        ? {
+            string: "당첨 발표",
+            color: { bgInfo: true, textWhite: true, w80: true },
+          }
+        : {
+            string: "마감",
+            color: { bgDanger: true, textWhite: true },
+          }
+      : null;
+
   const expires =
-    event.status == DrawEventStatus.ANNOUNCED
-      ? null
-      : event.status == DrawEventStatus.FINISHED || (event.expires_at && new Date(event.expires_at) < new Date())
+    event.has_application == true && event?.status == DrawEventStatus.IN_PROGRESS && event.expires_at && new Date(event.expires_at) < new Date()
       ? {
-          string: "마감",
-          color: { bgDanger: true, textWhite: true },
+          string: "기한 지남",
+          color: { bgWarning: true, textWhite: true, w80: true },
         }
-      : {
-          string: "진행 중",
-          color: { bgGray600: true, textWhite: true },
-        };
+      : null;
   return {
+    category: category,
+
     status: status,
 
     expires: expires,

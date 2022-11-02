@@ -99,11 +99,13 @@ const apis = {
       setPrivilege: (address, superPrivilege) => apiV1(`/admin/user/super_privilege${urlParams({ address, superPrivilege })}`),
     },
     events: {
-      list: (page_size, offset, search_key) => apiV1(`/admin/event/list${urlParams({ page_size, offset, search_key })}`),
+      list: (page_size, offset, search_key) => apiV1(`/admin/draw_event/list${urlParams({ page_size, offset, search_key })}`),
+      _: () => apiV1(`/admin/draw_event`),
     },
     collections: {
       list: (page_size, offset, search_key) => apiV1(`/admin/nft_collection/list${urlParams({ page_size, offset, search_key })}`),
       _: () => apiV1(`/admin/nft_collection`),
+      all: () => apiV1(`/admin/nft_collection/all`),
     },
     post: {
       list: (contract_address, token_id, page_size, offset, search_key) =>
