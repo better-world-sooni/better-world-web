@@ -15,6 +15,7 @@ import EventScreen from "src/components/admin/event";
 import { InitialgetAllCollectionsQuery, InitialgetEventsQuery } from "src/hooks/queries/admin/events";
 import { InitialgetCollectionsQuery } from "src/hooks/queries/admin/collections";
 import CollectionsScreen from "src/components/admin/collections";
+import { InitialgetDashboardQuery } from "src/hooks/queries/admin/dashboard";
 
 function Admin({ currentUser, currentNft }) {
   const dispatch = useDispatch();
@@ -44,6 +45,7 @@ Admin.getInitialProps = async (ctx: NextPageContext, queryClient) => {
   await InitialgetAllCollectionsQuery(queryClient, ctx);
   await InitialgetEventsQuery(queryClient, ctx);
   await InitialgetCollectionsQuery(queryClient, ctx);
+  await InitialgetDashboardQuery(queryClient, ctx);
   return { dehydratedState: dehydrate(queryClient) };
 };
 
