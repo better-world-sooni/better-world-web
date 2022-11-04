@@ -3,7 +3,7 @@ import { useState } from "react";
 import Div from "src/components/Div";
 import { IMAGES } from "src/modules/images";
 import { IphoneBlackContent } from "./iphone";
-import { DraftCenterAnchor, factorToPercent, factorTovw, iPhoneHeight, iPhoneWidth } from "./drafts";
+import { ContentImage, DraftCenterAnchor, factorToPercent, factorTovw, iPhoneHeight, iPhoneWidth } from "./drafts";
 
 function Drafts({ time, mountmargin, hoverscale, animate_time, once, textprops, margin }) {
   const [isHovered1, setHovered1] = useState(false);
@@ -258,37 +258,6 @@ function Drafts({ time, mountmargin, hoverscale, animate_time, once, textprops, 
     </Div>
   );
 }
-
-const ContentImage = ({ animate = null, transition = null, scrollProgress = null, src }) => {
-  return scrollProgress ? (
-    <motion.div
-      style={{
-        position: "absolute",
-        height: "100%",
-        width: "100%",
-        backgroundImage: `url(${src})`,
-        backgroundSize: "cover",
-        backgroundPositionX: "center",
-        backgroundPositionY: scrollProgress,
-      }}
-    />
-  ) : animate && transition ? (
-    <motion.div
-      animate={animate}
-      transition={transition}
-      style={{
-        position: "absolute",
-        height: "100%",
-        width: "100%",
-        backgroundImage: `url(${src})`,
-        backgroundSize: "cover",
-        backgroundPositionX: "center",
-      }}
-    />
-  ) : (
-    <Div absolute wFull imgTag src={src} />
-  );
-};
 
 export default function CommunityFeedDraft({ time, textprops, mountmargin, hoverscale, animate_time, once, margin }) {
   return (

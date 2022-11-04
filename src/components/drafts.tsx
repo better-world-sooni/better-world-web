@@ -1,10 +1,10 @@
 import Div from "src/components/Div";
 import { motion } from "framer-motion";
 import CommunityFeedDraft from "./communityfeeddraft";
-import CommunityWalletDraft from "./communitywalletdraft";
 import HolderVerificationDraft from "./holderverificationdraft";
 import { Iphone, iphoneSize } from "./iphone";
-import InboxDraft from "./inbox";
+import AggregatorDraft from "./aggregatorDraft";
+import DonationDraft from "./\bdonationDraft";
 
 const time = 0.5;
 const animate_time = time * 3;
@@ -38,7 +38,7 @@ export default function Drafts({ minW = 0 }) {
   return (
     <Div flex flexCol {...minWProps}>
       <Div selfCenter wFull>
-        <InboxDraft
+        <AggregatorDraft
           margin={margin}
           time={time}
           mountmargin={mountmargin}
@@ -56,6 +56,15 @@ export default function Drafts({ minW = 0 }) {
           animate_time={animate_time}
           once={once}
         />
+        <DonationDraft
+          margin={margin}
+          time={time}
+          mountmargin={mountmargin}
+          textprops={textprops}
+          hoverscale={hoverscale}
+          animate_time={animate_time}
+          once={once}
+        />
         <HolderVerificationDraft
           margin={margin}
           time={time}
@@ -65,7 +74,6 @@ export default function Drafts({ minW = 0 }) {
           animate_time={animate_time}
           once={once}
         />
-        {/* <CommunityWalletDraft margin={margin} time={time} mountmargin={mountmargin} textprops={textprops} hoverscale={hoverscale} animate_time={animate_time} once={once}/> */}
       </Div>
     </Div>
   );
@@ -93,3 +101,46 @@ export function DraftCenterAnchor({ draft, onMouseEnter, onMouseLeave, content }
     </Div>
   );
 }
+
+export const ContentImage = ({ animate = null, transition = null, scrollProgress = null, src }) => {
+  return scrollProgress ? (
+    <motion.div
+      style={{
+        position: "absolute",
+        height: "100%",
+        width: "100%",
+        backgroundImage: `url(${src})`,
+        backgroundSize: "cover",
+        backgroundPositionX: "center",
+        backgroundPositionY: scrollProgress,
+      }}
+    />
+  ) : animate && transition ? (
+    <motion.div
+      animate={animate}
+      transition={transition}
+      style={{
+        position: "absolute",
+        height: "100%",
+        width: "100%",
+        backgroundImage: `url(${src})`,
+        backgroundSize: "cover",
+        backgroundPositionX: "center",
+      }}
+    />
+  ) : (
+    <Div
+      absolute
+      wFull
+      hFull
+      style={{
+        position: "absolute",
+        height: "100%",
+        width: "100%",
+        backgroundImage: `url(${src})`,
+        backgroundSize: "cover",
+        backgroundPositionX: "center",
+      }}
+    />
+  );
+};

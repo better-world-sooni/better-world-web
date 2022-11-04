@@ -126,7 +126,6 @@ function ProfileDropdown({ currentNft, currentUser }) {
   const gotoAdmin = () => {
     href(urls.admin.index());
   };
-  console.log(currentUser?.super_privilege);
   return (
     <Menu as="div">
       <Menu.Button>

@@ -2,120 +2,135 @@
 @tailwind components;
 @tailwind utilities;
 @import "react-slideshow-image/dist/styles.css";
-@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;400;500;700;900&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;400;500;700;900&display=swap");
 @font-face {
   font-family: "MOONGET";
-  src: local("MOONGET"),
-    url("/fonts/MOONGET.ttf") format("truetype");
+  src: local("MOONGET"), url("/fonts/MOONGET.ttf") format("truetype");
   font-weight: normal;
-  unicode-range:U+0041-005A,
-  U+0061-007A,
-  U+0030-0039;
+  unicode-range: U+0041-005A, U+0061-007A, U+0030-0039;
 }
-  @font-face {
-    font-family: "Uni Sans";
-    src: local("Uni Sans"),
-      url("/fonts/Uni Sans Thin.otf") format("opentype");
-    font-weight: 200;
-    unicode-range: U+0041-005A, U+0061-007A, U+0030-0039;
-  }
+@font-face {
+  font-family: "Uni Sans";
+  src: local("Uni Sans"), url("/fonts/Uni Sans Thin.otf") format("opentype");
+  font-weight: 200;
+  unicode-range: U+0041-005A, U+0061-007A, U+0030-0039;
+}
 
-  @font-face {
-    font-family: "Uni Sans";
-    src: local("Uni Sans"),
-      url("/fonts/Uni San Light.otf") format("opentype");
-    font-weight: 300;
-    unicode-range: U+0041-005A, U+0061-007A, U+0030-0039;
-  }
+@font-face {
+  font-family: "Uni Sans";
+  src: local("Uni Sans"), url("/fonts/Uni San Light.otf") format("opentype");
+  font-weight: 300;
+  unicode-range: U+0041-005A, U+0061-007A, U+0030-0039;
+}
 
-  @font-face {
-    font-family: "Uni Sans";
-    src: local("Uni Sans"),
-      url("/fonts/Uni Sans Regular.otf") format("opentype");
-    font-weight: 400;
-    unicode-range: U+0041-005A, U+0061-007A, U+0030-0039;
-  }
+@font-face {
+  font-family: "Uni Sans";
+  src: local("Uni Sans"), url("/fonts/Uni Sans Regular.otf") format("opentype");
+  font-weight: 400;
+  unicode-range: U+0041-005A, U+0061-007A, U+0030-0039;
+}
 
-  @font-face {
-    font-family: "Uni Sans";
-    src: local("Uni Sans"),
-      url("/fonts/UniSans/Uni Sans SemiBold.otf") format("opentype");
-    font-weight: 500;
-    unicode-range: U+0041-005A, U+0061-007A, U+0030-0039;
-  }
+@font-face {
+  font-family: "Uni Sans";
+  src: local("Uni Sans"), url("/fonts/UniSans/Uni Sans SemiBold.otf") format("opentype");
+  font-weight: 500;
+  unicode-range: U+0041-005A, U+0061-007A, U+0030-0039;
+}
 
-  @font-face {
-    font-family: "Uni Sans";
-    src: local("Uni Sans"),
-      url("/fonts/Uni Sans Bold.otf") format("opentype");
-    font-weight: 600;
-    unicode-range: U+0041-005A, U+0061-007A, U+0030-0039;
-  }
+@font-face {
+  font-family: "Uni Sans";
+  src: local("Uni Sans"), url("/fonts/Uni Sans Bold.otf") format("opentype");
+  font-weight: 600;
+  unicode-range: U+0041-005A, U+0061-007A, U+0030-0039;
+}
 
-  @font-face {
-    font-family: "Uni Sans";
-    src: local("Uni Sans"),
-      url("/fonts/UniSans/Uni Sans Heavy.otf") format("opentype");
-    font-weight: 700;
-    unicode-range: U+0041-005A, U+0061-007A, U+0030-0039;
-  }
+@font-face {
+  font-family: "Uni Sans";
+  src: local("Uni Sans"), url("/fonts/UniSans/Uni Sans Heavy.otf") format("opentype");
+  font-weight: 700;
+  unicode-range: U+0041-005A, U+0061-007A, U+0030-0039;
+}
 
 @layer base {
-    body {
-      font-family: Noto Sans,
-      sans-serif !important;
-    }
-
-    @font-face {
-      * {
-        font-family: 'Noto Sans';
-        font-weight: 400;
-        font-style: normal;  } }
-    
-    @font-face {
-      * {
-        font-family: 'Noto Sans';
-        font-weight: 500;
-        font-style: normal;  } }
-    
-    @font-face {
-      * {
-        font-family: 'Noto Sans';
-        font-weight: 600;
-        font-style: normal;  } }
-    
-    }
-  html {
-    overflow: hidden;
-    height: 100%;
-  }
-  
   body {
-    height: 100%;
-    overflow: auto;
-    word-break: keep-all;
-    overflow-x: hidden
+    font-family: Noto Sans, sans-serif !important;
   }
-  path {
-    stroke-width: 2;
+
+  @font-face {
+    * {
+      font-family: "Noto Sans";
+      font-weight: 400;
+      font-style: normal;
+    }
   }
-  .file-input input[type=file] {
-    left: 0;
-    top: 0;
-    opacity: 0;
-    width: 100%;
-    height: 100%;
-    position: absolute;
+
+  @font-face {
+    * {
+      font-family: "Noto Sans";
+      font-weight: 500;
+      font-style: normal;
+    }
   }
-  .slideshow-indicator-custom:before {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 7px;
-    height: 7px;
-    border-radius: 50%;
-    content: '';
-    background: #000;
-    text-align: center
+
+  @font-face {
+    * {
+      font-family: "Noto Sans";
+      font-weight: 600;
+      font-style: normal;
+    }
   }
-  
+}
+html {
+  overflow: hidden;
+  height: 100%;
+}
+
+body {
+  height: 100%;
+  overflow: auto;
+  word-break: keep-all;
+  overflow-x: hidden;
+}
+path {
+  stroke-width: 2;
+}
+.file-input input[type="file"] {
+  left: 0;
+  top: 0;
+  opacity: 0;
+  width: 100%;
+  height: 100%;
+  position: absolute;
+}
+.slideshow-indicator-custom:before {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  content: "";
+  background: #000;
+  text-align: center;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: "none";
+  width: 0 !important;
+}
+
+.no-scrollbar {
+  overflow: "-moz-hidden-unscrollable-none";
+  -ms-overflow-style: "none";
+}
+
+textarea::-webkit-scrollbar {
+  width: 7px;
+  border-radius: 10px;
+  background-color: #f5f5f5;
+}
+
+textarea::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.1);
+  background-color: #00ff6d;
+}
