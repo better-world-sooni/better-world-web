@@ -25,6 +25,11 @@ const initialState = {
     offset: 0,
     search_key: "",
   },
+  eventApplicationPage: {
+    page_size: defaultPageSize,
+    offset: 0,
+    eventId: -1,
+  },
 };
 
 // action type
@@ -33,6 +38,7 @@ export const USERLISTPAGE = "admin/USERLISTPAGE" as const;
 export const USERLISTPOST = "admin/USERLISTPOST" as const;
 export const EVENTLISTPAGE = "admin/EVENTLISTPAGE" as const;
 export const COLLECTIONSPAGE = "admin/COLLECTIONSPAGE" as const;
+export const EVENT_APPLICATION_PAGE = "admin/EVENT_APPLICATION_PAGE" as const;
 
 // action function
 export const currentNftAction = ({ currentNft, currentUser }) => ({ type: CURRENT_NFT, currentNft, currentUser });
@@ -40,6 +46,7 @@ export const UserListAction = ({ page_size, offset, search_key }) => ({ type: US
 export const UserListPostAction = ({ page_size, offset, search_key }) => ({ type: USERLISTPOST, page_size, offset, search_key });
 export const EventListAction = ({ page_size, offset, search_key }) => ({ type: EVENTLISTPAGE, page_size, offset, search_key });
 export const collectionsAction = ({ page_size, offset, search_key }) => ({ type: COLLECTIONSPAGE, page_size, offset, search_key });
+export const eventApplicationAction = ({ page_size, offset, eventId }) => ({ type: EVENT_APPLICATION_PAGE, page_size, offset, eventId });
 
 const f = (action, func) => func(action);
 
@@ -96,6 +103,17 @@ export const adminReducer = (state = initialState, action) => {
             page_size,
             offset,
             search_key,
+          },
+        };
+      });
+    case EVENT_APPLICATION_PAGE:
+      return f(action, ({ page_size, offset, eventId }) => {
+        return {
+          ...state,
+          eventApplicationPage: {
+            page_size,
+            offset,
+            eventId,
           },
         };
       });

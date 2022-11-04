@@ -254,22 +254,25 @@ function Options({
     <Div wFull flex flexCol justifyCenter mt20 gapY={20}>
       <Div wFull flex flexRow justifyStart gapX={20}>
         <SelectExpires enableExpires={eanbleExpires} toggleExpires={() => setEnableExpires((prev) => !prev)} loading={loading} />
-        {eanbleExpires && (
-          <Div selfCenter w300>
-            <DatePicker
-              className={"self-center h-full w-full focus:outline-none focus:border-gray-400 bg-transparent rounded-md border-none"}
-              selected={expiresAt}
-              onChange={!loading && ((date) => setExpiresAt(date))}
-              showTimeSelect
-              timeFormat="HH:mm"
-              timeIntervals={15}
-              locale={ko}
-              minDate={new Date()}
-              timeCaption="time"
-              dateFormat="yyyy/MM/dd aa h:mm "
-            />
-          </Div>
-        )}
+        <DefaultTransition
+          show={eanbleExpires}
+          content={
+            <Div mt3 selfCenter w200>
+              <DatePicker
+                className={"self-center h-full w-full focus:outline-none focus:border-gray-400 bg-transparent rounded-md border-none"}
+                selected={expiresAt}
+                onChange={!loading && ((date) => setExpiresAt(date))}
+                showTimeSelect
+                timeFormat="HH:mm"
+                timeIntervals={15}
+                locale={ko}
+                minDate={new Date()}
+                timeCaption="time"
+                dateFormat="yyyy/MM/dd H:mm"
+              />
+            </Div>
+          }
+        />
       </Div>
       <Div wFull flex flexRow justifyStart gapX={20}>
         <SelectApplication enableApplicationLink={enableApplicationLink} toggleEnableApplicationLink={toggleEnableApplicationLink} loading={loading} />
@@ -705,7 +708,7 @@ function SelectApplication({ enableApplicationLink, toggleEnableApplicationLink,
 
 function SelectExpires({ enableExpires, toggleExpires, loading }) {
   return (
-    <Div selfCenter>
+    <Div selfCenter mt5 mb5>
       <SelectEntry
         firstText={"마감 기한 설정"}
         secondText={"미설정"}
@@ -762,6 +765,7 @@ function SelectCollection({ collection, selectCollection, loading }) {
   };
   const handleChangeSearchKey = ({ target: { value } }) => {
     !isError &&
+      value != null &&
       setcollectionList(
         collectionList?.collections.filter(
           (collection) =>
@@ -772,7 +776,12 @@ function SelectCollection({ collection, selectCollection, loading }) {
       );
     setSearchKey(value);
   };
-
+  const collectionListShowed =
+    searchKey == ""
+      ? collectionListFiltered && collectionListFiltered.length == 0 && collectionList?.collections && collectionList?.collections.length != 0
+        ? collectionList?.collections
+        : collectionListFiltered
+      : collectionListFiltered;
   return (
     <Div relative>
       <Div
@@ -837,16 +846,16 @@ function SelectCollection({ collection, selectCollection, loading }) {
                   ></input>
                 </Div>
                 <Div px20 flex flexCol overflowYScroll noScrollBar>
-                  {collectionListFiltered &&
-                    collectionListFiltered.length != 0 &&
-                    collectionListFiltered.map((value, index) => (
+                  {collectionListShowed &&
+                    collectionListShowed.length != 0 &&
+                    collectionListShowed.map((value, index) => (
                       <Div
                         key={index}
                         flex
                         flexRow
                         justifyStart
                         borderGray200
-                        borderB1={index != collectionListFiltered.length - 1}
+                        borderB1={index != collectionListShowed.length - 1}
                         gapX={20}
                         py2
                         onClick={() => clickCollection(value?.name, value?.contract_address, value?.image_uri)}

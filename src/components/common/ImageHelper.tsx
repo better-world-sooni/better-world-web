@@ -329,17 +329,18 @@ export function GetImage({ maxHeight, maxWidth, uri, click = false }) {
   return !Load ? (
     <Skeleton variant="rectangular" width={maxWidth} height={maxHeight} animation="wave" sx={{ bgcolor: "grey.200" }} />
   ) : (
-    <Div>
-      {width > height ? (
-        <Div w={maxWidth} flex flexRow>
-          {click ? <Div selfCenter src={img.src} imgTag wFull cursorPointer onClick={handleClick}></Div> : <Div selfCenter src={img.src} imgTag wFull></Div>}
-        </Div>
-      ) : (
-        <Div w={maxWidth} h={maxHeight} flex flexCol>
-          {click ? <Div selfCenter src={img.src} imgTag hFull cursorPointer onClick={handleClick}></Div> : <Div selfCenter src={img.src} imgTag hFull></Div>}
-        </Div>
-      )}
-    </Div>
+    <Div
+      w={maxWidth}
+      h={maxHeight}
+      style={{
+        backgroundImage: `url(${img.src})`,
+        backgroundSize: "contain",
+        backgroundRepeat: "no-repeat",
+        backgroundPositionX: "center",
+        backgroundPositionY: "center",
+      }}
+      onClick={click && handleClick}
+    />
   );
 }
 

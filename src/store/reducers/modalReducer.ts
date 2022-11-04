@@ -29,6 +29,9 @@ const initialState = {
   newEventModal: {
     enabled: false,
   },
+  eventApplicationModal: {
+    enabled: false,
+  },
 };
 
 // action type
@@ -40,6 +43,7 @@ export const SWITCH_ACCOUNT_MODAL = "modal/SWITCH_ACCOUNT_MODAL" as const;
 export const LOGIN_QR_MODAL = "modal/LOGIN_QR_MODAL" as const;
 export const USERPOST_MODAL = "modal/USERPOST_MODAL" as const;
 export const NEWEVENT_MODAL = "modal/NEWEVENT_MODAL" as const;
+export const EVENT_APPLICATION_MODAL = "modal/EVENT_APPLICATION_MODAL" as const;
 
 // action function
 export const confettiAction = ({ enabled }) => ({ type: CONFETTI, enabled });
@@ -50,6 +54,7 @@ export const loginQRModalAction = ({ enabled }) => ({ type: LOGIN_QR_MODAL, enab
 export const switchAccountModalAction = ({ enabled, currentNft, currentUser }) => ({ type: SWITCH_ACCOUNT_MODAL, enabled, currentNft, currentUser });
 export const UserPosttModalAction = ({ enabled, contract_address, token_id }) => ({ type: USERPOST_MODAL, enabled, contract_address, token_id });
 export const newEventModalAction = ({ enabled }) => ({ type: NEWEVENT_MODAL, enabled });
+export const eventApplicationModalAction = ({ enabled }) => ({ type: EVENT_APPLICATION_MODAL, enabled });
 
 const f = (action, func) => func(action);
 
@@ -129,6 +134,15 @@ export const modalReducer = (state = initialState, action) => {
         return {
           ...state,
           newEventModal: {
+            enabled,
+          },
+        };
+      });
+    case EVENT_APPLICATION_MODAL:
+      return f(action, ({ enabled }) => {
+        return {
+          ...state,
+          eventApplicationModal: {
             enabled,
           },
         };

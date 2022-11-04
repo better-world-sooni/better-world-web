@@ -28,7 +28,7 @@ import PaginationPageSizebox from "../common/paginationpagesizebox";
 import DataEntry from "../common/DataEntry";
 import { ImageSlide, ProfileImage } from "../common/ImageHelper";
 import SearchBar from "src/hooks/SearchBar";
-import { cancelEventListQuery, getEventListQuery, setStatus } from "src/hooks/queries/admin/events";
+import { cancelEventListQuery, getEventListQuery, setDrawEventStatus } from "src/hooks/queries/admin/events";
 import getDrawEventStatus, { DrawEventStatus } from "../common/getDrawEventStatus";
 import { motion } from "framer-motion";
 import TruncatedText from "../common/ModifiedTruncatedMarkdown";
@@ -40,6 +40,7 @@ import NewEventModal from "./NewEventModal";
 import { newEventModalAction } from "src/store/reducers/modalReducer";
 import { EventApplicationInputType } from "src/hooks/useUploadDrawEvent";
 import { DeleteEventModal } from "../modals/CheckModal";
+import EventApplicationModal, { useOpenEventApplicationModal } from "./EventApplications";
 
 function EventScreen() {
   const { page_size, offset, search_key } = useSelector((state: RootState) => ({
@@ -152,6 +153,7 @@ function EventScreen() {
           ))}
       </Div>
       <NewEventModal />
+      <EventApplicationModal />
     </>
   );
 }
@@ -173,9 +175,6 @@ function EventArray({ events }) {
 }
 
 function EventEntry({ event }) {
-  const { search_key } = useSelector((state: RootState) => ({
-    search_key: state.admin.EventListPage.search_key,
-  }));
   const HandleOpen = (open) => open;
   return (
     <Disclosure as="div" className="w-full">
@@ -243,7 +242,7 @@ function EventEntry({ event }) {
 function EventDetails({ event }) {
   const queryClient = useQueryClient();
   const { Modal, openModal, isLoading } = DeleteEventModal(event?.id, queryClient);
-  const eventStatus = getDrawEventStatus(event);
+  const openEventApplicationModal = useOpenEventApplicationModal(event?.id);
   return (
     <>
       <Modal />
@@ -263,12 +262,15 @@ function EventDetails({ event }) {
             <Div>
               <ChangeStatus event={event} />
             </Div>
+            {!event?.application_link && (
+              <Div ml10 fontSize14 rounded fontSemibold minW={80} py5 bgGray200 clx="hover:bg-gray-300" cursorPointer onClick={openEventApplicationModal}>
+                응모 관리
+              </Div>
+            )}
             <Div wFull />
             {event?.expires_at && (
               <Div selfCenter whitespaceNowrap mt3 textDanger fontSemibold>
-                {eventStatus?.status?.string == "마감"
-                  ? `${getDate(event?.expires_at, "YYYY.MM.DD HH:mm")}에 마감하였습니다.`
-                  : `${getDate(event?.expires_at, "YYYY.MM.DD HH:mm")}에 마감 예정입니다.`}
+                {`${getDate(event?.expires_at, "YYYY.MM.DD HH:mm")}에 마감`}
               </Div>
             )}
           </Div>
@@ -534,7 +536,7 @@ function EventStatus({ event }) {
 function ChangeStatus({ event }) {
   const eventId = event?.id;
   const queryClient = useQueryClient();
-  const { mutate, isLoading } = setStatus(eventId, queryClient);
+  const { mutate, isLoading } = setDrawEventStatus(eventId, queryClient);
   return (
     <SelectEntry
       firstText={"진행 중"}

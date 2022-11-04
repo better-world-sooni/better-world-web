@@ -101,6 +101,10 @@ const apis = {
     events: {
       list: (page_size, offset, search_key) => apiV1(`/admin/draw_event/list${urlParams({ page_size, offset, search_key })}`),
       _: () => apiV1(`/admin/draw_event`),
+      eventApplication: {
+        list: (page_size, offset, event_id) => apiV1(`/admin/draw_event/event_application${urlParams({ page_size, offset, event_id })}`),
+        _: () => apiV1(`/admin/draw_event/event_application`),
+      },
     },
     collections: {
       list: (page_size, offset, search_key) => apiV1(`/admin/nft_collection/list${urlParams({ page_size, offset, search_key })}`),

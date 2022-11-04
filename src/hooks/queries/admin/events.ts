@@ -39,11 +39,7 @@ export function getAllCollectionsQuery() {
     key: querykeys.admin.collections.list(),
     url: apis.admin.collections.all(),
     options: {
-      refetchOnMount: true,
-      refetchInterval: true,
-      keepPreviousData: true,
-      staleTime: Infinity,
-      cacheTime: Infinity,
+      enable: false,
     },
   });
 }
@@ -55,8 +51,7 @@ export function InitialgetAllCollectionsQuery(queryClient: QueryClient, ctx: Nex
     ctx: ctx,
     url: apis.admin.collections.all(),
     options: {
-      staleTime: Infinity,
-      cacheTime: Infinity,
+      enable: false,
     },
   });
 }
@@ -89,7 +84,7 @@ export function DeleteEvent(event_id, queryClient: QueryClient) {
   return { ...mutation, mutate: () => mutation?.mutate(body) };
 }
 
-export function setStatus(eventId, queryClient: QueryClient) {
+export function setDrawEventStatus(eventId, queryClient: QueryClient) {
   const body = (status) => {
     return {
       event_id: eventId,
@@ -105,3 +100,53 @@ export function setStatus(eventId, queryClient: QueryClient) {
   });
   return { ...mutation, mutate: (status) => mutation?.mutate(body(status)) };
 }
+
+export function setEventApplicationStatus(eventId, queryClient: QueryClient) {
+  const body = (eventApplicationId, status) => {
+    return {
+      event_application_ids: [eventApplicationId],
+      status: status,
+    };
+  };
+  const mutation = queryHelperMutationWithToken({
+    url: apis.admin.events.eventApplication._(),
+    method: "PUT",
+    options: {
+      onSuccess: () => queryClient.invalidateQueries(querykeys.admin.events.eventApplication(eventId)),
+    },
+  });
+  return { ...mutation, mutate: (eventApplicationId, status) => mutation?.mutate(body(eventApplicationId, status)) };
+}
+
+export function setEventApplicationsStatus(eventId, selectedEventApplications, queryClient: QueryClient) {
+  const body = (status) => {
+    return {
+      event_application_ids: selectedEventApplications,
+      status: status,
+    };
+  };
+  const mutation = queryHelperMutationWithToken({
+    url: apis.admin.events.eventApplication._(),
+    method: "PUT",
+    options: {
+      onSuccess: () => queryClient.invalidateQueries(querykeys.admin.events.eventApplication(eventId)),
+    },
+  });
+  return { ...mutation, mutate: (status) => mutation?.mutate(body(status)) };
+}
+
+export function getEventApplications(event_id, page_size: Number, offset: Number, onsettled: any) {
+  const onSettled = useCallback(onsettled, []);
+  return queryHelperWithToken({
+    key: querykeys.admin.events.eventApplication(event_id, page_size, offset),
+    url: apis.admin.events.eventApplication.list(page_size, offset, event_id),
+    options: {
+      keepPreviousData: true,
+      onSettled,
+    },
+  });
+}
+
+export const cancelEventApplicationQuery = (queryClient: QueryClient, eventId) => {
+  queryClient.cancelQueries(querykeys.admin.events.eventApplication(eventId));
+};

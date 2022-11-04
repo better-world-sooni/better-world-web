@@ -7,7 +7,7 @@ import { DialogTitle } from "@mui/material";
 import { useState } from "react";
 import LINKS from "src/modules/links";
 import { setSuperPrivilege } from "src/hooks/queries/admin/userlist";
-import { DeleteEvent, setStatus } from "src/hooks/queries/admin/events";
+import { DeleteEvent } from "src/hooks/queries/admin/events";
 
 const CheckModal = (Title = "", Label, YesAction = null, yesLabel = "예", NoAction = null, noLabel = "") => {
   const [CheckModalEnabled, setCheckModalEnabled] = useState(false);

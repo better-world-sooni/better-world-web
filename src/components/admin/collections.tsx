@@ -137,8 +137,8 @@ function CollectionsArray({ collections }) {
   if (list == null) return <></>;
   return list.length != 0 ? (
     <Div mb100 wFull bgWhite border1 bgOpacity90>
-      {list.map((collection, index) => (
-        <CollectionEntry key={index} collection={collection} />
+      {list.map((collection, _) => (
+        <CollectionEntry key={collection?.contract_address} collection={collection} />
       ))}
     </Div>
   ) : (
