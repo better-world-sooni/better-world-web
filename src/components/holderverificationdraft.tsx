@@ -133,7 +133,7 @@ function Drafts({ time, mountmargin, hoverscale, animate_time, once, textprops, 
                   onMouseLeave={() => setHovered(false)}
                   content={
                     <>
-                      <ContentImage src={IMAGES.appDraft6.holder.end} />
+                      <ContentImage src={IMAGES.verificationDraft.verification} />
                     </>
                   }
                 />
@@ -143,9 +143,13 @@ function Drafts({ time, mountmargin, hoverscale, animate_time, once, textprops, 
                   onMouseLeave={() => setHovered(false)}
                   content={
                     <>
-                      <ContentImage src={IMAGES.appDraft6.auth.initial} />
+                      <ContentImage src={IMAGES.verificationDraft.camera} />
                       <IphoneBlackContent animation={draft2.hover.black} />
-                      <ContentImage animate={draft2.hover.display.animate} transition={draft2.hover.display.transition} src={IMAGES.appDraft6.auth.end} />
+                      <ContentImage
+                        animate={draft2.hover.display.animate}
+                        transition={draft2.hover.display.transition}
+                        src={IMAGES.verificationDraft.success}
+                      />
                     </>
                   }
                 />
