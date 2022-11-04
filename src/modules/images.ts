@@ -48,9 +48,13 @@ const images = {
       end: "/images/appDraft6_4.png",
     },
   },
-  appDraft7: {
-    initial: "/images/appDraft7_1.png",
-    end: "/images/appDraft7_2.png",
+  aggregatorDraft: {
+    feed: "/images/aggregator_draft/aggregator_feed.png",
+    detail: "/images/aggregator_draft/aggregator_detail.png",
+  },
+  donationDraft: {
+    feed: "/images/donation_draft/donation_feed.png",
+    detail: "/images/donation_draft/donation_detail.png",
   },
   kaikas: "/images/kaikas.png",
   logoword: {
