@@ -49,6 +49,8 @@ export default function useUploadDrawEvent({ queryClient, uploadSuccessCallback 
   const [enableApplicationLink, setEnableApplicationLink] = useState(true);
   const [eanbleExpires, setEnableExpires] = useState(false);
   const [expiresAt, setExpiresAt] = useState(new Date());
+  const [enableCreatedAt, setEnableCreatedAt] = useState(false);
+  const [createdAt, setCreatedAt] = useState(new Date());
   const [applicationCategories, setApplicationCategories] = useState<EventApplicationCategory[]>([]);
   const [error, setError] = useState("");
   const selectCollection = (name, contractAddress, imageUri) => {
@@ -134,6 +136,7 @@ export default function useUploadDrawEvent({ queryClient, uploadSuccessCallback 
       description,
       images: keys,
       expires_at: type == EventType.EVENT && eanbleExpires ? expiresAt : null,
+      created_at: enableCreatedAt ? createdAt : new Date(),
       has_application: type == EventType.EVENT,
       application_link: type == EventType.EVENT && enableApplicationLink ? applicationLink : null,
       discord_link: discordLink != "" ? discordLink : null,
@@ -216,6 +219,10 @@ export default function useUploadDrawEvent({ queryClient, uploadSuccessCallback 
     eanbleExpires,
     setEnableExpires,
     setExpiresAt,
+    createdAt,
+    enableCreatedAt,
+    setCreatedAt,
+    setEnableCreatedAt,
     name,
     handleNameChange,
     description,

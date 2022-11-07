@@ -79,6 +79,16 @@ export function DeleteEventModal(eventId, queryClient) {
   const { isLoading, mutate } = DeleteEvent(eventId, queryClient);
   return { ...CheckModal("이벤트 삭제", "이 이벤트를 삭제할까요? 이 작업은 되돌릴 수 없습니다", mutate, "예", null, "아니오"), isLoading, mutate };
 }
+
+export function ChangeCreatedAtModal(eventId, createdAt, eventStatus, queryClient) {
+  const { mutate, isLoading } = setStatus(eventId, createdAt, queryClient);
+  return {
+    ...CheckModal("게시일 수정", "게시일을 수정할까요? 이 작업은 되돌릴 수 없습니다", () => mutate(eventStatus), "예", null, "아니오"),
+    isLoading,
+    mutate: () => mutate(eventStatus),
+  };
+}
+
 export function MakePostModal(DeletePostAction) {
   const { isLoading, mutate } = DeletePostAction();
   return { ...CheckModal("게시물 삭제", "이 게시물을 삭제할까요? 이 작업은 되돌릴 수 없습니다.", mutate, "예", null, "아니오"), isLoading };
