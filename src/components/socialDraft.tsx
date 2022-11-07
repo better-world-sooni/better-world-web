@@ -28,16 +28,6 @@ function Drafts({ time, mountmargin, hoverscale, animate_time, once, textprops, 
   };
 
   const draft1 = {
-    showtransition: {
-      hidden: { x: "0%", rotate: 0, y: "-1vw" },
-      show: {
-        // x: factorTovw(iPhoneWidth / 3),
-        transition: {
-          delay: time * 2 + animate_time / 2,
-          duration: time * 1.1,
-        },
-      },
-    },
     hover: {
       black: {
         animate: { opacity: canHover2 ? 0.5 : 0 },
@@ -61,15 +51,6 @@ function Drafts({ time, mountmargin, hoverscale, animate_time, once, textprops, 
   };
 
   const draft2 = {
-    showtransition: {
-      hidden: { x: "0%", rotate: 0, y: "-1vw" },
-      show: {
-        transition: {
-          delay: time * 2 + animate_time / 2,
-          duration: time * 1.1 * 1.1 * 1.1,
-        },
-      },
-    },
     hover: {
       black: {
         animate: { opacity: canHover1 ? 0.5 : 0 },
@@ -121,13 +102,14 @@ function Drafts({ time, mountmargin, hoverscale, animate_time, once, textprops, 
         style={{ marginTop: factorTovw((iPhoneHeight / 2) * hoverscale + 4), paddingBottom: factorTovw((iPhoneHeight / 2) * hoverscale + 4) }}
       >
         <motion.ul variants={container}>
-          <Div flex justifyCenter itemsCenter wFull>
+          <Div flex flexRow justifyCenter itemsCenter wFull>
             <Div w={"50%"} flex flexRow justifyEnd itemsCenter>
               <Div relative flex flexRow right={factorTovw(margin - (iPhoneWidth * 11) / 10)} gapX={factorTovw(iPhoneWidth / 5)} flexRowReverse>
                 <DraftCenterAnchor
                   draft={draft2}
                   onMouseEnter={() => setHovered2(true)}
                   onMouseLeave={() => setHovered2(false)}
+                  right={factorTovw((-iPhoneWidth * 6) / 10)}
                   content={
                     <>
                       <ContentImage src={IMAGES.chatDraft.feed} />
@@ -140,6 +122,7 @@ function Drafts({ time, mountmargin, hoverscale, animate_time, once, textprops, 
                   draft={draft1}
                   onMouseEnter={() => setHovered1(true)}
                   onMouseLeave={() => setHovered1(false)}
+                  right={factorTovw((iPhoneWidth * 6) / 10)}
                   content={
                     <>
                       <ContentImage animate={draft1.hover.display2.animate} transition={draft1.hover.display2.transition} src={IMAGES.socialDraft.feed} />

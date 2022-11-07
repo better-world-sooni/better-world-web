@@ -79,7 +79,7 @@ export default function Drafts({ minW = 0 }) {
   );
 }
 
-export function DraftCenterAnchor({ draft, onMouseEnter, onMouseLeave, content }) {
+export function DraftCenterAnchor({ draft, onMouseEnter, onMouseLeave, content, left = "", right = "" }) {
   return draft.showtransition ? (
     <motion.li variants={draft.showtransition} style={{ position: "relative", width: "100%", height: "100%" }}>
       <motion.div animate={draft.hover.draft.animate} transition={draft.hover.draft.transtion}>
@@ -89,7 +89,7 @@ export function DraftCenterAnchor({ draft, onMouseEnter, onMouseLeave, content }
       </motion.div>
     </motion.li>
   ) : (
-    <Div absolute _translateY1over2 _translateX1over2>
+    <Div absolute _translateY1over2 _translateX1over2 left={left} right={right}>
       <motion.div animate={draft.hover.draft.animate} transition={draft.hover.draft.transtion} onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}>
         <Iphone relative w={factorTovw(iPhoneWidth)}>
           {content}
