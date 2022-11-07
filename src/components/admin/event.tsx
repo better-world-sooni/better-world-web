@@ -40,7 +40,7 @@ import NewEventModal from "./NewEventModal";
 import { newEventModalAction } from "src/store/reducers/modalReducer";
 import { EventApplicationInputType } from "src/hooks/useUploadDrawEvent";
 import { DeleteEventModal } from "../modals/CheckModal";
-import EventApplicationModal, { useOpenEventApplicationModal } from "./EventApplications";
+import EventApplicationModal, { useOpenEventApplicationModal } from "./EventApplicationsModal";
 
 function EventScreen() {
   const { page_size, offset, search_key } = useSelector((state: RootState) => ({

@@ -32,6 +32,12 @@ const initialState = {
   eventApplicationModal: {
     enabled: false,
   },
+  ChartModal: {
+    enabled: false,
+    chartType: -1,
+    data: null,
+    title: "",
+  },
 };
 
 // action type
@@ -44,6 +50,7 @@ export const LOGIN_QR_MODAL = "modal/LOGIN_QR_MODAL" as const;
 export const USERPOST_MODAL = "modal/USERPOST_MODAL" as const;
 export const NEWEVENT_MODAL = "modal/NEWEVENT_MODAL" as const;
 export const EVENT_APPLICATION_MODAL = "modal/EVENT_APPLICATION_MODAL" as const;
+export const CHART_MODAL = "modal/CHART_MODAL" as const;
 
 // action function
 export const confettiAction = ({ enabled }) => ({ type: CONFETTI, enabled });
@@ -55,6 +62,7 @@ export const switchAccountModalAction = ({ enabled, currentNft, currentUser }) =
 export const UserPosttModalAction = ({ enabled, contract_address, token_id }) => ({ type: USERPOST_MODAL, enabled, contract_address, token_id });
 export const newEventModalAction = ({ enabled }) => ({ type: NEWEVENT_MODAL, enabled });
 export const eventApplicationModalAction = ({ enabled }) => ({ type: EVENT_APPLICATION_MODAL, enabled });
+export const charModalAction = ({ enabled, chartType, data, title }) => ({ type: CHART_MODAL, enabled, chartType, data, title });
 
 const f = (action, func) => func(action);
 
@@ -144,6 +152,18 @@ export const modalReducer = (state = initialState, action) => {
           ...state,
           eventApplicationModal: {
             enabled,
+          },
+        };
+      });
+    case CHART_MODAL:
+      return f(action, ({ enabled, chartType, data, title }) => {
+        return {
+          ...state,
+          ChartModal: {
+            enabled,
+            chartType,
+            data,
+            title,
           },
         };
       });
