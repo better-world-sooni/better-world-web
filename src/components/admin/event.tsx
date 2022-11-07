@@ -412,7 +412,7 @@ function ApplicationLink({ event }) {
         <Div selfCenter fontSemibold>
           응모 링크
         </Div>
-        <Div selfCenter flex flexCol justifyStart gapY={5}>
+        <Div selfCenter flex flexCol justifyStart overflowEllipsis overflowHidden whitespaceNowrap gapY={5} style={{ maxWidth: "30vw" }}>
           {link}
         </Div>
         <DefaultTransition
@@ -434,10 +434,10 @@ function DiscordLink({ event }) {
   return (
     link && (
       <Div selfCenter flex flexRow gapX={20}>
-        <Div selfCenter fontSemibold>
+        <Div selfCenter fontSemibold whitespaceNowrap>
           본문 링크
         </Div>
-        <Div selfCenter flex flexCol justifyStart gapY={5}>
+        <Div selfCenter flex flexCol justifyStart overflowEllipsis overflowHidden whitespaceNowrap gapY={5} style={{ maxWidth: "30vw" }}>
           {link}
         </Div>
         <DefaultTransition
