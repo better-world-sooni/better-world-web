@@ -16,18 +16,6 @@ const images = {
   webeDraft2: "/images/webeDraft2.png",
   webeDraft3: "/images/webeDraft3.png",
   mainbackground: "/images/background.png",
-  appDraft2: {
-    tool: "/images/appDraft2_1.png",
-    content: "/images/appDraft2_2.png",
-  },
-  appDraft3: {
-    initial: "/images/appDraft3_1.png",
-    end: "/images/appDraft3_2.png",
-  },
-  appDraft4: {
-    initial: "/images/appDraft4_1.png",
-    end: "/images/appDraft4_2.png",
-  },
   aggregatorDraft: {
     feed: "/images/aggregator_draft/aggregator_feed.png",
     detail: "/images/aggregator_draft/aggregator_detail.png",
@@ -41,6 +29,14 @@ const images = {
     verification: "/images/verification_draft/verification_verification.png",
     camera: "/images/verification_draft/verification_camera.png",
     success: "/images/verification_draft/verification_success.png",
+  },
+  chatDraft: {
+    feed: "/images/chat_draft/chat_feed.png",
+    detail: "/images/chat_draft/chat_detail.png",
+  },
+  socialDraft: {
+    feed: "/images/social_draft/social_feed.png",
+    header: "/images/social_draft/social_header.png",
   },
   kaikas: "/images/kaikas.png",
   logoword: {

@@ -1,6 +1,6 @@
 import Div from "src/components/Div";
 import { motion } from "framer-motion";
-import CommunityFeedDraft from "./communityfeeddraft";
+import SocialDraft from "./socialDraft";
 import HolderVerificationDraft from "./holderverificationdraft";
 import { Iphone, iphoneSize } from "./iphone";
 import AggregatorDraft from "./aggregatorDraft";
@@ -47,7 +47,7 @@ export default function Drafts({ minW = 0 }) {
           animate_time={animate_time}
           once={once}
         />
-        <CommunityFeedDraft
+        <SocialDraft
           margin={margin}
           time={time}
           mountmargin={mountmargin}
@@ -81,11 +81,8 @@ export default function Drafts({ minW = 0 }) {
 
 export function DraftCenterAnchor({ draft, onMouseEnter, onMouseLeave, content }) {
   return draft.showtransition ? (
-    <motion.li
-      variants={draft.showtransition}
-      style={{ position: "relative", width: "100%", height: "100%", top: factorTovw(-iPhoneHeight / 2), left: factorTovw(-iPhoneWidth / 2) }}
-    >
-      <motion.div style={{ originY: 1 }} animate={draft.hover.draft.animate} transition={draft.hover.draft.transtion}>
+    <motion.li variants={draft.showtransition} style={{ position: "relative", width: "100%", height: "100%" }}>
+      <motion.div animate={draft.hover.draft.animate} transition={draft.hover.draft.transtion}>
         <Iphone relative w={factorTovw(iPhoneWidth)} onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}>
           {content}
         </Iphone>
