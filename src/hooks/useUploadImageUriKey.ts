@@ -41,7 +41,7 @@ export function useUploadImageUriKey({ uri, attachedRecord }) {
   };
   useEffect(() => {
     if (filesContent.length != 0) setImage({ url: filesContent[0]?.content, file: plainFiles[0] });
-  }, [filesContent || plainFiles]);
+  }, [plainFiles]);
   useEffect(() => {
     reLoadImage();
   }, [uri]);
