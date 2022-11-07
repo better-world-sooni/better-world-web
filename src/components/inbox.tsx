@@ -2,13 +2,13 @@ import { motion } from "framer-motion";
 import { useState } from "react";
 import Div from "src/components/Div";
 import { IMAGES } from "src/modules/images";
-import { ContentImage, DraftCenterAnchor, factorTovw, iPhoneHeight } from "./drafts";
+import { DraftCenterAnchor, factorTovw, iPhoneHeight } from "./drafts";
 
 function Drafts({ time, mountmargin, hoverscale, animate_time, once, textprops, margin }) {
   const [isHovered, setHovered] = useState(false);
   const [canAnimate, setAnimate] = useState(false);
   const [canHover, setHover] = useState(false);
-  const isHover = isHovered && canHover;
+  const canHover5 = isHovered && canHover;
   const animate_duration = canAnimate ? { duration: animate_time / 2 } : { delay: time / 2, duration: time / 2 };
 
   const container = {
@@ -24,11 +24,11 @@ function Drafts({ time, mountmargin, hoverscale, animate_time, once, textprops, 
     },
   };
 
-  const draft = {
+  const draft5 = {
     hover: {
       draft: {
         animate: {
-          scale: isHover ? hoverscale : 1,
+          scale: canHover5 ? hoverscale : 1,
         },
         transtion: {
           duration: time,
@@ -36,7 +36,7 @@ function Drafts({ time, mountmargin, hoverscale, animate_time, once, textprops, 
       },
       display: {
         animate: {
-          opacity: canAnimate || isHover ? 1 : 0,
+          x: canAnimate || canHover5 ? "0%" : "100%",
         },
         transition: animate_duration,
       },
@@ -79,10 +79,10 @@ function Drafts({ time, mountmargin, hoverscale, animate_time, once, textprops, 
                     <Div flex flexCol>
                       <Div whitespaceNowrap {...textprops.title}>
                         {" "}
-                        크립토 후원
+                        NFT 커뮤니티 공지 알림 탭
                       </Div>
                       <Div whitespaceNowrap {...textprops.content}>
-                        마음에 드는 게시물을 <br /> 코인으로 응원하세요.
+                        내가 보유한 NFT의 중요한 공지들을 <br /> 놓치지 말고 한눈에 확인하세요
                       </Div>
                     </Div>
                   </Div>
@@ -92,13 +92,19 @@ function Drafts({ time, mountmargin, hoverscale, animate_time, once, textprops, 
             <Div w={"50%"} flex flexRow justifyStart itemsCenter>
               <Div relative left={factorTovw(margin)}>
                 <DraftCenterAnchor
-                  draft={draft}
+                  draft={draft5}
                   onMouseEnter={() => setHovered(true)}
                   onMouseLeave={() => setHovered(false)}
                   content={
                     <>
-                      <ContentImage src={IMAGES.donationDraft.feed} />
-                      <ContentImage src={IMAGES.donationDraft.detail} animate={draft.hover.display.animate} transition={draft.hover.display.transition} />
+                      <Div absolute wFull hFull imgTag src={IMAGES.appDraft7.initial}></Div>
+                      <motion.div
+                        animate={draft5.hover.display.animate}
+                        transition={draft5.hover.display.transition}
+                        style={{ position: "absolute", width: "100%", height: "100%" }}
+                      >
+                        <Div wFull hFull imgTag src={IMAGES.appDraft7.end}></Div>
+                      </motion.div>
                     </>
                   }
                 />
@@ -111,7 +117,7 @@ function Drafts({ time, mountmargin, hoverscale, animate_time, once, textprops, 
   );
 }
 
-export default function DonationDraft({ time, textprops, mountmargin, hoverscale, animate_time, once, margin }) {
+export default function InboxDraft({ time, textprops, mountmargin, hoverscale, animate_time, once, margin }) {
   return (
     <Div>
       <Div selfCenter>
