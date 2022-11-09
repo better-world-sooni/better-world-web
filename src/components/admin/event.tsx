@@ -28,19 +28,21 @@ import PaginationPageSizebox from "../common/paginationpagesizebox";
 import DataEntry from "../common/DataEntry";
 import { ImageSlide, ProfileImage } from "../common/ImageHelper";
 import SearchBar from "src/hooks/SearchBar";
-import { cancelEventListQuery, getEventListQuery, setDrawEventStatus } from "src/hooks/queries/admin/events";
+import { cancelEventListQuery, getEventListQuery, setStatus } from "src/hooks/queries/admin/events";
 import getDrawEventStatus, { DrawEventStatus } from "../common/getDrawEventStatus";
 import { motion } from "framer-motion";
 import TruncatedText from "../common/ModifiedTruncatedMarkdown";
-import { createdAtText, getDate } from "src/modules/timeHelper";
+import { createdAtText, getDate, getDateType } from "src/modules/timeHelper";
 import useLink from "src/hooks/useLink";
 import { FaBars, FaDiscord, FaTwitter } from "react-icons/fa";
 import { chain, debounce } from "lodash";
 import NewEventModal from "./NewEventModal";
 import { newEventModalAction } from "src/store/reducers/modalReducer";
 import { EventApplicationInputType } from "src/hooks/useUploadDrawEvent";
-import { DeleteEventModal } from "../modals/CheckModal";
 import EventApplicationModal, { useOpenEventApplicationModal } from "./EventApplicationsModal";
+import { ChangeCreatedAtModal, DeleteEventModal } from "../modals/CheckModal";
+import DatePicker from "react-datepicker";
+import { ko } from "date-fns/locale";
 
 function EventScreen() {
   const { page_size, offset, search_key } = useSelector((state: RootState) => ({
@@ -243,18 +245,39 @@ function EventDetails({ event }) {
   const queryClient = useQueryClient();
   const { Modal, openModal, isLoading } = DeleteEventModal(event?.id, queryClient);
   const openEventApplicationModal = useOpenEventApplicationModal(event?.id);
+  const eventStatus = getDrawEventStatus(event);
+  const originalCreatedAt = getDateType(event?.created_at);
+  const [createdAt, setCreatedAt] = useState(originalCreatedAt);
+  const { Modal: Modal2, openModal: openModal2, isLoading: isLoading2 } = ChangeCreatedAtModal(event?.id, createdAt, event?.status, queryClient);
+  console.log(createdAt, event?.status);
   return (
     <>
       <Modal />
+      <Modal2 />
       <Div px30 py10 flex flexCol justifyCenter gapY={20} textCenter>
         <Div wFull flex flexRow justifyStart gapX={10}>
           <Div selfCenter flex flexRow wFull jsutifyStart gapX={10} flexWrap gapY={10}>
             {event?.has_application && <ApplicationLink event={event} />}
             {event?.has_application && <EventOptions event={event} />}
           </Div>
-          <Div selfStart mr10 whitespaceNowrap mt3>
-            {getDate(event?.created_at)}
+          <Div selfStart mr10 whitespaceNowrap>
+            <Div selfStart w160>
+              {originalCreatedAt && (
+                <DatePicker
+                  className={"self-center h-full w-full focus:outline-none focus:border-gray-400 bg-transparent rounded-md border-none py-5 text-right px-2"}
+                  selected={createdAt}
+                  onChange={(date) => setCreatedAt(date)}
+                  showTimeSelect
+                  timeFormat="HH:mm"
+                  timeIntervals={15}
+                  locale={ko}
+                  timeCaption="time"
+                  dateFormat="yyyy/MM/dd HH:mm "
+                />
+              )}
+            </Div>
           </Div>
+          {+originalCreatedAt !== +createdAt && <CheckButton loading={isLoading2} onClick={openModal2} />}
           <DeleteButton loading={isLoading} openModal={openModal} />
         </Div>
         {event?.has_application && (
@@ -414,7 +437,7 @@ function ApplicationLink({ event }) {
         <Div selfCenter fontSemibold>
           응모 링크
         </Div>
-        <Div selfCenter flex flexCol justifyStart gapY={5}>
+        <Div selfCenter flex flexCol justifyStart overflowEllipsis overflowHidden whitespaceNowrap gapY={5} style={{ maxWidth: "30vw" }}>
           {link}
         </Div>
         <DefaultTransition
@@ -436,10 +459,10 @@ function DiscordLink({ event }) {
   return (
     link && (
       <Div selfCenter flex flexRow gapX={20}>
-        <Div selfCenter fontSemibold>
+        <Div selfCenter fontSemibold whitespaceNowrap>
           본문 링크
         </Div>
-        <Div selfCenter flex flexCol justifyStart gapY={5}>
+        <Div selfCenter flex flexCol justifyStart overflowEllipsis overflowHidden whitespaceNowrap gapY={5} style={{ maxWidth: "30vw" }}>
           {link}
         </Div>
         <DefaultTransition
@@ -515,6 +538,22 @@ function DeleteButton({ loading, openModal }) {
   );
 }
 
+function CheckButton({ loading, onClick }) {
+  return loading ? (
+    <Div selfStart px10 py5 bgBW bgOpacity50 rounded10 textWhite>
+      {" "}
+      <Oval height="14" width="14" color="red" secondaryColor="#FFFFFF" strokeWidth="5" />
+    </Div>
+  ) : (
+    <Tooltip title="게시일 변경" arrow>
+      <Div selfStart px10 py5 rounded10 textBlack cursorPointer clx="bg-bw-light hover:bg-bw hover:text-white" onClick={onClick}>
+        {" "}
+        <CheckIcon height={20} width={20} className="max-h-20 max-w-20" />
+      </Div>
+    </Tooltip>
+  );
+}
+
 function EventStatus({ event }) {
   const eventStatus = getDrawEventStatus(event);
   const Theme = ({ status }) => {
@@ -536,7 +575,7 @@ function EventStatus({ event }) {
 function ChangeStatus({ event }) {
   const eventId = event?.id;
   const queryClient = useQueryClient();
-  const { mutate, isLoading } = setDrawEventStatus(eventId, queryClient);
+  const { mutate, isLoading } = setStatus(eventId, event?.created_at, queryClient);
   return (
     <SelectEntry
       firstText={"진행 중"}

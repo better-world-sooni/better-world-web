@@ -84,11 +84,12 @@ export function DeleteEvent(event_id, queryClient: QueryClient) {
   return { ...mutation, mutate: () => mutation?.mutate(body) };
 }
 
-export function setDrawEventStatus(eventId, queryClient: QueryClient) {
+export function setStatus(eventId, createdAt, queryClient: QueryClient) {
   const body = (status) => {
     return {
       event_id: eventId,
       status: status,
+      created_at: createdAt,
     };
   };
   const mutation = queryHelperMutationWithToken({

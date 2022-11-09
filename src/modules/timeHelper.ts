@@ -31,3 +31,8 @@ export function getDate(time, format = "YYYY.MM.DD HH:mm:ss") {
   if (!time) return null;
   return kmoment(time).format(format);
 }
+
+export function getDateType(date) {
+  const dateType = new Date(date);
+  return dateType;
+}

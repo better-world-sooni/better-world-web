@@ -64,6 +64,10 @@ function EventDetails({ closeModal }) {
     applicationLinkError,
     expiresAt,
     setExpiresAt,
+    createdAt,
+    enableCreatedAt,
+    setCreatedAt,
+    setEnableCreatedAt,
     name,
     handleNameChange,
     description,
@@ -126,6 +130,27 @@ function EventDetails({ closeModal }) {
               handleClickDiscordLink={handleClickDiscordLink}
               discordLinkError={discordLinkError}
             />
+            <Div wFull />
+            <Div selfStart wFull flex flexRow justifyEnd gapX={20}>
+              {enableCreatedAt && (
+                <Div selfCenter w190>
+                  <DatePicker
+                    className={"self-center h-full w-full focus:outline-none focus:border-gray-400 bg-transparent rounded-md border-none"}
+                    selected={createdAt}
+                    onChange={!loading && ((date) => setCreatedAt(date))}
+                    showTimeSelect
+                    timeFormat="HH:mm"
+                    timeIntervals={15}
+                    locale={ko}
+                    timeCaption="time"
+                    dateFormat="yyyy/MM/dd aa h:mm "
+                  />
+                </Div>
+              )}
+              <Div selfCenter mt3 mb3>
+                <SelectCreatedAt enableCreatedAt={enableCreatedAt} toggleCreatedAt={() => setEnableCreatedAt((prev) => !prev)} loading={loading} />
+              </Div>
+            </Div>
           </Div>
           <Div gapY={10} overflowYScroll noScrollBar hFull>
             <Div wFull flex flexRow gapX={5} borderB1>
@@ -620,7 +645,7 @@ function ApplicationLink({ applicationLink, handleApplicationLinkChange, handleC
 function DiscordLink({ discordLink, handleDiscordLinkChange, handleClickDiscordLink, discordLinkError }) {
   return (
     <Div selfCenter flex flexRow gapX={10}>
-      <Div mt5 fontSemibold>
+      <Div mt5 fontSemibold whitespaceNowrap>
         본문 링크
       </Div>
       <Div flex flexCol justifyStart gapY={5}>
@@ -716,6 +741,22 @@ function SelectExpires({ enableExpires, toggleExpires, loading }) {
         clickSecond={toggleExpires}
         isFirst={enableExpires}
         isSecond={!enableExpires}
+        enable={!loading}
+      />
+    </Div>
+  );
+}
+
+function SelectCreatedAt({ enableCreatedAt, toggleCreatedAt, loading }) {
+  return (
+    <Div selfCenter>
+      <SelectEntry
+        firstText={"작성 날짜 설정"}
+        secondText={"미설정"}
+        clickFirst={toggleCreatedAt}
+        clickSecond={toggleCreatedAt}
+        isFirst={enableCreatedAt}
+        isSecond={!enableCreatedAt}
         enable={!loading}
       />
     </Div>

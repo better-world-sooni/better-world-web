@@ -16,41 +16,27 @@ const images = {
   webeDraft2: "/images/webeDraft2.png",
   webeDraft3: "/images/webeDraft3.png",
   mainbackground: "/images/background.png",
-  appDraft1: {
-    bgback: "/images/appDraft1_1.png",
-    bgfront1: "/images/appDraft1_2_1.png",
-    bgfront2: "/images/appDraft1_2_2.png",
-    content: "/images/appDraft1_3.png",
+  aggregatorDraft: {
+    feed: "/images/aggregator_draft/aggregator_feed.png",
+    detail: "/images/aggregator_draft/aggregator_detail.png",
   },
-  appDraft2: {
-    tool: "/images/appDraft2_1.png",
-    content: "/images/appDraft2_2.png",
+  donationDraft: {
+    feed: "/images/donation_draft/donation_feed.png",
+    detail: "/images/donation_draft/donation_detail.png",
   },
-  appDraft3: {
-    initial: "/images/appDraft3_1.png",
-    end: "/images/appDraft3_2.png",
+  verificationDraft: {
+    feed: "/images/verification_draft/verification_feed.png",
+    verification: "/images/verification_draft/verification_verification.png",
+    camera: "/images/verification_draft/verification_camera.png",
+    success: "/images/verification_draft/verification_success.png",
   },
-  appDraft4: {
-    initial: "/images/appDraft4_1.png",
-    end: "/images/appDraft4_2.png",
+  chatDraft: {
+    feed: "/images/chat_draft/chat_feed.png",
+    detail: "/images/chat_draft/chat_detail.png",
   },
-  appDraft5: {
-    initial: "/images/appDraft5_1.png",
-    end: "/images/appDraft5_2.png",
-  },
-  appDraft6: {
-    holder: {
-      initial: "/images/appDraft6_1.png",
-      end: "/images/appDraft6_2.png",
-    },
-    auth: {
-      initial: "/images/appDraft6_3.png",
-      end: "/images/appDraft6_4.png",
-    },
-  },
-  appDraft7: {
-    initial: "/images/appDraft7_1.png",
-    end: "/images/appDraft7_2.png",
+  socialDraft: {
+    feed: "/images/social_draft/social_feed.png",
+    header: "/images/social_draft/social_header.png",
   },
   kaikas: "/images/kaikas.png",
   logoword: {

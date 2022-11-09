@@ -36,7 +36,7 @@ export const ModifiledTruncatedMarkdown: TruncatedMarkdownType = function ({ tex
   if (result.length != text.length) {
     if (onClickTruncated) {
       return (
-        <Div>
+        <Div breakAll>
           <ReactMarkdown remarkPlugins={[remarkGfm]} children={result} />
           <Div onClick={onClickTruncated} cursorPointer fontBold>
             ...더보기
@@ -44,9 +44,17 @@ export const ModifiledTruncatedMarkdown: TruncatedMarkdownType = function ({ tex
         </Div>
       );
     }
-    return <ReactMarkdown remarkPlugins={[remarkGfm]} children={result.concat("...")} />;
+    return (
+      <Div breakAll>
+        <ReactMarkdown remarkPlugins={[remarkGfm]} children={result.concat("...")} />
+      </Div>
+    );
   }
-  return <ReactMarkdown remarkPlugins={[remarkGfm]} children={result} />;
+  return (
+    <Div breakAll>
+      <ReactMarkdown remarkPlugins={[remarkGfm]} children={result} />
+    </Div>
+  );
 };
 
 function TruncatedText({ text, maxLength }) {
@@ -64,7 +72,11 @@ function TruncatedText({ text, maxLength }) {
 }
 
 export function DefaultText({ text }) {
-  return <ReactMarkdown remarkPlugins={[remarkGfm]} children={text} />;
+  return (
+    <Div breakAll>
+      <ReactMarkdown remarkPlugins={[remarkGfm]} children={text} />
+    </Div>
+  );
 }
 
 export default TruncatedText;
