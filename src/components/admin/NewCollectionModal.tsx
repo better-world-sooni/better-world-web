@@ -110,6 +110,11 @@ function WriteContractAddress({ setModalParameter, error }) {
   const { contractAddress, contractAddressError, handleChangeContractAddress } = useContractAddress("");
   const canSubmit = !contractAddressError && contractAddress != "";
   const onClickNext = () => setModalParameter({ contractAddress: contractAddress });
+  const onEnter = (e) => {
+    if (e.key === "Enter" && canSubmit) {
+      onClickNext();
+    }
+  };
   return (
     <Div wFull flex flexCol fontSize18 gapY={20}>
       추가할 Collection의 컨트랙스 주소를 작성해주세요.
@@ -124,6 +129,7 @@ function WriteContractAddress({ setModalParameter, error }) {
             className={"px-5 ml-10 self-center w-full focus:outline-none focus:border-gray-400 bg-white rounded-md"}
             style={{ width: "100%", boxShadow: "none", border: "none" }}
             onChange={handleChangeContractAddress}
+            onKeyPress={onEnter}
           ></input>
           {contractAddressError ? (
             <Div ml10 mt3 textDanger fontSize11>
