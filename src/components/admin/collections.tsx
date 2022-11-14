@@ -5,7 +5,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "src/store/reducers/rootReducer";
 import { Disclosure } from "@headlessui/react";
 import { Oval } from "react-loader-spinner";
-import { ChevronUpIcon, RefreshIcon, UserCircleIcon, StarIcon, CheckIcon } from "@heroicons/react/outline";
+import { ChevronUpIcon, RefreshIcon, UserCircleIcon, StarIcon, CheckIcon, PlusIcon, TrashIcon } from "@heroicons/react/outline";
 import Pagination from "@mui/material/Pagination";
 import { useDispatch } from "react-redux";
 import { collectionsAction } from "src/store/reducers/adminReducer";
@@ -16,7 +16,7 @@ import PaginationPageSizebox from "../common/paginationpagesizebox";
 import DataEntry from "../common/DataEntry";
 import { ProfileImage, SizedImage } from "../common/ImageHelper";
 import SearchBar from "src/hooks/SearchBar";
-import { cancelCollectionsListQuery, getCollectionsListQuery, patchImageInfo } from "src/hooks/queries/admin/collections";
+import { cancelCollectionsListQuery, getCollectionsListQuery, patchCollectionInfo } from "src/hooks/queries/admin/collections";
 import DefaultTransition from "../common/defaulttransition";
 import { motion } from "framer-motion";
 import useName from "src/hooks/useName";
@@ -25,6 +25,8 @@ import useStory from "src/hooks/useStory";
 import ReactTextareaAutosize from "react-textarea-autosize";
 import { useUploadImageUriKey } from "src/hooks/useUploadImageUriKey";
 import { debounce } from "lodash";
+import NewCollectionModal, { useOpenNewCollectionModal } from "./NewCollectionModal";
+import { DeleteCollectionModal } from "../modals/CheckModal";
 
 function CollectionsScreen() {
   const { page_size, offset, search_key } = useSelector((state: RootState) => ({
@@ -64,71 +66,77 @@ function CollectionsScreen() {
     setSearchKey(search_key_input);
     debounceRefetchCollectionsList(search_key_input);
   };
-
+  const openModal = useOpenNewCollectionModal();
   return (
-    <Div flex flexCol>
-      <Div mt15 mb10 selfCenter flex flexRow wFull>
-        <Div justifyItemsStart flex flexRow wFull>
-          <Div selfCenter>
-            <PaginationPageSizebox handlePaginationPageSizeChange={handlePaginationPageSizeChange} page_size={page_size} />
-          </Div>
-          <Div selfCenter>개씩 보기</Div>
-          <Div selfCenter ml10>
-            <SearchBar w={300} placeholder={"Collections을 검색해보세요(이름/설명/심볼)"} initialText={searchKey} handleSearch={handleSearchBarChange} />
-          </Div>
-        </Div>
-        <Div selfCenter flex flexRow>
-          <Div minW={120} fontSize15 fontSemibold mr10 selfCenter>
-            <Div spanTag textSuccess>
-              <TimerText
-                condtion={!loading && LoadingButtonOn && !loading_status && !error}
-                text={"Update Complete"}
-                seconds={2}
-                closecontidion={setLoadingButton}
-              />
+    <>
+      <NewCollectionModal />
+      <Div flex flexCol>
+        <Div mt15 mb10 selfCenter flex flexRow wFull>
+          <Div justifyItemsStart flex flexRow wFull>
+            <Div selfCenter>
+              <PaginationPageSizebox handlePaginationPageSizeChange={handlePaginationPageSizeChange} page_size={page_size} />
             </Div>
-            <Div spanTag textDanger>
-              <TimerText condtion={!loading && LoadingButtonOn && error} text={"Update error"} seconds={2} closecontidion={setLoadingButton} />
+            <Div selfCenter>개씩 보기</Div>
+            <Div selfCenter ml10>
+              <SearchBar w={300} placeholder={"Collections을 검색해보세요(이름/설명/심볼)"} initialText={searchKey} handleSearch={handleSearchBarChange} />
             </Div>
           </Div>
-          {collections &&
-            (loading_status ? (
-              <Div fontSize15 fontBold selfEnd px10 py5 textWhite rounded10 bgBW>
-                <Oval height="14" width="14" color="#4738FF" secondaryColor="#FFFFFF" strokeWidth="5" />
+          <Div selfCenter flex flexRow>
+            <Div minW={120} fontSize15 fontSemibold mr10 selfCenter>
+              <Div spanTag textSuccess>
+                <TimerText
+                  condtion={!loading && LoadingButtonOn && !loading_status && !error}
+                  text={"Update Complete"}
+                  seconds={2}
+                  closecontidion={setLoadingButton}
+                />
               </Div>
-            ) : (
-              <Tooltip title="업데이트" arrow>
-                <Div fontBold selfEnd px10 cursorPointer py5 bgBWLight textBW rounded10 clx="hover:bg-bw hover:text-white" onClick={refetch}>
-                  <RefreshIcon height={20} width={20} className="max-h-20 max-w-20" />
+              <Div spanTag textDanger>
+                <TimerText condtion={!loading && LoadingButtonOn && error} text={"Update error"} seconds={2} closecontidion={setLoadingButton} />
+              </Div>
+            </Div>
+            <Div mr10>
+              <NewCollectionIcon loading={false} onClick={openModal} />
+            </Div>
+            {collections &&
+              (loading_status ? (
+                <Div fontSize15 fontBold selfEnd px10 py5 textWhite rounded10 bgBW>
+                  <Oval height="14" width="14" color="#4738FF" secondaryColor="#FFFFFF" strokeWidth="5" />
                 </Div>
-              </Tooltip>
-            ))}
-        </Div>
-      </Div>
-      {loading && (
-        <Div fontBold mb100 textStart maxW={1100} mxAuto>
-          <Oval height="300" width="300" color="#4738FF" secondaryColor="#FFFFFF" strokeWidth="100" />
-        </Div>
-      )}
-      {collections?.success && <CollectionsArray collections={collections} />}
-      {collections?.success && (
-        <Div selfCenter>
-          <Pagination
-            count={Math.ceil(collections?.collections?.collection_count / page_size)}
-            page={offset + 1}
-            showFirstButton
-            showLastButton
-            onChange={handlePaginationOffsetChange}
-          />
-        </Div>
-      )}
-      {error ||
-        (collections && !collections.success && (
-          <Div fontSize20 mb100 textStart maxW={1100} mxAuto>
-            오류가 발생하였습니다. 다시 시도하여 주세요.
+              ) : (
+                <Tooltip title="업데이트" arrow>
+                  <Div fontBold selfEnd px10 cursorPointer py5 bgBWLight textBW rounded10 clx="hover:bg-bw hover:text-white" onClick={refetch}>
+                    <RefreshIcon height={20} width={20} className="max-h-20 max-w-20" />
+                  </Div>
+                </Tooltip>
+              ))}
           </Div>
-        ))}
-    </Div>
+        </Div>
+        {loading && (
+          <Div fontBold mb100 textStart maxW={1100} mxAuto>
+            <Oval height="300" width="300" color="#4738FF" secondaryColor="#FFFFFF" strokeWidth="100" />
+          </Div>
+        )}
+        {collections?.success && <CollectionsArray collections={collections} />}
+        {collections?.success && (
+          <Div selfCenter>
+            <Pagination
+              count={Math.ceil(collections?.collections?.collection_count / page_size)}
+              page={offset + 1}
+              showFirstButton
+              showLastButton
+              onChange={handlePaginationOffsetChange}
+            />
+          </Div>
+        )}
+        {error ||
+          (collections && !collections.success && (
+            <Div fontSize20 mb100 textStart maxW={1100} mxAuto>
+              오류가 발생하였습니다. 다시 시도하여 주세요.
+            </Div>
+          ))}
+      </Div>
+    </>
   );
 }
 
@@ -152,66 +160,85 @@ function CollectionEntry({ collection }) {
   const { search_key } = useSelector((state: RootState) => ({
     search_key: state.admin.collectionsPage.search_key,
   }));
+  const queryClient = useQueryClient();
   const HandleOpen = (open) => open;
+  const { Modal, openModal, isLoading } = DeleteCollectionModal(collection?.contract_address, queryClient);
+  console.log(collection);
+  const onClickRemove = () => {
+    if (collection?.member_count > 0) {
+      alert("가입되어 있는 NFT가 존재하여 이 Collection은 삭제할 수 없습니다.");
+      return;
+    }
+    openModal();
+    return;
+  };
   return (
-    <Disclosure as="div" className="w-full">
-      {({ open }) => (
-        <>
-          <Disclosure.Button className="w-full hover:bg-gray-100">
-            <Div px30 py10 cursorPointer flex flexRow justifyCenter border1 borderGray100 clx={`${HandleOpen(open) ? "bg-gray-100" : ""}`} overflowHidden>
-              <Div wFull flex flexRow justifyCenter selfCenter>
-                <Div wFull flex flexRow justifyStart gapX={20}>
-                  <Div selfCenter>
-                    <ProfileImage width={40} height={40} nft={collection} rounded={true} resize={true} />
-                  </Div>
-                  <Div flex flexCol justifyStart selfCenter wFull>
-                    <Div fontSize18 fontBold wFull overflowEllipsis overflowHidden whitespaceNowrap textLeft>
-                      {collection?.name}
+    <>
+      <Modal />
+      <Disclosure as="div" className="w-full">
+        {({ open }) => (
+          <>
+            <Disclosure.Button className="w-full hover:bg-gray-100">
+              <Div px30 py10 cursorPointer flex flexRow justifyCenter border1 borderGray100 clx={`${HandleOpen(open) ? "bg-gray-100" : ""}`} overflowHidden>
+                <Div wFull flex flexRow justifyCenter selfCenter>
+                  <Div wFull flex flexRow justifyStart gapX={20}>
+                    <Div selfCenter>
+                      <ProfileImage width={40} height={40} nft={collection} rounded={true} resize={true} />
                     </Div>
-                    <Div fontSize12 wFull overflowEllipsis overflowHidden whitespaceNowrap textLeft>
-                      {collection?.symbol}
+                    <Div flex flexCol justifyStart selfCenter wFull>
+                      <Div fontSize18 fontBold wFull overflowEllipsis overflowHidden whitespaceNowrap textLeft>
+                        {collection?.name}
+                      </Div>
+                      <Div fontSize12 wFull overflowEllipsis overflowHidden whitespaceNowrap textLeft>
+                        {collection?.symbol}
+                      </Div>
                     </Div>
                   </Div>
-                </Div>
-                <Div flex flexRow wFull justifyEnd>
-                  {collection?.status != 1 && (
+                  <Div flex flexRow wFull justifyEnd>
+                    {collection?.status != 1 && (
+                      <DataEntry
+                        name={"팔로워 수"}
+                        w={55}
+                        label={<StarIcon height={20} width={20} className="max-h-20 max-w-20 mr-10" />}
+                        data={collection?.follower_count}
+                      />
+                    )}
                     <DataEntry
-                      name={"팔로워 수"}
+                      name={"Member 수"}
                       w={55}
-                      label={<StarIcon height={20} width={20} className="max-h-20 max-w-20 mr-10" />}
-                      data={collection?.follower_count}
+                      label={<UserCircleIcon height={20} width={20} className="max-h-20 max-w-20 mr-10" />}
+                      data={collection?.member_count}
                     />
-                  )}
-                  <DataEntry
-                    name={"Member 수"}
-                    w={55}
-                    label={<UserCircleIcon height={20} width={20} className="max-h-20 max-w-20 mr-10" />}
-                    data={collection?.member_count}
-                  />
+                  </Div>
+                </Div>
+                <Div selfCenter>
+                  <motion.div animate={{ rotate: HandleOpen(open) ? 180 : 0 }} transition={{ duration: 0.2 }}>
+                    <ChevronUpIcon height={20} width={20} className="text-gray-400" />
+                  </motion.div>
                 </Div>
               </Div>
-              <Div selfCenter>
-                <motion.div animate={{ rotate: HandleOpen(open) ? 180 : 0 }} transition={{ duration: 0.2 }}>
-                  <ChevronUpIcon height={20} width={20} className="text-gray-400" />
-                </motion.div>
-              </Div>
-            </Div>
-          </Disclosure.Button>
-          <DefaultTransition
-            show={HandleOpen(open)}
-            content={
-              <Disclosure.Panel static className="bg-gray-100 border-b-2">
-                <CollectionsDetails collection={collection} />
-              </Disclosure.Panel>
-            }
-          />
-        </>
-      )}
-    </Disclosure>
+            </Disclosure.Button>
+            <DefaultTransition
+              show={HandleOpen(open)}
+              content={
+                <Disclosure.Panel static className="bg-gray-100 border-b-2">
+                  <Div wFull flex flexCol>
+                    <Div wFull flex flexRow justifyEnd px20>
+                      <DeleteButton loading={isLoading} openModal={onClickRemove} />
+                    </Div>
+                    <CollectionsDetails collection={collection} />
+                  </Div>
+                </Disclosure.Panel>
+              }
+            />
+          </>
+        )}
+      </Disclosure>
+    </>
   );
 }
 
-function CollectionsDetails({ collection }) {
+export function CollectionsDetails({ collection, closeModal = null }) {
   const { name, nameHasChanged, nameError, handleChangeName } = useName(collection?.name, 10, 40);
   const { story, storyHasChanged, storyError, handleChangeStory } = useStory(collection?.about);
   const { image, uploading, handleAddImage, getImageUriKey, reLoadImage, imageHasChanged } = useUploadImageUriKey({
@@ -230,7 +257,7 @@ function CollectionsDetails({ collection }) {
     attachedRecord: "nft_collection",
   });
   const queryClient = useQueryClient();
-  const { isLoading, mutate } = patchImageInfo(collection, queryClient);
+  const { isLoading, mutate } = patchCollectionInfo(collection, queryClient, closeModal);
   const updateCollections = async () => {
     try {
       const imageUriKey = imageHasChanged ? await getImageUriKey() : null;
@@ -295,7 +322,13 @@ function CollectionsDetails({ collection }) {
               value={name}
               className={"px-5 ml-10 self-center w-full focus:outline-none focus:border-gray-400 bg-white rounded-md"}
               style={{ width: "100%", boxShadow: "none", border: "none" }}
-              onChange={handleChangeName}
+              onChange={
+                loading
+                  ? ({ target: { value } }) => {
+                      return;
+                    }
+                  : handleChangeName
+              }
             ></input>
             {nameError ? (
               <Div ml10 mt3 textDanger fontSize11>
@@ -311,7 +344,13 @@ function CollectionsDetails({ collection }) {
           <Div selfStart wFull>
             <ReactTextareaAutosize
               rows={5}
-              onChange={handleChangeStory}
+              onChange={
+                loading
+                  ? ({ target: { value } }) => {
+                      return;
+                    }
+                  : handleChangeStory
+              }
               placeholder={" Descriptions"}
               className={"px-5 ml-10 self-center w-full focus:outline-none focus:border-gray-400 bg-white rounded-md"}
               value={story}
@@ -327,9 +366,9 @@ function CollectionsDetails({ collection }) {
           </Div>
         </Div>
       </Div>
-      <Div wFull flex flexRow justifyEnd mb={!isSave && 30}>
+      <Div wFull flex flexRow justifyEnd mb={!(isSave || (closeModal && !nameError && !storyError)) && 30}>
         <DefaultTransition
-          show={isSave}
+          show={isSave || (closeModal && !nameError && !storyError)}
           content={
             loading ? (
               <Div fontBold px10 cursorPointer py5 bgGray600 rounded10>
@@ -337,7 +376,16 @@ function CollectionsDetails({ collection }) {
               </Div>
             ) : (
               <Tooltip title="저장하기" arrow>
-                <Div fontBold px10 cursorPointer py5 bgGray400 rounded10 clx="hover:bg-gray-600 hover:text-white" onClick={isSave && updateCollections}>
+                <Div
+                  fontBold
+                  px10
+                  cursorPointer
+                  py5
+                  bgGray400
+                  rounded10
+                  clx="hover:bg-gray-600 hover:text-white"
+                  onClick={closeModal ? (isSave ? updateCollections : closeModal) : isSave && updateCollections}
+                >
                   <CheckIcon height={20} width={20} className="max-h-20 max-w-20" />
                 </Div>
               </Tooltip>
@@ -346,6 +394,38 @@ function CollectionsDetails({ collection }) {
         />
       </Div>
     </Div>
+  );
+}
+
+function DeleteButton({ loading, openModal }) {
+  return loading ? (
+    <Div selfStart px10 py5 bgDanger bgOpacity50 rounded10 textWhite>
+      {" "}
+      <Oval height="14" width="14" color="red" secondaryColor="#FFFFFF" strokeWidth="5" />
+    </Div>
+  ) : (
+    <Tooltip title="삭제" arrow>
+      <Div selfStart px10 py5 bgDanger bgOpacity50 rounded10 textWhite cursorPointer clx="hover:bg-danger" onClick={openModal}>
+        {" "}
+        <TrashIcon height={20} width={20} className="max-h-20 max-w-20" />
+      </Div>
+    </Tooltip>
+  );
+}
+
+function NewCollectionIcon({ loading, onClick }) {
+  return loading ? (
+    <Div selfCenter px10 py5 bgBW bgOpacity50 rounded10 textWhite>
+      {" "}
+      <Oval height="14" width="14" color="white" secondaryColor="#FFFFFF" strokeWidth="5" />
+    </Div>
+  ) : (
+    <Tooltip title="새 Collection 추가" arrow>
+      <Div selfCenter px10 py5 bgOpacity50 rounded10 cursorPointer clx="text-black hover:bg-bw hover:text-white" onClick={onClick}>
+        {" "}
+        <PlusIcon height={20} width={20} className="max-h-20 max-w-20" />
+      </Div>
+    </Tooltip>
   );
 }
 

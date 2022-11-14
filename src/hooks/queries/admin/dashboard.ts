@@ -8,7 +8,6 @@ import { queryHelperInitialPropsWithJwtFromContext, queryHelperMutationWithToken
 export const defaultPageSize = 50;
 
 export function getDashboardQuery(onsettled: any) {
-  const onSettled = useCallback(onsettled, []);
   return queryHelperWithToken({
     key: querykeys.admin.dashboard._(),
     url: apis.admin.dashboard._(),
@@ -16,7 +15,7 @@ export function getDashboardQuery(onsettled: any) {
       refetchOnMount: false,
       refetchInterval: false,
       keepPreviousData: true,
-      onSettled,
+      onSettled: onsettled,
     },
   });
 }

@@ -38,7 +38,14 @@ export default function NewEventModal({}) {
   };
 
   return (
-    <Modal open={enabled} onClose={closeModal} bdClx={"bg-black/50"} clx={"bg-white w-full"}>
+    <Modal
+      open={enabled}
+      onClose={() => {
+        return;
+      }}
+      bdClx={"bg-black/50"}
+      clx={"bg-white w-full"}
+    >
       <EventDetails closeModal={closeModal} event={event} />
     </Modal>
   );

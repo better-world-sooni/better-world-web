@@ -30,6 +30,12 @@ const initialState = {
     enabled: false,
     event: null,
   },
+  newCollectionModal: {
+    enabled: false,
+    contractAddress: "",
+    collection: null,
+    error: "",
+  },
   eventApplicationModal: {
     enabled: false,
   },
@@ -50,6 +56,7 @@ export const SWITCH_ACCOUNT_MODAL = "modal/SWITCH_ACCOUNT_MODAL" as const;
 export const LOGIN_QR_MODAL = "modal/LOGIN_QR_MODAL" as const;
 export const USERPOST_MODAL = "modal/USERPOST_MODAL" as const;
 export const NEWEVENT_MODAL = "modal/NEWEVENT_MODAL" as const;
+export const NEWCOLLECTION_MODAL = "modal/NEWCOLLECTION_MODAL" as const;
 export const EVENT_APPLICATION_MODAL = "modal/EVENT_APPLICATION_MODAL" as const;
 export const CHART_MODAL = "modal/CHART_MODAL" as const;
 
@@ -62,6 +69,13 @@ export const loginQRModalAction = ({ enabled }) => ({ type: LOGIN_QR_MODAL, enab
 export const switchAccountModalAction = ({ enabled, currentNft, currentUser }) => ({ type: SWITCH_ACCOUNT_MODAL, enabled, currentNft, currentUser });
 export const UserPosttModalAction = ({ enabled, contract_address, token_id }) => ({ type: USERPOST_MODAL, enabled, contract_address, token_id });
 export const newEventModalAction = ({ enabled, event }) => ({ type: NEWEVENT_MODAL, enabled, event });
+export const newCollectionAction = ({ enabled, contractAddress, collection, error }) => ({
+  type: NEWCOLLECTION_MODAL,
+  enabled,
+  contractAddress,
+  collection,
+  error,
+});
 export const eventApplicationModalAction = ({ enabled }) => ({ type: EVENT_APPLICATION_MODAL, enabled });
 export const charModalAction = ({ enabled, chartType, data, title }) => ({ type: CHART_MODAL, enabled, chartType, data, title });
 
@@ -145,6 +159,18 @@ export const modalReducer = (state = initialState, action) => {
           newEventModal: {
             enabled,
             event,
+          },
+        };
+      });
+    case NEWCOLLECTION_MODAL:
+      return f(action, ({ enabled, contractAddress, collection, error }) => {
+        return {
+          ...state,
+          newCollectionModal: {
+            enabled,
+            error,
+            contractAddress,
+            collection,
           },
         };
       });

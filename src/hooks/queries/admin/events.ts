@@ -8,7 +8,6 @@ import { queryHelperInitialPropsWithJwtFromContext, queryHelperMutationWithToken
 export const defaultPageSize = 50;
 
 export function getEventListQuery(page_size: Number, offset: Number, search_key: String, onsettled: any) {
-  const onSettled = useCallback(onsettled, []);
   return queryHelperWithToken({
     key: querykeys.admin.events._(page_size, offset, search_key),
     url: apis.admin.events.list(page_size, offset, search_key),
@@ -16,7 +15,7 @@ export function getEventListQuery(page_size: Number, offset: Number, search_key:
       refetchOnMount: false,
       refetchInterval: false,
       keepPreviousData: true,
-      onSettled,
+      onSettled: onsettled,
     },
   });
 }
@@ -151,13 +150,12 @@ export function setEventApplicationsStatus(eventId, selectedEventApplications, q
 }
 
 export function getEventApplications(event_id, page_size: Number, offset: Number, onsettled: any) {
-  const onSettled = useCallback(onsettled, []);
   return queryHelperWithToken({
     key: querykeys.admin.events.eventApplication(event_id, page_size, offset),
     url: apis.admin.events.eventApplication.list(page_size, offset, event_id),
     options: {
       keepPreviousData: true,
-      onSettled,
+      onSettled: onsettled,
     },
   });
 }
