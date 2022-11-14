@@ -1,5 +1,7 @@
+import { chain } from "lodash";
 import { useRef, useState } from "react";
-import { uploadDrawEventQuery } from "./queries/admin/events";
+import { getDateType } from "src/modules/timeHelper";
+import { updateEventQuery, uploadDrawEventQuery } from "./queries/admin/events";
 import useLink from "./useLink";
 import { useUploadImageUriKeys } from "./useUploadImageUriKey";
 
@@ -22,36 +24,68 @@ export enum EventType {
   EVENT = 1,
 }
 
-export default function useUploadDrawEvent({ queryClient, uploadSuccessCallback = null }) {
-  const [collection, setCollection] = useState({ name: null, contractAddress: null, imageUri: null });
+export default function useUploadDrawEvent({ queryClient, uploadSuccessCallback = null, event = null }) {
+  const isModify = event != null;
   const [loading, setLoading] = useState(false);
-  const [type, setType] = useState(EventType.NOTICE);
-  const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
+
+  const [collection, setCollection] = useState({
+    name: event?.nft_collection?.name,
+    contractAddress: event?.nft_collection?.contract_address,
+    imageUri: event?.nft_collection?.image_uri,
+  });
+  const canModifyCollection = !isModify;
+
+  const [type, setType] = useState(event?.has_application ? (event?.has_application == true ? EventType.EVENT : EventType.NOTICE) : EventType.NOTICE);
+  const canModifyType = !(event?.has_application == true && event?.event_application_count != 0);
+
+  const [name, setName] = useState(event?.name ? event?.name : "");
+  const [description, setDescription] = useState(event?.description ? event?.description : "");
   const index = useRef<number>(0);
-  const getIndex = () => {
-    const nextIndex = index.current;
-    index.current += 1;
-    return nextIndex;
-  };
   const {
     link: discordLink,
     linkError: discordLinkError,
     handleChangeLink: handleChangeDiscordLink,
     handleClickLink: handleClickDiscordLink,
-  } = useLink("", true);
+  } = useLink(event?.discord_link ? event?.discord_link : "", true);
   const {
     link: applicationLink,
     linkError: applicationLinkError,
     handleChangeLink: handleChangeApplicationLink,
     handleClickLink: handleClickApplicationLink,
-  } = useLink("");
-  const [enableApplicationLink, setEnableApplicationLink] = useState(true);
-  const [eanbleExpires, setEnableExpires] = useState(false);
-  const [expiresAt, setExpiresAt] = useState(new Date());
-  const [enableCreatedAt, setEnableCreatedAt] = useState(false);
-  const [createdAt, setCreatedAt] = useState(new Date());
-  const [applicationCategories, setApplicationCategories] = useState<EventApplicationCategory[]>([]);
+  } = useLink(event?.application_link ? event?.application_link : "");
+  const [enableApplicationLink, setEnableApplicationLink] = useState(
+    isModify ? (event?.has_application == true && event?.application_link ? true : false) : true
+  );
+  const [eanbleExpires, setEnableExpires] = useState(event?.expires_at ? true : false);
+  const [expiresAt, setExpiresAt] = useState(event?.expires_at ? getDateType(event?.expires_at) : new Date());
+  const [enableCreatedAt, setEnableCreatedAt] = useState(isModify ? true : false);
+  const [createdAt, setCreatedAt] = useState(isModify ? getDateType(event?.created_at) : new Date());
+
+  const getIndex = () => {
+    const nextIndex = index.current;
+    index.current += 1;
+    return nextIndex;
+  };
+  const drawEventOptions = event?.draw_event_options;
+  const Options =
+    drawEventOptions && drawEventOptions.length != 0
+      ? chain(drawEventOptions)
+          .groupBy("category")
+          .map((value, key) => {
+            const options = value.map((item) => ({ ...item }));
+            if (options.length == 1 && options[0].input_type == EventApplicationInputType.CUSTOM_INPUT)
+              return { name: key, inputType: EventApplicationInputType.CUSTOM_INPUT, index: getIndex(), options: [] };
+            if (options.length == 1 && options[0].input_type == EventApplicationInputType.DISCORD_ID)
+              return { name: key, inputType: EventApplicationInputType.DISCORD_ID, index: getIndex(), options: [] };
+            if (options.length == 1 && options[0].input_type == EventApplicationInputType.TWITTER_ID)
+              return { name: key, inputType: EventApplicationInputType.TWITTER_ID, index: getIndex(), options: [] };
+            return { name: key, inputType: EventApplicationInputType.SELECT, index: getIndex(), options: options.map((value) => value?.name) };
+          })
+          .value()
+      : null;
+  const [applicationCategories, setApplicationCategories] = useState<EventApplicationCategory[]>(Options ? Options : []);
+  const canModifyApplicationCategories = !(event?.has_application == true && event?.event_application_count != 0);
+
   const [error, setError] = useState("");
   const selectCollection = (name, contractAddress, imageUri) => {
     setCollection({ name, contractAddress, imageUri });
@@ -61,8 +95,12 @@ export default function useUploadDrawEvent({ queryClient, uploadSuccessCallback 
   const { imageUrls, handleAddImages, handleChangeImage, handleRemoveImage, getImageUriKeys } = useUploadImageUriKeys({
     attachedRecord: "draw_event",
     fileLimit: fileLimit,
+    originImagesUrl: event?.image_uris,
   });
-  const { isLoading, mutate } = uploadDrawEventQuery(queryClient, uploadSuccessCallback);
+  const canModifyImages = !isModify;
+
+  const { isLoading: loadingUpload, mutate: mutateUpload } = uploadDrawEventQuery(queryClient, uploadSuccessCallback);
+  const { isLoading: loadingUpdate, mutate: mutateUpdate } = updateEventQuery(queryClient, uploadSuccessCallback);
   const isSelectCollection = collection?.contractAddress != null;
   const canUploadDrawEvent = !(
     !isSelectCollection ||
@@ -75,7 +113,7 @@ export default function useUploadDrawEvent({ queryClient, uploadSuccessCallback 
   );
 
   const uploadDrawEvent = async () => {
-    if (loading || isLoading) {
+    if (loading || loadingUpload || loadingUpdate) {
       return;
     }
     if (!isSelectCollection) {
@@ -108,7 +146,7 @@ export default function useUploadDrawEvent({ queryClient, uploadSuccessCallback 
       return;
     }
     setLoading(true);
-    const keys = await getImageUriKeys();
+    const keys = isModify ? [] : await getImageUriKeys();
     if (keys == null) {
       setLoading(false);
       return;
@@ -131,6 +169,7 @@ export default function useUploadDrawEvent({ queryClient, uploadSuccessCallback 
       })
       .flat();
     const body = {
+      event_id: event?.id,
       contract_address: collection.contractAddress,
       name,
       description,
@@ -142,7 +181,7 @@ export default function useUploadDrawEvent({ queryClient, uploadSuccessCallback 
       discord_link: discordLink != "" ? discordLink : null,
       draw_event_options_attributes: type == EventType.EVENT && !enableApplicationLink ? applicationOptions : [],
     };
-    mutate(body);
+    isModify ? mutateUpdate(body) : mutateUpload(body);
     setLoading(false);
     setError("");
   };
@@ -193,12 +232,14 @@ export default function useUploadDrawEvent({ queryClient, uploadSuccessCallback 
   };
 
   return {
+    canModifyCollection,
     type,
     setType,
+    canModifyType,
     collection,
     selectCollection,
     error,
-    loading: loading || isLoading,
+    loading: loading || loadingUpload || loadingUpdate,
     canUploadDrawEvent,
     discordLink,
     handleDiscordLinkChange,
@@ -209,6 +250,7 @@ export default function useUploadDrawEvent({ queryClient, uploadSuccessCallback 
     handleRemoveApplicationCategory,
     handleAddApplicationOption,
     handleRemoveApplicationOption,
+    canModifyApplicationCategories,
     enableApplicationLink,
     toggleEnableApplicationLink,
     applicationLink,
@@ -232,6 +274,7 @@ export default function useUploadDrawEvent({ queryClient, uploadSuccessCallback 
     handleAddImages,
     handleChangeImage,
     handleRemoveImage,
+    canModifyImages,
     fileLimit,
   };
 }

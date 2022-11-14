@@ -21,29 +21,38 @@ import { ko } from "date-fns/locale";
 
 import "react-datepicker/dist/react-datepicker.css";
 
+export const useOpenNewEventModal = (data = null) => {
+  const dispatch = useDispatch();
+  const openNewEventModal = () => dispatch(newEventModalAction({ enabled: true, event: data }));
+  return openNewEventModal;
+};
+
 export default function NewEventModal({}) {
-  const { enabled } = useSelector((state: RootState) => ({
+  const { enabled, event } = useSelector((state: RootState) => ({
     enabled: state.modal.newEventModal.enabled,
+    event: state.modal.newEventModal.event,
   }));
   const dispatch = useDispatch();
   const closeModal = () => {
-    dispatch(newEventModalAction({ enabled: false }));
+    dispatch(newEventModalAction({ enabled: false, event: null }));
   };
 
   return (
     <Modal open={enabled} onClose={closeModal} bdClx={"bg-black/50"} clx={"bg-white w-full"}>
-      <EventDetails closeModal={closeModal} />
+      <EventDetails closeModal={closeModal} event={event} />
     </Modal>
   );
 }
 
-function EventDetails({ closeModal }) {
+function EventDetails({ closeModal, event }) {
   const queryClient = useQueryClient();
   const {
+    canModifyCollection,
     collection,
     selectCollection,
     type,
     setType,
+    canModifyType,
     error,
     loading,
     canUploadDrawEvent,
@@ -52,6 +61,7 @@ function EventDetails({ closeModal }) {
     handleRemoveApplicationCategory,
     handleAddApplicationOption,
     handleRemoveApplicationOption,
+    canModifyApplicationCategories,
     enableApplicationLink,
     toggleEnableApplicationLink,
     discordLink,
@@ -76,17 +86,18 @@ function EventDetails({ closeModal }) {
     handleAddImages,
     handleChangeImage,
     handleRemoveImage,
+    canModifyImages,
     fileLimit,
     uploadDrawEvent,
     eanbleExpires,
     setEnableExpires,
-  } = useUploadDrawEvent({ queryClient, uploadSuccessCallback: closeModal });
+  } = useUploadDrawEvent({ queryClient, uploadSuccessCallback: closeModal, event });
   return (
     <Div zIndex={-1000} wFull hFull flex itemsCenter justifyCenter>
       <Div wFull mb10 flex flexCol px30 py30>
         <Div wFull flex flexRow py10 borderB1>
           <Div wFull selfCenter fontBold fontSize30 selfStart textBW>
-            새 Event 작성
+            {event ? "Event 수정" : "새 Event 작성"}
           </Div>
           <Div selfCenter>
             <Tooltip title="창 닫기" arrow>
@@ -99,10 +110,10 @@ function EventDetails({ closeModal }) {
         <Div mt10 px10 wFull selfCenter flex flexCol justifyCneter border1 gapY={10} minH={"50vh"} maxH={"60vh"} overflowHidden>
           <Div flex flexRow gapX={5}>
             <Div selfCenter justifyStart>
-              <SelectCollection collection={collection} selectCollection={selectCollection} loading={loading} />
+              <SelectCollection collection={collection} selectCollection={selectCollection} loading={canModifyCollection ? loading : true} />
             </Div>
             <Div selfCenter justifyEnd>
-              <SelectEventType type={type} setType={setType} loading={loading} />
+              <SelectEventType type={type} setType={setType} loading={canModifyType ? loading : true} />
             </Div>
             <Div selfCenter wFull px10 py5>
               <Title
@@ -172,7 +183,7 @@ function EventDetails({ closeModal }) {
               handleChangeImage={handleChangeImage}
               handleRemoveImage={handleRemoveImage}
               fileLimit={fileLimit}
-              loading={loading}
+              loading={canModifyImages ? loading : true}
             />
             <DefaultTransition
               show={type == EventType.EVENT}
@@ -189,6 +200,7 @@ function EventDetails({ closeModal }) {
                   handleRemoveApplicationCategory={handleRemoveApplicationCategory}
                   handleAddApplicationOption={handleAddApplicationOption}
                   handleRemoveApplicationOption={handleRemoveApplicationOption}
+                  canModifyApplicationCategories={canModifyApplicationCategories}
                   expiresAt={expiresAt}
                   setExpiresAt={setExpiresAt}
                   loading={loading}
@@ -207,9 +219,9 @@ function EventDetails({ closeModal }) {
                   <Oval height="14" width="14" color="#4738FF" secondaryColor="#FFFFFF" strokeWidth="5" />
                 </Div>
               ) : (
-                <Tooltip title="이벤트 업로드" arrow>
+                <Tooltip title={event ? "이벤트 수정" : "이벤트 업로드"} arrow>
                   <Div fontBold bgOpacity80 bgBW selfEnd px10 cursorPointer py5 bgBWLight textWhite rounded10 clx="hover:bg-bw" onClick={uploadDrawEvent}>
-                    업로드
+                    {event ? "수정" : "업로드"}
                   </Div>
                 </Tooltip>
               )}
@@ -267,6 +279,7 @@ function Options({
   handleRemoveApplicationCategory,
   handleAddApplicationOption,
   handleRemoveApplicationOption,
+  canModifyApplicationCategories,
 
   expiresAt,
   setExpiresAt,
@@ -291,7 +304,6 @@ function Options({
                 timeFormat="HH:mm"
                 timeIntervals={15}
                 locale={ko}
-                minDate={new Date()}
                 timeCaption="time"
                 dateFormat="yyyy/MM/dd H:mm"
               />
@@ -300,7 +312,11 @@ function Options({
         />
       </Div>
       <Div wFull flex flexRow justifyStart gapX={20}>
-        <SelectApplication enableApplicationLink={enableApplicationLink} toggleEnableApplicationLink={toggleEnableApplicationLink} loading={loading} />
+        <SelectApplication
+          enableApplicationLink={enableApplicationLink}
+          toggleEnableApplicationLink={toggleEnableApplicationLink}
+          loading={canModifyApplicationCategories ? loading : true}
+        />
         {enableApplicationLink && (
           <DefaultTransition
             show={enableApplicationLink}
@@ -308,7 +324,7 @@ function Options({
               <ApplicationLink
                 applicationLink={applicationLink}
                 handleApplicationLinkChange={
-                  !loading
+                  !(canModifyApplicationCategories ? loading : true)
                     ? handleApplicationLinkChange
                     : () => {
                         return;
@@ -320,7 +336,7 @@ function Options({
             }
           />
         )}
-        {!enableApplicationLink && !loading && (
+        {!enableApplicationLink && !(canModifyApplicationCategories ? loading : true) && (
           <DefaultTransition show={!enableApplicationLink} content={<AddOptions handleAddApplicationCategory={handleAddApplicationCategory} />} />
         )}
       </Div>
@@ -338,7 +354,7 @@ function Options({
                         key={value?.index}
                         handleAddApplicationOption={(optionName) => handleAddApplicationOption(index, optionName)}
                         handleRemoveApplicationOption={(optionIndex) => handleRemoveApplicationOption(index, optionIndex)}
-                        loading={loading}
+                        loading={canModifyApplicationCategories ? loading : true}
                       />
                     ))
                   : null}

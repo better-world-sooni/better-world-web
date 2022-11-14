@@ -70,6 +70,20 @@ export function uploadDrawEventQuery(queryClient, uploadSuccessCallback = null) 
   return { ...mutation, mutate: (body) => mutation?.mutate(body) };
 }
 
+export function updateEventQuery(queryClient, uploadSuccessCallback = null) {
+  const mutation = queryHelperMutationWithToken({
+    url: apis.admin.events._(),
+    method: "PUT",
+    options: {
+      onSuccess: () => {
+        queryClient.invalidateQueries(querykeys.admin.events._());
+        uploadSuccessCallback && uploadSuccessCallback();
+      },
+    },
+  });
+  return { ...mutation, mutate: (body) => mutation?.mutate(body) };
+}
+
 export function DeleteEvent(event_id, queryClient: QueryClient) {
   const body = {
     event_id: event_id,
@@ -93,7 +107,7 @@ export function setStatus(eventId, createdAt, queryClient: QueryClient) {
     };
   };
   const mutation = queryHelperMutationWithToken({
-    url: apis.admin.events._(),
+    url: apis.admin.events.summery(),
     method: "PUT",
     options: {
       onSuccess: () => queryClient.invalidateQueries(querykeys.admin.events._()),

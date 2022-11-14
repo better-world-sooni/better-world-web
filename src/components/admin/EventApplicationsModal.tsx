@@ -108,7 +108,20 @@ function EventApplicationModalEntry({ closeModal }) {
                 </Div>
                 {eventApplication?.success && eventApplications.length != 0 && (
                   <Div selfCenter flex ml10 flexRow border1 fontSize13 rounded mt3>
-                    <Div flex flexRow justifyCenter cursorPointer whitespaceNowrap px10 py5 bgBW textWhite rounded onClick={handleToggleAll}>
+                    <Div
+                      flex
+                      flexRow
+                      justifyCenter
+                      cursorPointer
+                      whitespaceNowrap
+                      px10
+                      py5
+                      bgBW
+                      textWhite
+                      rounded={!canMutation}
+                      roundedL={canMutation}
+                      onClick={handleToggleAll}
+                    >
                       {allText}
                     </Div>
                     <DefaultTransition
@@ -120,7 +133,6 @@ function EventApplicationModalEntry({ closeModal }) {
                             whitespaceNowrap
                             px10
                             py5
-                            rounded
                             clx={"hover:bg-black hover:text-white"}
                             onClick={() => handleSetStatus(EventApplicationStatus.APPLIED)}
                           >
@@ -131,7 +143,6 @@ function EventApplicationModalEntry({ closeModal }) {
                             whitespaceNowrap
                             px10
                             py5
-                            rounded
                             clx={"hover:bg-success hover:text-white"}
                             onClick={() => handleSetStatus(EventApplicationStatus.SELECTED)}
                           >
@@ -142,7 +153,7 @@ function EventApplicationModalEntry({ closeModal }) {
                             whitespaceNowrap
                             px10
                             py5
-                            rounded
+                            roundedR
                             clx={"hover:bg-info hover:text-white"}
                             onClick={() => handleSetStatus(EventApplicationStatus.RECEIVED)}
                           >
@@ -304,7 +315,7 @@ function SelectStatus({ eventApplication, eventId }) {
         whitespaceNowrap
         px10
         py5
-        rounded
+        roundedL
         bgBlack={eventApplication?.status == EventApplicationStatus.APPLIED}
         textWhite={eventApplication?.status == EventApplicationStatus.APPLIED}
         clx={eventApplication?.status != EventApplicationStatus.APPLIED && "hover:bg-black hover:bg-opacity-40"}
@@ -318,7 +329,6 @@ function SelectStatus({ eventApplication, eventId }) {
         whitespaceNowrap
         px10
         py5
-        rounded
         bgSuccess={eventApplication?.status == EventApplicationStatus.SELECTED}
         textWhite={eventApplication?.status == EventApplicationStatus.SELECTED}
         clx={eventApplication?.status != EventApplicationStatus.SELECTED && "hover:bg-success hover:bg-opacity-40"}
@@ -332,7 +342,7 @@ function SelectStatus({ eventApplication, eventId }) {
         whitespaceNowrap
         px10
         py5
-        rounded
+        roundedR
         bgInfo={eventApplication?.status == EventApplicationStatus.RECEIVED}
         textWhite={eventApplication?.status == EventApplicationStatus.RECEIVED}
         clx={eventApplication?.status != EventApplicationStatus.RECEIVED && "hover:bg-info hover:bg-opacity-40"}

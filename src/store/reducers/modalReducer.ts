@@ -28,6 +28,7 @@ const initialState = {
   },
   newEventModal: {
     enabled: false,
+    event: null,
   },
   eventApplicationModal: {
     enabled: false,
@@ -60,7 +61,7 @@ export const klipQRAction = ({ enabled, qrImage, requestKey }) => ({ type: KLIP_
 export const loginQRModalAction = ({ enabled }) => ({ type: LOGIN_QR_MODAL, enabled });
 export const switchAccountModalAction = ({ enabled, currentNft, currentUser }) => ({ type: SWITCH_ACCOUNT_MODAL, enabled, currentNft, currentUser });
 export const UserPosttModalAction = ({ enabled, contract_address, token_id }) => ({ type: USERPOST_MODAL, enabled, contract_address, token_id });
-export const newEventModalAction = ({ enabled }) => ({ type: NEWEVENT_MODAL, enabled });
+export const newEventModalAction = ({ enabled, event }) => ({ type: NEWEVENT_MODAL, enabled, event });
 export const eventApplicationModalAction = ({ enabled }) => ({ type: EVENT_APPLICATION_MODAL, enabled });
 export const charModalAction = ({ enabled, chartType, data, title }) => ({ type: CHART_MODAL, enabled, chartType, data, title });
 
@@ -138,11 +139,12 @@ export const modalReducer = (state = initialState, action) => {
         };
       });
     case NEWEVENT_MODAL:
-      return f(action, ({ enabled }) => {
+      return f(action, ({ enabled, event }) => {
         return {
           ...state,
           newEventModal: {
             enabled,
+            event,
           },
         };
       });

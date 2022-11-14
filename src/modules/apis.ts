@@ -102,6 +102,7 @@ const apis = {
     events: {
       list: (page_size, offset, search_key) => apiV1(`/admin/draw_event/list${urlParams({ page_size, offset, search_key })}`),
       _: () => apiV1(`/admin/draw_event`),
+      summery: () => apiV1(`/admin/draw_event/summery`),
       eventApplication: {
         list: (page_size, offset, event_id) => apiV1(`/admin/draw_event/event_application${urlParams({ page_size, offset, event_id })}`),
         _: () => apiV1(`/admin/draw_event/event_application`),
