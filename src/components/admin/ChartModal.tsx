@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "src/store/reducers/rootReducer";
 import { charModalAction } from "src/store/reducers/modalReducer";
 import Tooltip from "@mui/material/Tooltip";
-import { CollectionsChart } from "./dashboard";
+import { CollectionsChart, TimeChart } from "./dashboard";
 
 export function useOpenChartModal(chartType, data, title) {
   const dispatch = useDispatch();
@@ -16,6 +16,7 @@ export function useOpenChartModal(chartType, data, title) {
 
 export enum ChartModalType {
   NFT_BY_COLLECTIONS = 0,
+  DAY = 1,
 }
 
 export default function ChartModal({}) {
@@ -54,7 +55,8 @@ function ChartModalEntry({ closeModal, chartType, data, title }) {
           </Div>
         </Div>
         <Div mt10 px10 wFull selfCenter>
-          {chartType == ChartModalType.NFT_BY_COLLECTIONS && <CollectionsChart data={data} summerize={false} />}
+          {chartType == ChartModalType.NFT_BY_COLLECTIONS && <CollectionsChart data={data} summerize={false} showNow={false} />}
+          {chartType == ChartModalType.DAY && <TimeChart summerize={false} showNow={false} />}
         </Div>
       </Div>
     </Div>

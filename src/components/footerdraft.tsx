@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import { useState } from "react";
 import Div from "src/components/Div";
 import { IMAGES } from "src/modules/images";
+import { initialDelay } from "./drafts";
 import EmptyBlock from "./EmptyBlock";
 
 export default function FooterDraft({ time, once, appstore, playstore }) {
@@ -11,6 +12,7 @@ export default function FooterDraft({ time, once, appstore, playstore }) {
     show: {
       opacity: 1,
       transition: {
+        delay: initialDelay,
         duration: time,
       },
     },
@@ -22,6 +24,7 @@ export default function FooterDraft({ time, once, appstore, playstore }) {
       x: 0 + 90,
       scale: 1,
       transition: {
+        delay: initialDelay,
         duration: time * 2,
       },
     },
@@ -34,7 +37,7 @@ export default function FooterDraft({ time, once, appstore, playstore }) {
       x: 0 + 90,
       scale: 1,
       transition: {
-        delay: time * 2,
+        delay: initialDelay + time * 2,
         duration: time,
       },
     },
@@ -46,7 +49,7 @@ export default function FooterDraft({ time, once, appstore, playstore }) {
       opacity: 1,
       y: 0,
       transition: {
-        delay: time * 2.5,
+        delay: initialDelay + time * 2.5,
         duration: time,
       },
     },
@@ -58,7 +61,7 @@ export default function FooterDraft({ time, once, appstore, playstore }) {
       opacity: 1,
       y: 0,
       transition: {
-        delay: time * 3,
+        delay: initialDelay + time * 3,
         duration: time,
       },
     },
@@ -69,7 +72,7 @@ export default function FooterDraft({ time, once, appstore, playstore }) {
     show: {
       opacity: 1,
       transition: {
-        delay: time * 3.5,
+        delay: initialDelay + time * 3.5,
         duration: time,
         onComplete: () => sethref(true),
       },

@@ -105,6 +105,7 @@ function DataCharts({ data }) {
   };
   const openChartModal = useOpenChartModal;
   const openNftByCollection = openChartModal(ChartModalType.NFT_BY_COLLECTIONS, data?.count_by_collections, "Collection별 통계");
+  const openDay = openChartModal(ChartModalType.DAY, data?.count_by_collections, "날짜별 통계");
   return (
     <Div mb100 wFull bgWhite flex flexRow justifyCenter gapX={"2%"}>
       <Container>
@@ -117,14 +118,25 @@ function DataCharts({ data }) {
       </Container>
       <Container number={66}>
         <Theme name="Collection별 통계" onClickDetails={openNftByCollection}>
-          <CollectionsChart data={data?.count_by_collections} />
+          <CollectionsChart data={data?.count_by_collections} showNow={false} />
+        </Theme>
+        <Theme name="날짜별 통계" onClickDetails={openDay}>
+          <TimeChart showNow={false} />
         </Theme>
       </Container>
     </Div>
   );
 }
 
-export function CollectionsChart({ data, summerize = true }) {
+export function TimeChart({ summerize = true, showNow = true }) {
+  return (
+    <Div h={summerize ? 200 : "50vh"} flex flexCol justifyCenter textCenter>
+      구성 중입니다.
+    </Div>
+  );
+}
+
+export function CollectionsChart({ data, summerize = true, showNow = true }) {
   const dataArray = data ? data : [];
   const CustomTooltip = ({ active, payload, label }) => {
     if (active && payload && payload.length) {
@@ -213,6 +225,14 @@ export function CollectionsChart({ data, summerize = true }) {
     setSelect([true, true]);
     doNext && doNext();
   };
+
+  if (!showNow) {
+    return (
+      <Div h={summerize ? 200 : "50vh"} flex flexCol justifyCenter textCenter>
+        구성 중입니다.
+      </Div>
+    );
+  }
   return (
     <Div h={summerize ? 200 : "50vh"} flex flexCol justifyCenter>
       <Div wFull flex flexRow justifyStart gapX={10} fontSize14 fontSemibold textCenter mb10>
