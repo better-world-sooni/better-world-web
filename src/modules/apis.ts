@@ -93,6 +93,7 @@ const apis = {
     },
   },
   admin: {
+    dashboard: { _: () => apiV1(`/admin/dashboard`) },
     user: {
       list: (page_size, offset, search_key) => apiV1(`/admin/user/list${urlParams({ page_size, offset, search_key })}`),
       _: () => apiV1(`/admin/user`),
@@ -101,10 +102,16 @@ const apis = {
     events: {
       list: (page_size, offset, search_key) => apiV1(`/admin/draw_event/list${urlParams({ page_size, offset, search_key })}`),
       _: () => apiV1(`/admin/draw_event`),
+      summery: () => apiV1(`/admin/draw_event/summery`),
+      eventApplication: {
+        list: (page_size, offset, event_id) => apiV1(`/admin/draw_event/event_application${urlParams({ page_size, offset, event_id })}`),
+        _: () => apiV1(`/admin/draw_event/event_application`),
+      },
     },
     collections: {
       list: (page_size, offset, search_key) => apiV1(`/admin/nft_collection/list${urlParams({ page_size, offset, search_key })}`),
       _: () => apiV1(`/admin/nft_collection`),
+      newCollection: (contract_address) => apiV1(`/admin/nft_collection${urlParams({ contract_address })}`),
       all: () => apiV1(`/admin/nft_collection/all`),
     },
     post: {

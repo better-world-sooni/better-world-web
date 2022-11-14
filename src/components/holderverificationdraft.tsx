@@ -3,7 +3,7 @@ import { useState } from "react";
 import Div from "src/components/Div";
 import { IMAGES } from "src/modules/images";
 import { IphoneBlackContent } from "./iphone";
-import { ContentImage, DraftCenterAnchor, factorTovw, iPhoneHeight } from "./drafts";
+import { ContentImage, DraftCenterAnchor, factorTovw, initialDelay, iPhoneHeight } from "./drafts";
 
 function Drafts({ time, mountmargin, hoverscale, animate_time, once, textprops, margin }) {
   const [isHovered, setHovered] = useState(false);
@@ -19,6 +19,7 @@ function Drafts({ time, mountmargin, hoverscale, animate_time, once, textprops, 
       opacity: 1,
       y: 0,
       transition: {
+        delay: initialDelay,
         duration: time,
         onUpdate: () => setHover(false),
         onComplete: () => setAnimate(true),
@@ -101,7 +102,7 @@ function Drafts({ time, mountmargin, hoverscale, animate_time, once, textprops, 
     show: {
       opacity: 1,
       transition: {
-        delay: modifed_animate_time,
+        delay: initialDelay + modifed_animate_time,
         duration: time,
         onComplete: () => {
           setHover(true);

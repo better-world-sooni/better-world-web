@@ -62,17 +62,22 @@ type ImageTypeOutput = {
   key: number;
 };
 
-export function useUploadImageUriKeys({ attachedRecord, fileLimit }) {
-  const [images, setImages] = useState<ImageType[]>([]);
-  const { uploadFile } = useFileUpload({ attachedRecord });
-  const imagesLeft = fileLimit - images.length;
-  const changedIndex = useRef<number>(-1);
+export function useUploadImageUriKeys({ attachedRecord, fileLimit, originImagesUrl = [] }) {
   const key = useRef<number>(0);
   const getKey = () => {
     const nextKey = key.current;
     key.current += 1;
     return nextKey;
   };
+  const originImages = originImagesUrl.map((value) => {
+    return { url: value, file: null, loading: false, key: getKey() };
+  });
+
+  const [images, setImages] = useState<ImageType[]>(originImages);
+  const { uploadFile } = useFileUpload({ attachedRecord });
+  const imagesLeft = fileLimit - images.length;
+  const changedIndex = useRef<number>(-1);
+
   const [openFileSelector, { filesContent, plainFiles, clear }] = useFilePicker({
     readAs: "DataURL",
     accept: "image/*",
@@ -131,7 +136,11 @@ export function useUploadImageUriKeys({ attachedRecord, fileLimit }) {
   };
   const getImageUriKeyAtIndex = async (index: number) => {
     setImages((prevSelectedImages) => setSelectedImageLoadingAtIndex(prevSelectedImages, index, true));
-    const res = await uploadFile(images[index].file, FileUploadReturnType.BlobSignedId);
+    var res;
+    if (images[index].file) {
+      res = await uploadFile(images[index].file, FileUploadReturnType.BlobSignedId);
+    } else {
+    }
     setImages((prevSelectedImages) => setSelectedImageLoadingAtIndex(prevSelectedImages, index, false));
     return res;
   };

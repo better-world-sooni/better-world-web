@@ -7,8 +7,7 @@ import { NextPageContext } from "next";
 
 export const defaultPageSize = 50;
 
-export function getCollectionsListQuery(page_size: Number, offset: Number, search_key: String, onsettled: any) {
-  const onSettled = useCallback(onsettled, []);
+export function getCollectionsListQuery(page_size: Number, offset: Number, search_key: String, onsettled) {
   return queryHelperWithToken({
     key: querykeys.admin.collections._(page_size, offset, search_key),
     url: apis.admin.collections.list(page_size, offset, search_key),
@@ -16,7 +15,18 @@ export function getCollectionsListQuery(page_size: Number, offset: Number, searc
       refetchOnMount: false,
       refetchInterval: false,
       keepPreviousData: true,
-      onSettled,
+      onSettled: onsettled,
+    },
+  });
+}
+
+export function getNewCollectionQuery(contractAddress, queryClient) {
+  return queryHelperWithToken({
+    key: querykeys.admin.collections.newCollection(contractAddress),
+    url: apis.admin.collections.newCollection(contractAddress),
+    options: {
+      keepPreviousData: false,
+      onSuccess: () => queryClient.invalidateQueries(querykeys.admin.collections._()),
     },
   });
 }
@@ -34,7 +44,7 @@ export function InitialgetCollectionsQuery(queryClient: QueryClient, ctx: NextPa
   });
 }
 
-export function patchImageInfo(collection, queryClient) {
+export function patchCollectionInfo(collection, queryClient, onSettled) {
   const body = (bodyParam) => {
     return {
       contract_address: collection.contract_address,
@@ -49,8 +59,25 @@ export function patchImageInfo(collection, queryClient) {
     url: apis.admin.collections._(),
     method: "PUT",
     options: {
-      onSuccess: () => queryClient.invalidateQueries(querykeys.admin.collections._()),
+      onSuccess: () => {
+        queryClient.invalidateQueries(querykeys.admin.collections._());
+        onSettled && onSettled();
+      },
     },
   });
   return { ...mutation, mutate: (bodyParam) => mutation?.mutate(body(bodyParam)) };
+}
+
+export function DeleteCollection(contractAddress, queryClient: QueryClient) {
+  const body = {
+    contract_address: contractAddress,
+  };
+  const mutation = queryHelperMutationWithToken({
+    url: apis.admin.collections._(),
+    method: "DELETE",
+    options: {
+      onSuccess: () => queryClient.invalidateQueries(querykeys.admin.collections._()),
+    },
+  });
+  return { ...mutation, mutate: () => mutation?.mutate(body) };
 }

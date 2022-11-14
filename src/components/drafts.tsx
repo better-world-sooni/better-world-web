@@ -4,7 +4,7 @@ import SocialDraft from "./socialDraft";
 import HolderVerificationDraft from "./holderverificationdraft";
 import { Iphone, iphoneSize } from "./iphone";
 import AggregatorDraft from "./aggregatorDraft";
-import DonationDraft from "./\bdonationDraft";
+import DonationDraft from "./donationDraft";
 
 const time = 0.5;
 const animate_time = time * 3;
@@ -12,6 +12,7 @@ const once = false;
 const mountmargin = 100;
 const hoverscale = 1.1;
 const iPhoneWidthPercent = 20;
+export const initialDelay = 0;
 const textprops = {
   title: {
     fontBold: true,
@@ -47,6 +48,7 @@ export default function Drafts({ minW = 0 }) {
           animate_time={animate_time}
           once={once}
         />
+        {initialDelay > 0 && <Div wFull h1 bgBlack />}
         <SocialDraft
           margin={margin}
           time={time}
@@ -56,6 +58,7 @@ export default function Drafts({ minW = 0 }) {
           animate_time={animate_time}
           once={once}
         />
+        {initialDelay > 0 && <Div wFull h1 bgBlack />}
         <DonationDraft
           margin={margin}
           time={time}
@@ -65,6 +68,7 @@ export default function Drafts({ minW = 0 }) {
           animate_time={animate_time}
           once={once}
         />
+        {initialDelay > 0 && <Div wFull h1 bgBlack />}
         <HolderVerificationDraft
           margin={margin}
           time={time}
@@ -74,6 +78,7 @@ export default function Drafts({ minW = 0 }) {
           animate_time={animate_time}
           once={once}
         />
+        {initialDelay > 0 && <Div wFull h1 bgBlack />}
       </Div>
     </Div>
   );

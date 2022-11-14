@@ -36,9 +36,10 @@ import { createdAtText, getDate, getDateType } from "src/modules/timeHelper";
 import useLink from "src/hooks/useLink";
 import { FaBars, FaDiscord, FaTwitter } from "react-icons/fa";
 import { chain, debounce } from "lodash";
-import NewEventModal from "./NewEventModal";
+import NewEventModal, { useOpenNewEventModal } from "./NewEventModal";
 import { newEventModalAction } from "src/store/reducers/modalReducer";
 import { EventApplicationInputType } from "src/hooks/useUploadDrawEvent";
+import EventApplicationModal, { useOpenEventApplicationModal } from "./EventApplicationsModal";
 import { ChangeCreatedAtModal, DeleteEventModal } from "../modals/CheckModal";
 import DatePicker from "react-datepicker";
 import { ko } from "date-fns/locale";
@@ -81,9 +82,7 @@ function EventScreen() {
     setSearchKey(search_key_input);
     debounceRefetchhEvenList(search_key_input);
   };
-  const openModal = () => {
-    dispatch(newEventModalAction({ enabled: true }));
-  };
+  const openModal = useOpenNewEventModal();
 
   return (
     <>
@@ -154,6 +153,7 @@ function EventScreen() {
           ))}
       </Div>
       <NewEventModal />
+      <EventApplicationModal />
     </>
   );
 }
@@ -175,9 +175,6 @@ function EventArray({ events }) {
 }
 
 function EventEntry({ event }) {
-  const { search_key } = useSelector((state: RootState) => ({
-    search_key: state.admin.EventListPage.search_key,
-  }));
   const HandleOpen = (open) => open;
   return (
     <Disclosure as="div" className="w-full">
@@ -245,11 +242,11 @@ function EventEntry({ event }) {
 function EventDetails({ event }) {
   const queryClient = useQueryClient();
   const { Modal, openModal, isLoading } = DeleteEventModal(event?.id, queryClient);
-  const eventStatus = getDrawEventStatus(event);
+  const openEventApplicationModal = useOpenEventApplicationModal(event?.id);
   const originalCreatedAt = getDateType(event?.created_at);
   const [createdAt, setCreatedAt] = useState(originalCreatedAt);
   const { Modal: Modal2, openModal: openModal2, isLoading: isLoading2 } = ChangeCreatedAtModal(event?.id, createdAt, event?.status, queryClient);
-  console.log(createdAt, event?.status);
+  const openModifyEventModal = useOpenNewEventModal(event);
   return (
     <>
       <Modal />
@@ -278,6 +275,7 @@ function EventDetails({ event }) {
             </Div>
           </Div>
           {+originalCreatedAt !== +createdAt && <CheckButton loading={isLoading2} onClick={openModal2} />}
+          <ModifyButton onClick={openModifyEventModal} />
           <DeleteButton loading={isLoading} openModal={openModal} />
         </Div>
         {event?.has_application && (
@@ -285,12 +283,15 @@ function EventDetails({ event }) {
             <Div>
               <ChangeStatus event={event} />
             </Div>
+            {!event?.application_link && (
+              <Div ml10 fontSize14 rounded fontSemibold minW={80} py5 bgGray200 clx="hover:bg-gray-300" cursorPointer onClick={openEventApplicationModal}>
+                응모 관리
+              </Div>
+            )}
             <Div wFull />
             {event?.expires_at && (
               <Div selfCenter whitespaceNowrap mt3 textDanger fontSemibold>
-                {eventStatus?.status?.string == "마감"
-                  ? `${getDate(event?.expires_at, "YYYY.MM.DD HH:mm")}에 마감하였습니다.`
-                  : `${getDate(event?.expires_at, "YYYY.MM.DD HH:mm")}에 마감 예정입니다.`}
+                {`${getDate(event?.expires_at, "YYYY.MM.DD HH:mm")}에 마감`}
               </Div>
             )}
           </Div>
@@ -503,13 +504,8 @@ function NewEventIcon({ loading, onClick }) {
   );
 }
 
-function ModifyButton({ loading, onClick }) {
-  return loading ? (
-    <Div selfStart px10 py5 bgBW bgOpacity50 rounded10 textWhite>
-      {" "}
-      <Oval height="14" width="14" color="white" secondaryColor="#FFFFFF" strokeWidth="5" />
-    </Div>
-  ) : (
+function ModifyButton({ onClick }) {
+  return (
     <Tooltip title="수정" arrow>
       <Div selfStart px10 py5 bgBW bgOpacity50 rounded10 textWhite cursorPointer clx="hover:bg-bw" onClick={onClick}>
         {" "}

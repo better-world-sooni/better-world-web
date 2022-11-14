@@ -8,7 +8,6 @@ import { queryHelperInitialPropsWithJwtFromContext, queryHelperMutationWithToken
 export const defaultPageSize = 50;
 
 export function getEventListQuery(page_size: Number, offset: Number, search_key: String, onsettled: any) {
-  const onSettled = useCallback(onsettled, []);
   return queryHelperWithToken({
     key: querykeys.admin.events._(page_size, offset, search_key),
     url: apis.admin.events.list(page_size, offset, search_key),
@@ -16,7 +15,7 @@ export function getEventListQuery(page_size: Number, offset: Number, search_key:
       refetchOnMount: false,
       refetchInterval: false,
       keepPreviousData: true,
-      onSettled,
+      onSettled: onsettled,
     },
   });
 }
@@ -39,11 +38,7 @@ export function getAllCollectionsQuery() {
     key: querykeys.admin.collections.list(),
     url: apis.admin.collections.all(),
     options: {
-      refetchOnMount: true,
-      refetchInterval: true,
-      keepPreviousData: true,
-      staleTime: Infinity,
-      cacheTime: Infinity,
+      enable: false,
     },
   });
 }
@@ -55,8 +50,7 @@ export function InitialgetAllCollectionsQuery(queryClient: QueryClient, ctx: Nex
     ctx: ctx,
     url: apis.admin.collections.all(),
     options: {
-      staleTime: Infinity,
-      cacheTime: Infinity,
+      enable: false,
     },
   });
 }
@@ -67,6 +61,20 @@ export function uploadDrawEventQuery(queryClient, uploadSuccessCallback = null) 
     method: "POST",
     options: {
       onSettled: () => {
+        queryClient.invalidateQueries(querykeys.admin.events._());
+        uploadSuccessCallback && uploadSuccessCallback();
+      },
+    },
+  });
+  return { ...mutation, mutate: (body) => mutation?.mutate(body) };
+}
+
+export function updateEventQuery(queryClient, uploadSuccessCallback = null) {
+  const mutation = queryHelperMutationWithToken({
+    url: apis.admin.events._(),
+    method: "PUT",
+    options: {
+      onSuccess: () => {
         queryClient.invalidateQueries(querykeys.admin.events._());
         uploadSuccessCallback && uploadSuccessCallback();
       },
@@ -98,7 +106,7 @@ export function setStatus(eventId, createdAt, queryClient: QueryClient) {
     };
   };
   const mutation = queryHelperMutationWithToken({
-    url: apis.admin.events._(),
+    url: apis.admin.events.summery(),
     method: "PUT",
     options: {
       onSuccess: () => queryClient.invalidateQueries(querykeys.admin.events._()),
@@ -106,3 +114,52 @@ export function setStatus(eventId, createdAt, queryClient: QueryClient) {
   });
   return { ...mutation, mutate: (status) => mutation?.mutate(body(status)) };
 }
+
+export function setEventApplicationStatus(eventId, queryClient: QueryClient) {
+  const body = (eventApplicationId, status) => {
+    return {
+      event_application_ids: [eventApplicationId],
+      status: status,
+    };
+  };
+  const mutation = queryHelperMutationWithToken({
+    url: apis.admin.events.eventApplication._(),
+    method: "PUT",
+    options: {
+      onSuccess: () => queryClient.invalidateQueries(querykeys.admin.events.eventApplication(eventId)),
+    },
+  });
+  return { ...mutation, mutate: (eventApplicationId, status) => mutation?.mutate(body(eventApplicationId, status)) };
+}
+
+export function setEventApplicationsStatus(eventId, selectedEventApplications, queryClient: QueryClient) {
+  const body = (status) => {
+    return {
+      event_application_ids: selectedEventApplications,
+      status: status,
+    };
+  };
+  const mutation = queryHelperMutationWithToken({
+    url: apis.admin.events.eventApplication._(),
+    method: "PUT",
+    options: {
+      onSuccess: () => queryClient.invalidateQueries(querykeys.admin.events.eventApplication(eventId)),
+    },
+  });
+  return { ...mutation, mutate: (status) => mutation?.mutate(body(status)) };
+}
+
+export function getEventApplications(event_id, page_size: Number, offset: Number, onsettled: any) {
+  return queryHelperWithToken({
+    key: querykeys.admin.events.eventApplication(event_id, page_size, offset),
+    url: apis.admin.events.eventApplication.list(page_size, offset, event_id),
+    options: {
+      keepPreviousData: true,
+      onSettled: onsettled,
+    },
+  });
+}
+
+export const cancelEventApplicationQuery = (queryClient: QueryClient, eventId) => {
+  queryClient.cancelQueries(querykeys.admin.events.eventApplication(eventId));
+};

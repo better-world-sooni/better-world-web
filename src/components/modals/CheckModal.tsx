@@ -7,7 +7,9 @@ import { DialogTitle } from "@mui/material";
 import { useState } from "react";
 import LINKS from "src/modules/links";
 import { setSuperPrivilege } from "src/hooks/queries/admin/userlist";
-import { DeleteEvent, setStatus } from "src/hooks/queries/admin/events";
+import { DeleteEvent } from "src/hooks/queries/admin/events";
+import { setStatus } from "src/hooks/queries/admin/events";
+import { DeleteCollection } from "src/hooks/queries/admin/collections";
 
 const CheckModal = (Title = "", Label, YesAction = null, yesLabel = "예", NoAction = null, noLabel = "") => {
   const [CheckModalEnabled, setCheckModalEnabled] = useState(false);
@@ -78,6 +80,11 @@ export function MakeSuperPrivilegeModal(address, superPrivilege, queryClient) {
 export function DeleteEventModal(eventId, queryClient) {
   const { isLoading, mutate } = DeleteEvent(eventId, queryClient);
   return { ...CheckModal("이벤트 삭제", "이 이벤트를 삭제할까요? 이 작업은 되돌릴 수 없습니다", mutate, "예", null, "아니오"), isLoading, mutate };
+}
+
+export function DeleteCollectionModal(contractAddress, queryClient) {
+  const { isLoading, mutate } = DeleteCollection(contractAddress, queryClient);
+  return { ...CheckModal("Collection 삭제", "이 Collection을 삭제할까요? 이 작업은 되돌릴 수 없습니다", mutate, "예", null, "아니오"), isLoading, mutate };
 }
 
 export function ChangeCreatedAtModal(eventId, createdAt, eventStatus, queryClient) {
