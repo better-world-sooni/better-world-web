@@ -1,10 +1,12 @@
 import Div from "src/components/Div";
 import { useState } from "react";
 import React from "react";
+import Tooltip from "@mui/material/Tooltip";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartTooltip, ResponsiveContainer, Legend } from "recharts";
 import { ProfileImage } from "../common/ImageHelper";
 import { showType } from "../admin/dashboard";
 import { sortType } from "../admin/dashboard";
+import { resizeImageUri } from "src/modules/uriUtils";
 
 const uniqueNftCount = (condition, a, b) => (condition ? (a?.nft_count_uniq ? a?.nft_count_uniq : 0) - (b?.nft_count_uniq ? b?.nft_count_uniq : 0) : 0);
 const sleepNftCount = (condition, a, b) => (condition ? (a?.nft_count_sleep ? a?.nft_count_sleep : 0) - (b?.nft_count_sleep ? b?.nft_count_sleep : 0) : 0);
@@ -49,6 +51,44 @@ const hugCount = (condition, a, b) => (condition ? (a?.hug_count ? a?.hug_count 
 
 export default function CollectionsChart({ data, summerize = true, showNow = true }) {
   const dataArray = data ? data : [];
+  const CustomXAxis = (props) => {
+    const { x, y, stroke, payload } = props;
+    const [loaded, setLoaded] = useState(false);
+    const [error, setError] = useState(false);
+    const margin = 5;
+    const width =
+      (props.width - (props.visibleTicksCount - 1) * margin) / props.visibleTicksCount > 30
+        ? 30
+        : (props.width - (props.visibleTicksCount - 1) * margin) / props.visibleTicksCount;
+    const height = width;
+    const img = new Image();
+    img.src = payload.value;
+    img.onload = () => setLoaded(true);
+    img.onerror = () => setError(true);
+    return (
+      <g transform={`translate(${x - width / 2},${y + (15 - width / 2)})`} id={`container-${width}${props.value}`}>
+        <svg id={`svg-${width}${props.value}`}>
+          <defs>
+            <clipPath id={`clip-${width}${props.value}`}>
+              <rect id={`rect-${width}${props.value}`} width={`${width}px`} height={`${height}px`} rx={`${width / 6}px`} />
+            </clipPath>
+          </defs>
+          <g id={`container2-${width}${props.value}`} clipPath={`url(#clip-${width}${props.value})`}>
+            {loaded && (
+              <image
+                id={`image-${width}${props.value}`}
+                xlinkHref={resizeImageUri(payload.value, 400, 400)}
+                width={`${width}px`}
+                height={`${height}px`}
+                rx={`${width / 6}px`}
+              />
+            )}
+            {(!loaded || error) && <rect id={`rect-${width}${props.value}`} width={`${width}px`} height={`${height}px`} fill="#ccc" rx={`${width / 6}px`} />}
+          </g>
+        </svg>
+      </g>
+    );
+  };
   const CustomTooltip = ({ active, payload, label }) => {
     if (active && payload && payload.length) {
       return (
@@ -75,7 +115,7 @@ export default function CollectionsChart({ data, summerize = true, showNow = tru
               {option == 0 && select[1] && (
                 <Div selfCenter wFull textRight>{`휴면 NFT: ${payload[0].payload.nft_count_sleep ? payload[0].payload.nft_count_sleep : 0}개`}</Div>
               )}
-              {option == 1 && <Div selfCenter wFull textRight>{`팔로워: ${payload[0].payload.follow_count ? payload[0].payload.follow_count : 0}`}</Div>}
+              {option == 1 && <Div selfCenter wFull textRight>{`팔로워: ${payload[0].payload.follow_count ? payload[0].payload.follow_count : 0}명`}</Div>}
             </>
           )}
           {show == showType.event && (
@@ -90,15 +130,15 @@ export default function CollectionsChart({ data, summerize = true, showNow = tru
                 <Div selfCenter wFull textRight>{`총 조회수: ${
                   (payload[0].payload.event_read_count ? payload[0].payload.event_read_count : 0) +
                   (payload[0].payload.notification_read_count ? payload[0].payload.notification_read_count : 0)
-                }개`}</Div>
-              )}
-              {option == 1 && select[0] && (
-                <Div selfCenter wFull textRight>{`이벤트 조회수: ${payload[0].payload.event_read_count ? payload[0].payload.event_read_count : 0}개`}</Div>
+                }회`}</Div>
               )}
               {option == 1 && select[1] && (
                 <Div selfCenter wFull textRight>{`공지 조회수: ${
                   payload[0].payload.notification_read_count ? payload[0].payload.notification_read_count : 0
-                }개`}</Div>
+                }회`}</Div>
+              )}
+              {option == 1 && select[0] && (
+                <Div selfCenter wFull textRight>{`이벤트 조회수: ${payload[0].payload.event_read_count ? payload[0].payload.event_read_count : 0}회`}</Div>
               )}
               {option == 2 && select[0] && select[1] && select[2] && (
                 <Div selfCenter wFull textRight>{`총 이벤트: ${payload[0].payload.event_count ? payload[0].payload.event_count : 0}개`}</Div>
@@ -123,9 +163,9 @@ export default function CollectionsChart({ data, summerize = true, showNow = tru
                   payload[0].payload.event_application_count ? payload[0].payload.event_application_count : 0
                 }개`}</Div>
               )}
-              {option == 3 && select[0] && (
-                <Div selfCenter wFull textRight>{`응모기록: ${
-                  payload[0].payload.applied_event_application_count ? payload[0].payload.applied_event_application_count : 0
+              {option == 3 && select[2] && (
+                <Div selfCenter wFull textRight>{`수령완료된 응모기록: ${
+                  payload[0].payload.received_event_application_count ? payload[0].payload.received_event_application_count : 0
                 }개`}</Div>
               )}
               {option == 3 && select[1] && (
@@ -133,15 +173,18 @@ export default function CollectionsChart({ data, summerize = true, showNow = tru
                   payload[0].payload.selected_event_application_count ? payload[0].payload.selected_event_application_count : 0
                 }개`}</Div>
               )}
-              {option == 3 && select[2] && (
-                <Div selfCenter wFull textRight>{`수령완료된 응모기록: ${
-                  payload[0].payload.received_event_application_count ? payload[0].payload.received_event_application_count : 0
+              {option == 3 && select[0] && (
+                <Div selfCenter wFull textRight>{`제출된 응모기록: ${
+                  payload[0].payload.applied_event_application_count ? payload[0].payload.applied_event_application_count : 0
                 }개`}</Div>
               )}
             </>
           )}
           {show == showType.social && (
             <>
+              {option == 0 && select[1] && (
+                <Div selfCenter wFull textRight>{`총 댓글 작성: ${payload[0].payload.comment_count ? payload[0].payload.comment_count : 0}개`}</Div>
+              )}
               {option == 0 && select[0] && !select[2] && (
                 <Div selfCenter wFull textRight>{`총 게시글 작성: ${payload[0].payload.post_count ? payload[0].payload.post_count : 0}개`}</Div>
               )}
@@ -149,9 +192,6 @@ export default function CollectionsChart({ data, summerize = true, showNow = tru
                 <Div selfCenter wFull textRight>{`총 게시글 작성: ${
                   (payload[0].payload.post_count ? payload[0].payload.post_count : 0) + (payload[0].payload.repost_count ? payload[0].payload.repost_count : 0)
                 }개`}</Div>
-              )}
-              {option == 0 && select[1] && (
-                <Div selfCenter wFull textRight>{`총 댓글 작성: ${payload[0].payload.comment_count ? payload[0].payload.comment_count : 0}개`}</Div>
               )}
               {option == 0 && select[0] && select[2] && (
                 <Div selfCenter wFull textRight>{`총 리포스트 게시글 작성: ${payload[0].payload.repost_count ? payload[0].payload.repost_count : 0}개`}</Div>
@@ -162,14 +202,14 @@ export default function CollectionsChart({ data, summerize = true, showNow = tru
                   (payload[0].payload.comment_like_count ? payload[0].payload.comment_like_count : 0)
                 }개`}</Div>
               )}
-              {option == 1 && select[0] && (
-                <Div selfCenter wFull textRight>{`총 게시글 좋아요 표현: ${
-                  payload[0].payload.post_like_count ? payload[0].payload.post_like_count : 0
-                }개`}</Div>
-              )}
               {option == 1 && select[1] && (
                 <Div selfCenter wFull textRight>{`총 댓글 좋아요 표현: ${
                   payload[0].payload.comment_like_count ? payload[0].payload.comment_like_count : 0
+                }개`}</Div>
+              )}
+              {option == 1 && select[0] && (
+                <Div selfCenter wFull textRight>{`총 게시글 좋아요 표현: ${
+                  payload[0].payload.post_like_count ? payload[0].payload.post_like_count : 0
                 }개`}</Div>
               )}
               {option == 2 && (
@@ -283,6 +323,7 @@ export default function CollectionsChart({ data, summerize = true, showNow = tru
   const [show, setShow] = useState<showType>(showType.nft);
   const [option, setOption] = useState(0);
   const [select, setSelect] = useState([true, true, true]);
+  const [showName, setShowNmae] = useState(true);
   const filteredDataArray = dataArray
     .filter(filterFunction)
     .map(mpaFunction)
@@ -320,7 +361,7 @@ export default function CollectionsChart({ data, summerize = true, showNow = tru
     }
   };
   return (
-    <Div h={summerize ? 200 : "50vh"} flex flexCol justifyCenter>
+    <Div h={summerize ? 300 : "50vh"} flex flexCol justifyCenter>
       <Div wFull flex flexRow justifyStart gapX={10} fontSize14 fontSemibold textCenter mb10>
         <Div flex flexRow justifyCenter rounded bgGray200 wFull={summerize}>
           <Div
@@ -450,7 +491,7 @@ export default function CollectionsChart({ data, summerize = true, showNow = tru
                     bgBW={select[2]}
                     onClick={() => setSelect([select[0], select[1], !select[2]])}
                   >
-                    {option == 0 && show == showType.social && "리포스트 포함"}
+                    {option == 0 && show == showType.social && select[2] ? "리포스트 표시" : "리포스트 미표시"}
                   </Div>
                 </Div>
               )}
@@ -459,6 +500,22 @@ export default function CollectionsChart({ data, summerize = true, showNow = tru
         {!summerize && (
           <>
             <Div wFull />
+            <Div
+              selfCenter
+              px5
+              py5
+              rounded
+              clx="hover:bg-bw hover:text-white"
+              cursorPointer
+              mr10
+              whitespaceNowrap
+              bgBWLight={!showName}
+              bgBW={showName}
+              textWhite={showName}
+              onClick={() => setShowNmae((prev) => !prev)}
+            >
+              {showName ? "이름 보이기" : "이름 숨기기"}
+            </Div>
             <Div
               selfCenter
               px5
@@ -504,48 +561,68 @@ export default function CollectionsChart({ data, summerize = true, showNow = tru
             }}
           >
             <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="symbol" />
+            <XAxis xAxisId={0} dataKey="image_uri" height={summerize || !showName ? 40 : 30} interval={0} tick={<CustomXAxis />} />
+            {!summerize && showName && (
+              <XAxis
+                xAxisId={1}
+                dataKey="symbol"
+                dy={5}
+                y={-5}
+                axisLine={false}
+                tickLine={false}
+                label={{ value: "", angle: 0, position: "bottom" }}
+                tickFormatter={(value) => (value.length > 5 ? value.substr(0, 4).concat("...") : value)}
+              />
+            )}
             <YAxis />
             <RechartTooltip content={CustomTooltip} />
             {show == showType.nft && (
               <>
-                {option == 0 && select[0] && <Bar dataKey="nft_count_uniq" stackId="nft_count" fill="#8884d8" />}
-                {option == 0 && select[1] && <Bar dataKey="nft_count_sleep" stackId="nft_count" fill="#82ca9d" />}
-                {option == 1 && <Bar dataKey="follow_count" stackId="follow_count" fill="#8884d8" />}
+                {option == 0 && select[0] && <Bar dataKey="nft_count_uniq" name="활동 NFT" stackId="nft_count" fill="#8884d8" />}
+                {option == 0 && select[1] && <Bar dataKey="nft_count_sleep" name="휴면 NFT" stackId="nft_count" fill="#82ca9d" />}
+                {option == 1 && <Bar dataKey="follow_count" stackId="follow_count" name="팔로워" fill="#8884d8" />}
               </>
             )}
             {show == showType.event && (
               <>
-                {option == 0 && select[0] && <Bar dataKey="event_count" stackId="total_event_count" fill="#8884d8" />}
-                {option == 0 && select[1] && <Bar dataKey="notification_count" stackId="total_event_count" fill="#82ca9d" />}
-                {option == 1 && select[0] && <Bar dataKey="event_read_count" stackId="read_count" fill="#8884d8" />}
-                {option == 1 && select[1] && <Bar dataKey="notification_read_count" stackId="read_count" fill="#82ca9d" />}
-                {option == 2 && select[0] && <Bar dataKey="in_progress_event_count" stackId="event_count" fill="#8884d8" />}
-                {option == 2 && select[1] && <Bar dataKey="announced_event_count" stackId="event_count" fill="#82ca9d" />}
-                {option == 2 && select[2] && <Bar dataKey="finished_event_count" stackId="event_count" fill="#ffc658" />}
-                {option == 3 && select[0] && <Bar dataKey="applied_event_application_count" stackId="event_application_count" fill="#8884d8" />}
-                {option == 3 && select[1] && <Bar dataKey="selected_event_application_count" stackId="event_application_count" fill="#82ca9d" />}
-                {option == 3 && select[2] && <Bar dataKey="received_event_application_count" stackId="event_application_count" fill="#ffc658" />}
+                {option == 0 && select[0] && <Bar dataKey="event_count" name="이벤트 개수" stackId="total_event_count" fill="#8884d8" />}
+                {option == 0 && select[1] && <Bar dataKey="notification_count" name="공지 개수" stackId="total_event_count" fill="#82ca9d" />}
+                {option == 1 && select[0] && <Bar dataKey="event_read_count" name="이벤트 조회수" stackId="read_count" fill="#8884d8" />}
+                {option == 1 && select[1] && <Bar dataKey="notification_read_count" name="공지 조회수" stackId="read_count" fill="#82ca9d" />}
+                {option == 2 && select[2] && <Bar dataKey="finished_event_count" name="마감된 이벤트" stackId="event_count" fill="#8884d8" />}
+                {option == 2 && select[1] && <Bar dataKey="announced_event_count" name="당첨 발표된 이벤트" stackId="event_count" fill="#82ca9d" />}
+                {option == 2 && select[0] && <Bar dataKey="in_progress_event_count" name="진행 중인 이벤트" stackId="event_count" fill="#ffc658" />}
+                {option == 3 && select[2] && (
+                  <Bar dataKey="received_event_application_count" name="수령 완료된 응모" stackId="event_application_count" fill="#8884d8" />
+                )}
+                {option == 3 && select[1] && (
+                  <Bar dataKey="selected_event_application_count" name="당첨된 응모" stackId="event_application_count" fill="#82ca9d" />
+                )}
+                {option == 3 && select[0] && (
+                  <Bar dataKey="applied_event_application_count" name="제출된 응모" stackId="event_application_count" fill="#ffc658" />
+                )}
               </>
             )}
             {show == showType.social && (
               <>
-                {option == 0 && select[0] && <Bar dataKey="post_count" stackId="total_social_count" fill="#8884d8" />}
-                {option == 0 && select[1] && <Bar dataKey="comment_count" stackId="total_social_count" fill="#82ca9d" />}
-                {option == 0 && select[2] && select[0] && <Bar dataKey="repost_count" stackId="total_social_count" fill="#ffc658" />}
-                {option == 1 && select[0] && <Bar dataKey="post_like_count" stackId="like_count" fill="#8884d8" />}
-                {option == 1 && select[1] && <Bar dataKey="comment_like_count" stackId="like_count" fill="#82ca9d" />}
-                {option == 2 && <Bar dataKey="donation_sum" stackId="donation_sum" fill="#8884d8" />}
-                {option == 3 && <Bar dataKey="hug_count" stackId="hug_count" fill="#8884d8" />}
+                {option == 0 && select[0] && <Bar dataKey="post_count" name="총 게시글 수" stackId="total_social_count" fill="#8884d8" />}
+                {option == 0 && select[2] && select[0] && (
+                  <Bar dataKey="repost_count" name="리포스트된 게시글 수" stackId="total_social_count" fill="#ffc658" />
+                )}
+                {option == 0 && select[1] && <Bar dataKey="comment_count" name="총 댓글 수" stackId="total_social_count" fill="#82ca9d" />}
+                {option == 1 && select[0] && <Bar dataKey="post_like_count" name="게시글 좋아요 표현" stackId="like_count" fill="#8884d8" />}
+                {option == 1 && select[1] && <Bar dataKey="comment_like_count" name="댓글 좋아요 표현" stackId="like_count" fill="#82ca9d" />}
+                {option == 2 && <Bar dataKey="donation_sum" name="후원(Klay)" stackId="donation_sum" fill="#8884d8" />}
+                {option == 3 && <Bar dataKey="hug_count" name="허그한 횟수" stackId="hug_count" fill="#8884d8" />}
               </>
             )}
-            {/* <Legend /> */}
+            {!summerize && <Legend />}
           </BarChart>
         </ResponsiveContainer>
       )}
       {filteredDataArray.length == 0 && (
         <Div wFull textCenter flex flexCol hFull justifyCenter fontSize18 fontSemibold>
-          Data가 충분하지 않습니다.{" "}
+          {"Data가 없습니다."}
         </Div>
       )}
     </Div>
