@@ -283,11 +283,9 @@ function EventDetails({ event }) {
             <Div>
               <ChangeStatus event={event} />
             </Div>
-            {!event?.application_link && (
-              <Div ml10 fontSize14 rounded fontSemibold minW={80} py5 bgGray200 clx="hover:bg-gray-300" cursorPointer onClick={openEventApplicationModal}>
-                응모 관리
-              </Div>
-            )}
+            <Div ml10 fontSize14 rounded fontSemibold minW={80} py5 bgGray200 clx="hover:bg-gray-300" cursorPointer onClick={openEventApplicationModal}>
+              응모 관리
+            </Div>
             <Div wFull />
             {event?.expires_at && (
               <Div selfCenter whitespaceNowrap mt3 textDanger fontSemibold>
@@ -305,7 +303,7 @@ function EventDetails({ event }) {
             )}
             <TruncatedText text={event?.description} maxLength={1000} />
           </Div>
-          {event?.image_uris && (
+          {event?.image_uris && event?.image_uris.length != 0 && (
             <Div>
               <ImageSlide uris={event?.image_uris} maxHeight={300} maxWidth={300} click={false} />
             </Div>

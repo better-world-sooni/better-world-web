@@ -107,7 +107,7 @@ export default function useUploadDrawEvent({ queryClient, uploadSuccessCallback 
     !name ||
     !description ||
     (type == EventType.EVENT && enableApplicationLink && (applicationLinkError || applicationLink == "")) ||
-    imageUrls.length == 0 ||
+    (type == EventType.EVENT && imageUrls.length == 0) ||
     imageUrls.length > fileLimit ||
     discordLinkError
   );
@@ -137,7 +137,7 @@ export default function useUploadDrawEvent({ queryClient, uploadSuccessCallback 
       setError(discordLinkError);
       return;
     }
-    if (imageUrls.length == 0) {
+    if (type == EventType.EVENT && imageUrls.length == 0) {
       setError("이미지를 추가해주세요.");
       return;
     }
