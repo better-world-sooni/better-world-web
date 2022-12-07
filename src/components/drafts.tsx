@@ -1,10 +1,10 @@
 import Div from "src/components/Div";
 import { motion } from "framer-motion";
-import CommunityFeedDraft from "./communityfeeddraft";
+import SocialDraft from "./socialDraft";
 import HolderVerificationDraft from "./holderverificationdraft";
 import { Iphone, iphoneSize } from "./iphone";
 import AggregatorDraft from "./aggregatorDraft";
-import DonationDraft from "./\bdonationDraft";
+import DonationDraft from "./donationDraft";
 
 const time = 0.5;
 const animate_time = time * 3;
@@ -12,6 +12,7 @@ const once = false;
 const mountmargin = 100;
 const hoverscale = 1.1;
 const iPhoneWidthPercent = 20;
+export const initialDelay = 0;
 const textprops = {
   title: {
     fontBold: true,
@@ -47,7 +48,8 @@ export default function Drafts({ minW = 0 }) {
           animate_time={animate_time}
           once={once}
         />
-        <CommunityFeedDraft
+        {initialDelay > 0 && <Div wFull h1 bgBlack />}
+        <SocialDraft
           margin={margin}
           time={time}
           mountmargin={mountmargin}
@@ -56,6 +58,7 @@ export default function Drafts({ minW = 0 }) {
           animate_time={animate_time}
           once={once}
         />
+        {initialDelay > 0 && <Div wFull h1 bgBlack />}
         <DonationDraft
           margin={margin}
           time={time}
@@ -65,6 +68,7 @@ export default function Drafts({ minW = 0 }) {
           animate_time={animate_time}
           once={once}
         />
+        {initialDelay > 0 && <Div wFull h1 bgBlack />}
         <HolderVerificationDraft
           margin={margin}
           time={time}
@@ -74,25 +78,23 @@ export default function Drafts({ minW = 0 }) {
           animate_time={animate_time}
           once={once}
         />
+        {initialDelay > 0 && <Div wFull h1 bgBlack />}
       </Div>
     </Div>
   );
 }
 
-export function DraftCenterAnchor({ draft, onMouseEnter, onMouseLeave, content }) {
+export function DraftCenterAnchor({ draft, onMouseEnter, onMouseLeave, content, left = "", right = "" }) {
   return draft.showtransition ? (
-    <motion.li
-      variants={draft.showtransition}
-      style={{ position: "relative", width: "100%", height: "100%", top: factorTovw(-iPhoneHeight / 2), left: factorTovw(-iPhoneWidth / 2) }}
-    >
-      <motion.div style={{ originY: 1 }} animate={draft.hover.draft.animate} transition={draft.hover.draft.transtion}>
+    <motion.li variants={draft.showtransition} style={{ position: "relative", width: "100%", height: "100%" }}>
+      <motion.div animate={draft.hover.draft.animate} transition={draft.hover.draft.transtion}>
         <Iphone relative w={factorTovw(iPhoneWidth)} onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}>
           {content}
         </Iphone>
       </motion.div>
     </motion.li>
   ) : (
-    <Div absolute _translateY1over2 _translateX1over2>
+    <Div absolute _translateY1over2 _translateX1over2 left={left} right={right}>
       <motion.div animate={draft.hover.draft.animate} transition={draft.hover.draft.transtion} onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}>
         <Iphone relative w={factorTovw(iPhoneWidth)}>
           {content}

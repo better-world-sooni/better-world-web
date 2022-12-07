@@ -2,7 +2,7 @@ import Div from "src/components/Div";
 import MainTopBar from "src/components/MainTopBar";
 import Footer from "src/components/Footer";
 import React, { useState } from "react";
-import Drafts from "src/components/drafts";
+import Drafts, { initialDelay } from "src/components/drafts";
 import IntroDraft from "src/components/introdraft";
 import FooterDraft from "src/components/footerdraft";
 import { href } from "src/modules/routeHelper";
@@ -23,7 +23,7 @@ export default function Home({ currentUser, currentNft }) {
   if (isMobile) return <MobileMain appstore={appstore} playstore={playstore} />;
   return (
     <>
-      <MainTopBar currentUser={currentUser} currentNft={currentNft} />
+      {initialDelay <= 0 && <MainTopBar currentUser={currentUser} currentNft={currentNft} />}
       <Div flex itemsCenter justifyCenter {...minWProps}>
         <IntroDraft time={0.5} once={false} appstore={appstore} playstore={playstore} />
       </Div>

@@ -8,7 +8,6 @@ import { NextPageContext } from "next";
 export const defaultPageSize = 50;
 
 export function getUserListQuery(page_size: Number, offset: Number, search_key: String, onsettled: any) {
-  const onSettled = useCallback(onsettled, []);
   return queryHelperWithToken({
     key: querykeys.admin.userlist._(page_size, offset, search_key),
     url: apis.admin.user.list(page_size, offset, search_key),
@@ -16,7 +15,7 @@ export function getUserListQuery(page_size: Number, offset: Number, search_key: 
       refetchOnMount: false,
       refetchInterval: false,
       keepPreviousData: true,
-      onSettled,
+      onSettled: onsettled,
     },
   });
 }
@@ -97,13 +96,12 @@ export function DeleteComment(comment_id, queryClient: QueryClient, contract_add
 }
 
 export function getUserPostListQuery(contract_address, token_id, page_size: Number, offset: Number, search_key: String, onsettled: any) {
-  const onSettled = useCallback(onsettled, []);
   return queryHelperWithToken({
     key: querykeys.admin.userlist.post(contract_address, token_id, page_size, offset, search_key),
     url: apis.admin.post.list(contract_address, token_id, page_size, offset, search_key),
     options: {
       keepPreviousData: true,
-      onSettled,
+      onSettled: onsettled,
     },
   });
 }

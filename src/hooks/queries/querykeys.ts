@@ -13,12 +13,16 @@ const querykeys = {
     events: {
       _: (page_size: Number = null, offset: Number = null, search_key: String = null) =>
         page_size || offset || search_key ? ["events", "list", search_key, page_size, offset] : ["events", "list"],
+      eventApplication: (eventId, page_size: Number = null, offset: Number = null) =>
+        page_size || offset ? ["events", "eventApplication", eventId, page_size, offset] : ["events", "eventApplication", eventId],
     },
     collections: {
       _: (page_size: Number = null, offset: Number = null, search_key: String = null) =>
         page_size || offset || search_key ? ["collections", "list", search_key, page_size, offset] : ["collections", "list"],
       list: () => ["all", "collections", "list"],
+      newCollection: (contract_address) => ["all", "collections", "newCollection", contract_address],
     },
+    dashboard: { _: () => ["dashboard"] },
   },
 };
 

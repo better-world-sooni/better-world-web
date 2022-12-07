@@ -1056,6 +1056,7 @@ const propsToClx = (props) => {
     bgBlack: () => clxs.push("bg-black"),
     bgWhite: () => clxs.push("bg-white"),
     bgBW: () => clxs.push("bg-bw"),
+    bgBWLight: () => clxs.push("bg-bw-light"),
     // background opacity
     bgOpacity0: () => clxs.push("bg-opacity-0"),
     bgOpacity5: () => clxs.push("bg-opacity-5"),

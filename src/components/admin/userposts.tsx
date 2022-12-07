@@ -3,7 +3,7 @@ import Modal from "../modals/Modal";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "src/store/reducers/rootReducer";
 import { UserPosttModalAction } from "src/store/reducers/modalReducer";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { cancelUserPostListQuery, DeleteComment, DeletePost, getUserPostListQuery } from "src/hooks/queries/admin/userlist";
 import { UserListPostAction } from "src/store/reducers/adminReducer";
 import TimerText from "../common/timertext";
@@ -16,6 +16,7 @@ import Pagination from "@mui/material/Pagination";
 import PostList from "../postlist";
 import { useQueryClient } from "react-query";
 import SearchBar from "src/hooks/SearchBar";
+import { debounce } from "lodash";
 
 export default function UserPostModal({ name, contract_address, token_id }) {
   const { UserPostEnabled, contract_address_reducer, token_id_reducer } = useSelector((state: RootState) => ({
@@ -47,6 +48,7 @@ function ModalEntry({ name, contract_address, token_id, closeModal }) {
     offset: state.admin.UserListPostPage.offset,
     search_key: state.admin.UserListPostPage.search_key,
   }));
+  const [searchKey, setSearchKey] = useState(search_key);
   const {
     isLoading: loading,
     isFetching: fetching,
@@ -69,8 +71,15 @@ function ModalEntry({ name, contract_address, token_id, closeModal }) {
   const handlePaginationPageSizeChange = (page_size_input) => {
     if (page_size != page_size_input) refetchUserPost(page_size_input, 0, search_key);
   };
+  const debounceRefetchUserPost = useCallback(
+    debounce((searchKey) => {
+      refetchUserPost(page_size, 0, searchKey);
+    }, 500),
+    [page_size]
+  );
   const handleSearchBarChange = (search_key_input) => {
-    refetchUserPost(page_size, 0, search_key_input);
+    setSearchKey(search_key_input);
+    debounceRefetchUserPost(search_key_input);
   };
   return (
     <Div zIndex={-1000} wFull hFull flex itemsCenter justifyCenter>
@@ -98,7 +107,7 @@ function ModalEntry({ name, contract_address, token_id, closeModal }) {
                   <PaginationPageSizebox handlePaginationPageSizeChange={handlePaginationPageSizeChange} page_size={page_size} />
                   <Div selfCenter>개씩 보기</Div>
                   <Div selfCenter ml10>
-                    <SearchBar w={250} placeholder={"원하는 내용을 검색해보세요"} initialText={search_key} handleSearch={handleSearchBarChange} />
+                    <SearchBar w={250} placeholder={"원하는 내용을 검색해보세요"} initialText={searchKey} handleSearch={handleSearchBarChange} />
                   </Div>
                 </Div>
               </Div>
