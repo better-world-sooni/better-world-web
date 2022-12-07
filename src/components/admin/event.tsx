@@ -294,7 +294,7 @@ function EventDetails({ event }) {
             )}
           </Div>
         )}
-        <Div wFull flex flexRow justifyCenter borderT1 py10 borderGray300>
+        <Div wFull flex flexRow justifyCenter borderT1 py10 borderGray300 gapX={15}>
           <Div selfcenter wFull textLeft flex flexCol gapY={10}>
             {event?.discord_link && (
               <Div flex flexRow justifyStart>

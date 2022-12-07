@@ -10,10 +10,13 @@ export enum EventApplicationInputType {
   CUSTOM_INPUT = 1,
   TWITTER_ID = 2,
   DISCORD_ID = 3,
+  LINK = 4,
+  NOT_SELECTED = -1,
 }
 
 export type EventApplicationCategory = {
   name: string;
+  category: string;
   options: string[];
   inputType: EventApplicationInputType;
   index: number;
@@ -22,6 +25,11 @@ export type EventApplicationCategory = {
 export enum EventType {
   NOTICE = 0,
   EVENT = 1,
+}
+
+export enum OrderableType {
+  HOLDER_ONLY = 0,
+  ALL = 1,
 }
 
 export default function useUploadDrawEvent({ queryClient, uploadSuccessCallback = null, event = null }) {
@@ -47,15 +55,7 @@ export default function useUploadDrawEvent({ queryClient, uploadSuccessCallback 
     handleChangeLink: handleChangeDiscordLink,
     handleClickLink: handleClickDiscordLink,
   } = useLink(event?.discord_link ? event?.discord_link : "", true);
-  const {
-    link: applicationLink,
-    linkError: applicationLinkError,
-    handleChangeLink: handleChangeApplicationLink,
-    handleClickLink: handleClickApplicationLink,
-  } = useLink(event?.application_link ? event?.application_link : "");
-  const [enableApplicationLink, setEnableApplicationLink] = useState(
-    isModify ? (event?.has_application == true && event?.application_link ? true : false) : true
-  );
+  const [orderableType, setOrderableType] = useState(event?.orderable_type ? event?.orderable_type : OrderableType.HOLDER_ONLY);
   const [eanbleExpires, setEnableExpires] = useState(event?.expires_at ? true : false);
   const [expiresAt, setExpiresAt] = useState(event?.expires_at ? getDateType(event?.expires_at) : new Date());
   const [enableCreatedAt, setEnableCreatedAt] = useState(isModify ? true : false);
@@ -74,16 +74,18 @@ export default function useUploadDrawEvent({ queryClient, uploadSuccessCallback 
           .map((value, key) => {
             const options = value.map((item) => ({ ...item }));
             if (options.length == 1 && options[0].input_type == EventApplicationInputType.CUSTOM_INPUT)
-              return { name: key, inputType: EventApplicationInputType.CUSTOM_INPUT, index: getIndex(), options: [] };
+              return { category: key, name: options[0].name, inputType: EventApplicationInputType.CUSTOM_INPUT, index: getIndex(), options: [] };
             if (options.length == 1 && options[0].input_type == EventApplicationInputType.DISCORD_ID)
-              return { name: key, inputType: EventApplicationInputType.DISCORD_ID, index: getIndex(), options: [] };
+              return { category: key, name: options[0].name, inputType: EventApplicationInputType.DISCORD_ID, index: getIndex(), options: [] };
             if (options.length == 1 && options[0].input_type == EventApplicationInputType.TWITTER_ID)
-              return { name: key, inputType: EventApplicationInputType.TWITTER_ID, index: getIndex(), options: [] };
-            return { name: key, inputType: EventApplicationInputType.SELECT, index: getIndex(), options: options.map((value) => value?.name) };
+              return { category: key, name: options[0].name, inputType: EventApplicationInputType.TWITTER_ID, index: getIndex(), options: [] };
+            return { category: key, name: key, inputType: EventApplicationInputType.SELECT, index: getIndex(), options: options.map((value) => value?.name) };
           })
           .value()
       : null;
-  const [applicationCategories, setApplicationCategories] = useState<EventApplicationCategory[]>(Options ? Options : []);
+  const [applicationCategories, setApplicationCategories] = useState<EventApplicationCategory[]>(
+    Options ? Options : [{ name: "", category: "", index: getIndex(), options: [], inputType: EventApplicationInputType.NOT_SELECTED }]
+  );
   const canModifyApplicationCategories = !(event?.has_application == true && event?.event_application_count != 0);
 
   const [error, setError] = useState("");
@@ -106,13 +108,14 @@ export default function useUploadDrawEvent({ queryClient, uploadSuccessCallback 
     !isSelectCollection ||
     !name ||
     !description ||
-    (type == EventType.EVENT && enableApplicationLink && (applicationLinkError || applicationLink == "")) ||
     (type == EventType.EVENT && imageUrls.length == 0) ||
     imageUrls.length > fileLimit ||
     discordLinkError
   );
 
   const uploadDrawEvent = async () => {
+    setLoading((prev) => !prev);
+    return;
     if (loading || loadingUpload || loadingUpdate) {
       return;
     }
@@ -125,7 +128,7 @@ export default function useUploadDrawEvent({ queryClient, uploadSuccessCallback 
       return;
     }
     if (!description) {
-      setError("설명을 작성해주세요.");
+      setError("내용을 작성해주세요.");
       return;
     }
 
@@ -151,14 +154,14 @@ export default function useUploadDrawEvent({ queryClient, uploadSuccessCallback 
       .map((applicationCategory) => {
         if (applicationCategory.inputType !== EventApplicationInputType.SELECT)
           return {
-            name: applicationCategory.name,
-            category: applicationCategory.name,
+            name: applicationCategory.inputType == EventApplicationInputType.LINK ? applicationCategory.name : applicationCategory.category,
+            category: applicationCategory.category,
             input_type: applicationCategory.inputType,
           };
         return applicationCategory.options.map((applicationOption) => {
           return {
             name: applicationOption,
-            category: applicationCategory.name,
+            category: applicationCategory.category,
             input_type: applicationCategory.inputType,
           };
         });
@@ -173,24 +176,18 @@ export default function useUploadDrawEvent({ queryClient, uploadSuccessCallback 
       expires_at: type == EventType.EVENT && eanbleExpires ? expiresAt : null,
       created_at: enableCreatedAt ? createdAt : new Date(),
       has_application: type == EventType.EVENT,
-      application_link: type == EventType.EVENT && enableApplicationLink ? applicationLink : null,
+      application_link: null,
       discord_link: discordLink != "" ? discordLink : null,
-      draw_event_options_attributes: type == EventType.EVENT && !enableApplicationLink ? applicationOptions : [],
+      draw_event_options_attributes: type == EventType.EVENT ? applicationOptions : [],
+      orderable_type: type == EventType.EVENT ? orderableType : OrderableType.HOLDER_ONLY,
     };
     isModify ? mutateUpdate(body) : mutateUpload(body);
     setLoading(false);
     setError("");
   };
-  const handleApplicationLinkChange = (value) => {
-    handleChangeApplicationLink(value);
-    setError("");
-  };
   const handleDiscordLinkChange = (value) => {
     handleChangeDiscordLink(value);
     setError("");
-  };
-  const toggleEnableApplicationLink = () => {
-    setEnableApplicationLink((prev) => !prev);
   };
   const handleDescriptionChange = ({ target: { value: text } }) => {
     setDescription(text);
@@ -200,13 +197,22 @@ export default function useUploadDrawEvent({ queryClient, uploadSuccessCallback 
     setName(text);
     setError("");
   };
-  const handleAddApplicationCategory = (name, inputType) => {
-    setApplicationCategories([...applicationCategories, { name, options: [], inputType, index: getIndex() }]);
+  const handleAddApplicationCategory = () => {
+    const newApplicationCategory = {
+      name: "",
+      category: "",
+      index: getIndex(),
+      options: [],
+      inputType: EventApplicationInputType.NOT_SELECTED,
+    };
+    setApplicationCategories([...applicationCategories, newApplicationCategory]);
   };
 
   const handleRemoveApplicationCategory = (index) => {
+    if (applicationCategories.length == 1) return;
     const newApplicationCategories = applicationCategories.slice(0, index).concat(applicationCategories.slice(index + 1));
     setApplicationCategories(newApplicationCategories);
+    setError("");
   };
 
   const handleAddApplicationOption = (categoryIndex, optionName) => {
@@ -214,6 +220,7 @@ export default function useUploadDrawEvent({ queryClient, uploadSuccessCallback 
     if (newApplicationCategories[categoryIndex]) {
       newApplicationCategories[categoryIndex].options = [...newApplicationCategories[categoryIndex].options, optionName];
       setApplicationCategories(newApplicationCategories);
+      setError("");
     }
   };
 
@@ -224,6 +231,45 @@ export default function useUploadDrawEvent({ queryClient, uploadSuccessCallback 
         .slice(0, optionIndex)
         .concat(newApplicationCategories[categoryIndex].options.slice(optionIndex + 1));
       setApplicationCategories(newApplicationCategories);
+      setError("");
+    }
+  };
+
+  const handleChangeApplicationCategoryName = (categoryIndex, value) => {
+    const newApplicationCategories = [...applicationCategories];
+    if (newApplicationCategories[categoryIndex]) {
+      newApplicationCategories[categoryIndex] = {
+        ...newApplicationCategories[categoryIndex],
+        category: value,
+      };
+      setApplicationCategories(newApplicationCategories);
+      setError("");
+    }
+  };
+
+  const handleChangeApplicationName = (categoryIndex, value) => {
+    const newApplicationCategories = [...applicationCategories];
+    if (newApplicationCategories[categoryIndex]) {
+      newApplicationCategories[categoryIndex] = {
+        ...newApplicationCategories[categoryIndex],
+        name: value,
+      };
+      setApplicationCategories(newApplicationCategories);
+      setError("");
+    }
+  };
+
+  const handleChangeApplicationInputType = (categoryIndex, inputType: EventApplicationInputType) => {
+    const newApplicationCategories = [...applicationCategories];
+    if (newApplicationCategories[categoryIndex]) {
+      newApplicationCategories[categoryIndex] = {
+        ...newApplicationCategories[categoryIndex],
+        inputType,
+        options: [],
+        name: "",
+      };
+      setApplicationCategories(newApplicationCategories);
+      setError("");
     }
   };
 
@@ -246,13 +292,12 @@ export default function useUploadDrawEvent({ queryClient, uploadSuccessCallback 
     handleRemoveApplicationCategory,
     handleAddApplicationOption,
     handleRemoveApplicationOption,
+    handleChangeApplicationCategoryName,
+    handleChangeApplicationInputType,
+    handleChangeApplicationName,
     canModifyApplicationCategories,
-    enableApplicationLink,
-    toggleEnableApplicationLink,
-    applicationLink,
-    handleApplicationLinkChange,
-    handleClickApplicationLink,
-    applicationLinkError,
+    orderableType,
+    setOrderableType,
     expiresAt,
     eanbleExpires,
     setEnableExpires,
