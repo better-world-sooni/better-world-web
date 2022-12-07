@@ -128,10 +128,6 @@ export default function useUploadDrawEvent({ queryClient, uploadSuccessCallback 
       setError("설명을 작성해주세요.");
       return;
     }
-    if (type == EventType.EVENT && enableApplicationLink && (applicationLinkError || applicationLink == "")) {
-      setError(applicationLinkError);
-      return;
-    }
 
     if (discordLinkError) {
       setError(discordLinkError);
