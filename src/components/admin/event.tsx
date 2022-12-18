@@ -294,7 +294,7 @@ function EventDetails({ event }) {
             )}
           </Div>
         )}
-        <Div wFull flex flexRow justifyCenter borderT1 py10 borderGray300>
+        <Div wFull flex flexRow justifyCenter borderT1 py10 borderGray300 gapX={15}>
           <Div selfcenter wFull textLeft flex flexCol gapY={10}>
             {event?.discord_link && (
               <Div flex flexRow justifyStart>
@@ -328,7 +328,7 @@ function EventOptions({ event }) {
               return { name: key, inputType: EventApplicationInputType.DISCORD_ID, options };
             if (options.length == 1 && options[0].input_type == EventApplicationInputType.TWITTER_ID)
               return { name: key, inputType: EventApplicationInputType.TWITTER_ID, options };
-            return { name: key, inputType: EventApplicationInputType.SELECT, options };
+            return { name: key, inputType: options[0].input_type, options };
           })
           .value()
       : null;
@@ -363,8 +363,9 @@ function EventOption({ option }) {
         relative
         onMouseEnter={onHoverOptions}
         onMouseLeave={onLeaveOptions}
-        cursorPointer={canClick}
+        cursorPointer={canClick || option?.inputType == EventApplicationInputType.LINK}
         clx={canClick && "hover:bg-gray-200"}
+        onClick={option?.inputType == EventApplicationInputType.LINK && (() => window.open(option?.options[0].name, "_blank"))}
       >
         <Div relative selfCenter>
           {option?.inputType == EventApplicationInputType.DISCORD_ID ? (
@@ -373,8 +374,12 @@ function EventOption({ option }) {
             <FaTwitter size={18} />
           ) : option?.inputType == EventApplicationInputType.CUSTOM_INPUT ? (
             <PencilAltIcon height={18} width={18} className="max-h-18 max-w-18" />
-          ) : (
+          ) : option?.inputType == EventApplicationInputType.SELECT ? (
             <FaBars size={18} />
+          ) : option?.inputType == EventApplicationInputType.LINK ? (
+            <ArrowRightIcon height={18} width={18} className="max-h-18 max-w-18" />
+          ) : (
+            <></>
           )}
         </Div>
         <Div relative selfCenter fontSize12 ml5 fontSemibold>

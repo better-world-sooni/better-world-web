@@ -6,10 +6,10 @@ import { newEventModalAction } from "src/store/reducers/modalReducer";
 import Tooltip from "@mui/material/Tooltip";
 import { getAllCollectionsQuery } from "src/hooks/queries/admin/events";
 import { ProfileImage, UploadImage } from "../common/ImageHelper";
-import { useState } from "react";
+import { Fragment, useEffect, useRef, useState } from "react";
 import DefaultTransition from "../common/defaulttransition";
 import { ArrowRightIcon, CheckIcon, ChevronDownIcon, GlobeAltIcon, MinusIcon, PencilAltIcon, PlusIcon, SearchIcon } from "@heroicons/react/outline";
-import useUploadDrawEvent, { EventApplicationInputType, EventType } from "src/hooks/useUploadDrawEvent";
+import useUploadDrawEvent, { EventApplicationInputType, EventType, OrderableType } from "src/hooks/useUploadDrawEvent";
 import ReactTextareaAutosize from "react-textarea-autosize";
 import { DefaultText } from "../common/ModifiedTruncatedMarkdown";
 import { FaBars, FaDiscord, FaTwitter } from "react-icons/fa";
@@ -20,6 +20,8 @@ import DatePicker from "react-datepicker";
 import { ko } from "date-fns/locale";
 
 import "react-datepicker/dist/react-datepicker.css";
+import { Menu, Popover, Transition } from "@headlessui/react";
+import useLink from "src/hooks/useLink";
 
 export const useOpenNewEventModal = (data = null) => {
   const dispatch = useDispatch();
@@ -62,23 +64,21 @@ function EventDetails({ closeModal, event }) {
     canModifyType,
     error,
     loading,
-    canUploadDrawEvent,
     applicationCategories,
     handleAddApplicationCategory,
     handleRemoveApplicationCategory,
     handleAddApplicationOption,
     handleRemoveApplicationOption,
+    handleChangeApplicationCategoryName,
+    handleChangeApplicationName,
+    handleChangeApplicationInputType,
     canModifyApplicationCategories,
-    enableApplicationLink,
-    toggleEnableApplicationLink,
+    orderableType,
+    setOrderableType,
     discordLink,
     handleDiscordLinkChange,
     handleClickDiscordLink,
     discordLinkError,
-    applicationLink,
-    handleApplicationLinkChange,
-    handleClickApplicationLink,
-    applicationLinkError,
     expiresAt,
     setExpiresAt,
     createdAt,
@@ -196,17 +196,16 @@ function EventDetails({ closeModal, event }) {
               show={type == EventType.EVENT}
               content={
                 <Options
-                  applicationLink={applicationLink}
-                  handleApplicationLinkChange={handleApplicationLinkChange}
-                  enableApplicationLink={enableApplicationLink}
-                  toggleEnableApplicationLink={toggleEnableApplicationLink}
-                  handleClickApplicationLink={handleClickApplicationLink}
-                  applicationLinkError={applicationLinkError}
+                  orderableType={orderableType}
+                  setOrderableType={setOrderableType}
                   applicationCategories={applicationCategories}
                   handleAddApplicationCategory={handleAddApplicationCategory}
                   handleRemoveApplicationCategory={handleRemoveApplicationCategory}
                   handleAddApplicationOption={handleAddApplicationOption}
                   handleRemoveApplicationOption={handleRemoveApplicationOption}
+                  handleChangeApplicationCategoryName={handleChangeApplicationCategoryName}
+                  handleChangeApplicationInputType={handleChangeApplicationInputType}
+                  handleChangeApplicationName={handleChangeApplicationName}
                   canModifyApplicationCategories={canModifyApplicationCategories}
                   expiresAt={expiresAt}
                   setExpiresAt={setExpiresAt}
@@ -219,21 +218,29 @@ function EventDetails({ closeModal, event }) {
           </Div>
         </Div>
         <Div wFull flex flexRow justifyEnd mt30>
-          {canUploadDrawEvent && (
-            <Div selfCenter>
-              {loading ? (
-                <Div fontBold bgBW selfEnd px10 py5 bgBWLight textWhite rounded10>
-                  <Oval height="14" width="14" color="#4738FF" secondaryColor="#FFFFFF" strokeWidth="5" />
+          <Div selfCenter>
+            <DefaultTransition
+              show={error != ""}
+              content={
+                <Div textDanger fontBold mr10>
+                  {error}
                 </Div>
-              ) : (
-                <Tooltip title={event ? "이벤트 수정" : "이벤트 업로드"} arrow>
-                  <Div fontBold bgOpacity80 bgBW selfEnd px10 cursorPointer py5 bgBWLight textWhite rounded10 clx="hover:bg-bw" onClick={uploadDrawEvent}>
-                    {event ? "수정" : "업로드"}
-                  </Div>
-                </Tooltip>
-              )}
-            </Div>
-          )}
+              }
+            />
+          </Div>
+          <Div selfCenter>
+            {loading ? (
+              <Div fontBold bgBW selfEnd px10 py5 bgBWLight textWhite rounded10>
+                <Oval height="14" width="14" color="#4738FF" secondaryColor="#FFFFFF" strokeWidth="5" />
+              </Div>
+            ) : (
+              <Tooltip title={event ? "이벤트 수정" : "이벤트 업로드"} arrow>
+                <Div fontBold bgOpacity80 bgBW selfEnd px10 cursorPointer py5 bgBWLight textWhite rounded10 clx="hover:bg-bw" onClick={uploadDrawEvent}>
+                  {event ? "수정" : "업로드"}
+                </Div>
+              </Tooltip>
+            )}
+          </Div>
         </Div>
       </Div>
     </Div>
@@ -274,12 +281,8 @@ function Images({ imageUrls, handleAddImages, handleChangeImage, handleRemoveIma
 }
 
 function Options({
-  enableApplicationLink,
-  toggleEnableApplicationLink,
-  applicationLink,
-  handleApplicationLinkChange,
-  handleClickApplicationLink,
-  applicationLinkError,
+  orderableType,
+  setOrderableType,
 
   applicationCategories,
   handleAddApplicationCategory,
@@ -287,6 +290,9 @@ function Options({
   handleAddApplicationOption,
   handleRemoveApplicationOption,
   canModifyApplicationCategories,
+  handleChangeApplicationCategoryName,
+  handleChangeApplicationInputType,
+  handleChangeApplicationName,
 
   expiresAt,
   setExpiresAt,
@@ -296,8 +302,8 @@ function Options({
   loading,
 }) {
   return (
-    <Div wFull flex flexCol justifyCenter mt20 gapY={20}>
-      <Div wFull flex flexRow justifyStart gapX={20}>
+    <Div wFull flex flexCol justifyCenter mt20 gapY={20} mb200>
+      <Div flex flexRow justifyStart gapX={20}>
         <SelectExpires enableExpires={eanbleExpires} toggleExpires={() => setEnableExpires((prev) => !prev)} loading={loading} />
         <DefaultTransition
           show={eanbleExpires}
@@ -319,348 +325,383 @@ function Options({
         />
       </Div>
       <Div wFull flex flexRow justifyStart gapX={20}>
-        <SelectApplication
-          enableApplicationLink={enableApplicationLink}
-          toggleEnableApplicationLink={toggleEnableApplicationLink}
-          loading={canModifyApplicationCategories ? loading : true}
-        />
-        {enableApplicationLink && (
-          <DefaultTransition
-            show={enableApplicationLink}
-            content={
-              <ApplicationLink
-                applicationLink={applicationLink}
-                handleApplicationLinkChange={
-                  !(canModifyApplicationCategories ? loading : true)
-                    ? handleApplicationLinkChange
-                    : () => {
-                        return;
-                      }
-                }
-                handleClickApplicationLink={handleClickApplicationLink}
-                applicationLinkError={applicationLinkError}
-              />
-            }
-          />
-        )}
-        {!enableApplicationLink && !(canModifyApplicationCategories ? loading : true) && (
-          <DefaultTransition show={!enableApplicationLink} content={<AddOptions handleAddApplicationCategory={handleAddApplicationCategory} />} />
-        )}
+        <SelectOrderableType orderableType={orderableType} setOrderableType={setOrderableType} loading={loading} />
       </Div>
-      {!enableApplicationLink && (
-        <DefaultTransition
-          show={!enableApplicationLink}
-          content={
-            <Div selfCenter flex flexRow wFull jsutifyStart gapX={10} flexWrap gapY={10}>
-              <AnimatePresence>
-                {applicationCategories
-                  ? applicationCategories.map((value, index) => (
-                      <ModifyOption
-                        option={value}
-                        onClick={() => handleRemoveApplicationCategory(index)}
-                        key={value?.index}
-                        handleAddApplicationOption={(optionName) => handleAddApplicationOption(index, optionName)}
-                        handleRemoveApplicationOption={(optionIndex) => handleRemoveApplicationOption(index, optionIndex)}
-                        loading={canModifyApplicationCategories ? loading : true}
-                      />
-                    ))
-                  : null}
-              </AnimatePresence>
+      <Div relative selfCenter flex flexCol wFull jsutifyStart gapX={10} flexWrap gapY={10} ml30>
+        <AnimatePresence>
+          {applicationCategories
+            ? applicationCategories.map((value, index) => (
+                <ModifyOption
+                  index={index}
+                  option={value}
+                  length={applicationCategories.length}
+                  onClick={() => handleRemoveApplicationCategory(index)}
+                  key={value?.index}
+                  handleChangeApplicationCategoryName={(categoryName) => handleChangeApplicationCategoryName(index, categoryName)}
+                  handleChangeApplicationInputType={(inputType: EventApplicationInputType) => handleChangeApplicationInputType(index, inputType)}
+                  handleAddApplicationOption={(optionName) => handleAddApplicationOption(index, optionName)}
+                  handleRemoveApplicationOption={(optionIndex) => handleRemoveApplicationOption(index, optionIndex)}
+                  loading={canModifyApplicationCategories ? loading : true}
+                  handleChangeApplicationName={(applicationName) => handleChangeApplicationName(index, applicationName)}
+                />
+              ))
+            : null}
+          {!(canModifyApplicationCategories ? loading : true) && (
+            <Div flex flexRow gapX={20}>
+              <Div w={"10vw"} />
+              <AddOptions handleAddApplicationCategory={handleAddApplicationCategory} />
             </Div>
-          }
-        />
-      )}
+          )}
+        </AnimatePresence>
+      </Div>
     </Div>
   );
 }
 
-function ModifyOption({ option, onClick, handleAddApplicationOption, handleRemoveApplicationOption, loading }) {
-  const [click, setClick] = useState(false);
-  const canClick = option?.inputType == EventApplicationInputType.SELECT;
-  const [optionInput, handleChangeOptionInputText] = useState("");
-  const handleChangeOptionInput = ({ target: { value } }) => {
-    handleChangeOptionInputText(value);
+function ModifyOption({
+  length,
+  index,
+  option,
+  onClick,
+  handleAddApplicationOption,
+  handleRemoveApplicationOption,
+  handleChangeApplicationName,
+  handleChangeApplicationInputType,
+  loading,
+  handleChangeApplicationCategoryName,
+}) {
+  const handleChangeApplicationCategoryNameText = ({ target: { value } }) => {
+    !loading && handleChangeApplicationCategoryName(value);
   };
   const animation = {
     mount: { opacity: 1, scale: 1 },
     unmount: { opacity: 0, scale: 0.95 },
     transition: { duration: 0.2 },
   };
-  const onEnterOptions = (e) => {
-    if (e.key === "Enter" && optionInput != "") {
-      handleAddApplicationOption(optionInput);
-      handleChangeOptionInputText("");
-    }
-  };
   return (
-    <motion.div initial={animation.unmount} animate={animation.mount} exit={animation.unmount} transition={animation.transition}>
-      <Div relative>
-        <Div
-          selfStart
-          px10
-          py5
-          bgGray100={!click}
-          bgGray200={click}
-          rounded={!click}
-          roundedT={click}
-          textBlack
-          flex
-          flexRow
-          justifyCenter
-          relative
-          onClick={!loading && (!canClick ? () => onClick() : () => setClick(!click))}
-          cursorPointer={!loading}
-          clx={!loading && "hover:bg-gray-200"}
-        >
-          <Div relative selfCenter>
-            {option?.inputType == EventApplicationInputType.DISCORD_ID ? (
-              <FaDiscord size={18} />
-            ) : option?.inputType == EventApplicationInputType.TWITTER_ID ? (
-              <FaTwitter size={18} />
-            ) : option?.inputType == EventApplicationInputType.CUSTOM_INPUT ? (
-              <PencilAltIcon height={18} width={18} className="max-h-18 max-w-18" />
-            ) : (
-              <FaBars size={18} />
-            )}
-          </Div>
-          <Div relative selfCenter fontSize12 ml5 fontSemibold>
-            {option?.name}
-          </Div>
-          {!loading && (
-            <Div relative selfCenter fontSize12 ml5 fontSemibold onClick={canClick && !click && onClick} px5 py5>
-              {!click ? (
-                <MinusIcon height={12} width={12} className="max-h-12 max-w-12" />
-              ) : (
-                <ChevronDownIcon height={12} width={12} className="max-h-12 max-w-12" />
-              )}
-            </Div>
-          )}
-        </Div>
-        <DefaultTransition
-          show={click && canClick}
-          duration={0.2}
-          content={
-            <Div cursorPointer={!loading} z100 bgGray200 absolute breakAll style={{ maxHeight: "500%" }} minWFull roundedB px10 flex flexCol py5 gapY={3}>
-              {!loading && (
-                <Div wFull textLeft fontSize12 borderGray400 flex flexRow selfCenter gapY={2} gapX={5} justifyStart>
-                  <Div wFull textLeft>
-                    <input
-                      placeholder="옵션 입력"
-                      value={optionInput}
-                      className={"self-center h-full w-full focus:outline-none focus:border-gray-400 bg-transparent rounded-md"}
-                      style={{ boxShadow: "none", border: "none" }}
-                      onChange={handleChangeOptionInput}
-                      onKeyPress={onEnterOptions}
-                    ></input>
-                  </Div>
-                  <Div
-                    selfCenter
-                    fontSize12
-                    ml5
-                    fontSemibold
-                    textRight
-                    onClick={
-                      optionInput != "" &&
-                      (() => {
-                        handleAddApplicationOption(optionInput);
-                        handleChangeOptionInputText("");
-                      })
-                    }
-                  >
-                    <PlusIcon height={12} width={12} className="max-h-12 max-w-12" />
-                  </Div>
+    <motion.div
+      initial={animation.unmount}
+      animate={animation.mount}
+      exit={animation.unmount}
+      transition={animation.transition}
+      style={{ position: "relative" }}
+    >
+      <Div relative wFull flex flexRow justifyStart gapX={20}>
+        <Div flex flexRow justifyEnd w={"10vw"} pr10>
+          {!loading && length != 1 && (
+            <Div wFull selfCenter>
+              <Div
+                selfCenter
+                rounded15
+                w30
+                h30
+                bgDangerLight
+                textCenter
+                flex
+                flexRow
+                justifyCenter
+                clx="hover:bg-danger"
+                cursorPointer
+                onClick={!loading && onClick}
+              >
+                <Div selfCenter>
+                  <MinusIcon height={12} width={12} className="max-h-12 max-w-12" />
                 </Div>
-              )}
-              <Div overflowYScroll noScrollBar>
-                {option?.options.map((value, index) => (
-                  <Div
-                    key={`${value}-${index}`}
-                    relative
-                    textRight
-                    wFull
-                    fontSize12
-                    borderGray400
-                    borderB1={index != option?.options.length - 1}
-                    onClick={!loading && (() => handleRemoveApplicationOption(index))}
-                    flex
-                    flexRow
-                    selfCenter
-                    gapY={2}
-                    gapX={5}
-                  >
-                    <Div wFull textLeft>
-                      {value}
-                    </Div>
-                    {!loading && (
-                      <Div selfCenter fontSize12 ml5 fontSemibold textRight>
-                        <MinusIcon height={12} width={12} className="max-h-12 max-w-12" />
-                      </Div>
-                    )}
-                  </Div>
-                ))}
               </Div>
             </Div>
-          }
-        />
+          )}
+          <Div whitespaceNowrap selfCenter textRight fontBold>
+            참여 조건{" " + (index + 1)}
+          </Div>
+        </Div>
+        <Div selfCenter justifyStart w={"25vw"} px20 py10 textCenter bgGray200>
+          <input
+            placeholder={"참여 조건 " + (index + 1) + " 입력"}
+            value={option.category}
+            className={"self-center h-full w-full focus:outline-none focus:border-gray-400 bg-transparent rounded-md"}
+            style={{ boxShadow: "none", border: "none" }}
+            onChange={handleChangeApplicationCategoryNameText}
+          ></input>
+        </Div>
+        <ChooseInputType loading={loading} inputType={option.inputType} handleChangeApplicationInputType={handleChangeApplicationInputType} />
+        {option.inputType == EventApplicationInputType.LINK && (
+          <OptionLink loading={loading} handleChangeApplicationName={handleChangeApplicationName} link={option.name} />
+        )}
+        {option.inputType == EventApplicationInputType.SELECT && (
+          <ModifyOptions
+            loading={loading}
+            handleAddApplicationOption={handleAddApplicationOption}
+            handleRemoveApplicationOption={handleRemoveApplicationOption}
+            options={option.options}
+          />
+        )}
       </Div>
     </motion.div>
   );
 }
 
-function AddOptions({ handleAddApplicationCategory }) {
-  const [cutomInput, handleChangeCustomInputText] = useState("");
-  const [select, handleChangeSelectText] = useState("");
-  const handleChangeCustomInput = ({ target: { value } }) => {
-    handleChangeCustomInputText(value);
+function ModifyOptions({ loading, handleAddApplicationOption, handleRemoveApplicationOption, options = [] }) {
+  const width = 300;
+  const MenuItem = (props) => {
+    return (
+      <Div
+        {...props}
+        borderT1
+        borderGray400
+        selfCenter
+        justifyStart
+        w={width}
+        px10
+        py5
+        textLeft
+        bgGray300
+        relative
+        clx={`${props.active ? "bg-gray-300 font-bold" : "text-gray-800"}`}
+        cursorPointer
+        flex
+        flexRow
+      >
+        <Div selfCenter wFull textLeft breakAll>
+          {props.children}
+        </Div>
+        <Div selfCenter w={30} px10 textCenter fontSize20 fontBold cursorPointer>
+          -
+        </Div>
+      </Div>
+    );
   };
-  const handleChangeSelect = ({ target: { value } }) => {
-    handleChangeSelectText(value);
+  return loading ? (
+    <Div relative fontSize16 selfCenter justifyCenter w={width} px10 py10 textCenter bgGray200 fontBold>
+      옵션 추가
+    </Div>
+  ) : (
+    <Div relative>
+      <Popover as="div">
+        {({ open, close }) => (
+          <>
+            {!open && (
+              <Popover.Button className="relative">
+                <Div relative fontSize16 selfCenter justifyCenter w={width} px10 py10 textCenter bgGray200 clx="hover:bg-gray-300" fontBold>
+                  옵션 추가
+                </Div>
+              </Popover.Button>
+            )}
+            <Popover.Panel className="origin-top-right absolute bg-gray-200 focus:outline-none " style={{ zIndex: 100 }} static>
+              {open && <AddOptionInput loading={loading} handleAddApplicationOption={handleAddApplicationOption} width={width} open={open} />}
+              <Transition
+                show={open}
+                enter="transition ease-out duration-100"
+                enterFrom="transform opacity-0 scale-95"
+                enterTo="transform opacity-100 scale-100"
+                leave="transition ease-in duration-75"
+                leaveFrom="transform opacity-100 scale-100"
+                leaveTo="transform opacity-0 scale-95"
+              >
+                <Div relative textBase fontSize15>
+                  {options.map((value, index) => (
+                    <MenuItem key={index} onClick={() => handleRemoveApplicationOption(index)}>
+                      {value}
+                    </MenuItem>
+                  ))}
+                </Div>
+              </Transition>
+            </Popover.Panel>
+          </>
+        )}
+      </Popover>
+    </Div>
+  );
+}
+
+function AddOptionInput({ loading, handleAddApplicationOption, width, open }) {
+  const [optionInput, setOptionInput] = useState("");
+  const ref = useRef(null);
+  const handleChangeOptionInputText = ({ target: { value } }) => {
+    !loading && setOptionInput(value);
   };
-  const onEnterCustomInput = (e) => {
-    if (e.key === "Enter" && cutomInput != "") {
-      handleChangeCustomInputText("");
-      handleAddApplicationCategory(cutomInput, EventApplicationInputType.CUSTOM_INPUT);
+  const onEnterOptions = (e) => {
+    if (e.key === "Enter" && optionInput != "") {
+      handleAddApplicationOption(optionInput);
+      setOptionInput("");
     }
   };
-  const onEnterCategories = (e) => {
-    if (e.key === "Enter" && select != "") {
-      handleChangeSelectText("");
-      handleAddApplicationCategory(select, EventApplicationInputType.SELECT);
+  const onClickAddOption = () => {
+    if (optionInput != "") {
+      handleAddApplicationOption(optionInput);
+      setOptionInput("");
     }
   };
+  useEffect(() => {
+    if (open) ref.current?.focus();
+  }, [open]);
   return (
-    <Div flex flexRow justifyStart gapX={10}>
-      <Div relative selfCenter cursorPointer onClick={() => handleAddApplicationCategory("트위터 아이디", EventApplicationInputType.TWITTER_ID)}>
-        <Div selfStart px10 py5 bgGray100 rounded textBlack flex flexRow justifyCenter relative clx={"hover:bg-gray-200"}>
-          <Div relative selfCenter>
-            <FaTwitter size={18} />
-          </Div>
-          <Div relative selfCenter fontSize12 ml5 fontSemibold>
-            트위터
-          </Div>
-          <Div relative selfCenter fontSize12 ml5 fontSemibold px5 py5>
-            <PlusIcon height={12} width={12} className="max-h-12 max-w-12" />
-          </Div>
-        </Div>
-      </Div>
-      <Div relative selfCenter cursorPointer onClick={() => handleAddApplicationCategory("디스코드 아이디", EventApplicationInputType.DISCORD_ID)}>
-        <Div selfStart px10 py5 bgGray100 rounded textBlack flex flexRow justifyCenter relative clx={"hover:bg-gray-200"}>
-          <Div relative selfCenter>
-            <FaDiscord size={18} />
-          </Div>
-          <Div relative selfCenter fontSize12 ml5 fontSemibold>
-            디스코드
-          </Div>
-          <Div relative selfCenter fontSize12 ml5 fontSemibold px5 py5>
-            <PlusIcon height={12} width={12} className="max-h-12 max-w-12" />
-          </Div>
-        </Div>
-      </Div>
-      <Div relative selfCenter>
-        <Div selfStart px10 py5 bgGray100 rounded textBlack flex flexRow justifyCenter relative clx={"hover:bg-gray-200"}>
-          <Div relative selfCenter>
-            <PencilAltIcon height={18} width={18} className="max-h-18 max-w-18" />
-          </Div>
-          <Div relative selfCenter fontSize12 ml5 fontSemibold w={250}>
-            <input
-              placeholder="커스텀 입력"
-              value={cutomInput}
-              className={"self-center h-full w-full focus:outline-none focus:border-gray-400 bg-transparent rounded-md"}
-              style={{ boxShadow: "none", border: "none" }}
-              onChange={handleChangeCustomInput}
-              onKeyPress={onEnterCustomInput}
-            ></input>
-          </Div>
-          <Div
-            relative
-            selfCenter
-            fontSize12
-            ml5
-            fontSemibold
-            cursorPointer
-            px5
-            py5
-            onClick={
-              cutomInput != "" &&
-              (() => {
-                handleChangeCustomInputText("");
-                handleAddApplicationCategory(cutomInput, EventApplicationInputType.CUSTOM_INPUT);
-              })
-            }
-          >
-            <PlusIcon height={12} width={12} className="max-h-12 max-w-12" />
-          </Div>
-        </Div>
-      </Div>
-      <Div relative selfCenter>
-        <Div selfStart px10 py5 bgGray100 rounded textBlack flex flexRow justifyCenter relative clx={"hover:bg-gray-200"}>
-          <Div relative selfCenter>
-            <FaBars size={18} />
-          </Div>
-          <Div relative selfCenter fontSize12 ml5 fontSemibold w={250}>
-            <input
-              placeholder="옵션 선택 카테고리"
-              value={select}
-              className={"self-center h-full w-full focus:outline-none focus:border-gray-400 bg-transparent rounded-md"}
-              style={{ boxShadow: "none", border: "none" }}
-              onChange={handleChangeSelect}
-              onKeyPress={onEnterCategories}
-            ></input>
-          </Div>
-          <Div
-            relative
-            selfCenter
-            fontSize12
-            ml5
-            fontSemibold
-            cursorPointer
-            px5
-            py5
-            onClick={
-              select != "" &&
-              (() => {
-                handleChangeSelectText("");
-                handleAddApplicationCategory(select, EventApplicationInputType.SELECT);
-              })
-            }
-          >
-            <PlusIcon height={12} width={12} className="max-h-12 max-w-12" />
-          </Div>
-        </Div>
+    <Div relative fontSize16 selfCenter justifyCenter w={width} px10 py10 textCenter bgGray300 fontBold flex flexRow>
+      <input
+        ref={ref}
+        placeholder={"옵션 입력"}
+        value={optionInput}
+        className={"self-center h-full w-full focus:outline-none focus:border-gray-400 bg-transparent rounded-md"}
+        style={{ boxShadow: "none", border: "none" }}
+        onChange={handleChangeOptionInputText}
+        onKeyPress={onEnterOptions}
+      ></input>
+      <Div w={30} px10 textCenter fontSize20 fontBold onClick={onClickAddOption} cursorPointer>
+        +
       </Div>
     </Div>
   );
 }
 
-function ApplicationLink({ applicationLink, handleApplicationLinkChange, handleClickApplicationLink, applicationLinkError }) {
+function OptionLink({ loading, handleChangeApplicationName, link }) {
+  const { linkError, handleChangeLink, handleClickLink } = useLink("", false);
+  const handleChangeApplicationLink = ({ target: { value } }) => {
+    !loading && handleChangeApplicationName(value);
+    !loading && handleChangeLink({ target: { value } });
+  };
   return (
-    <Div selfCenter flex flexRow gapX={10}>
-      <Div mt5 fontSemibold>
-        <GlobeAltIcon height={20} width={20} className="max-h-20 max-w-20" />
+    <Div flex flexRow w={"37vw"}>
+      <Div wFull selfCenter justifyStart px20 py10 textCenter bgGray200 border1={linkError != ""} borderDanger>
+        <input
+          placeholder={"https://..."}
+          value={link}
+          className={"self-center h-full w-full focus:outline-none focus:border-gray-400 bg-transparent rounded-md"}
+          style={{ boxShadow: "none", border: "none" }}
+          onChange={handleChangeApplicationLink}
+        ></input>
       </Div>
-      <Div flex flexCol justifyStart gapY={5}>
-        <Div px10 py5 bgWhite roundedLg textBlack w300>
-          <input
-            placeholder="https://..."
-            value={applicationLink}
-            className={"self-center h-full w-full focus:outline-none focus:border-gray-400 bg-transparent rounded-md"}
-            style={{ boxShadow: "none", border: "none" }}
-            onChange={handleApplicationLinkChange}
-          ></input>
-        </Div>
-        <Div textLeft textDanger fontBold fontSize12 ml10 mb18={!applicationLinkError}>
-          <DefaultTransition show={applicationLinkError ? true : false} content={applicationLinkError} />
-        </Div>
+      <Div selfCenter ml10 px10 py5 bgInfo bgOpacity50 rounded10 textWhite cursorPointer clx="hover:bg-info" onClick={handleClickLink}>
+        {" "}
+        <ArrowRightIcon height={20} width={20} className="max-h-20 max-w-20" />
       </Div>
-      <DefaultTransition
-        show={!applicationLinkError}
-        content={
-          <Div selfStart px10 py5 bgInfo bgOpacity50 rounded10 textWhite cursorPointer clx="hover:bg-info" onClick={handleClickApplicationLink}>
-            {" "}
-            <ArrowRightIcon height={20} width={20} className="max-h-20 max-w-20" />
+    </Div>
+  );
+}
+
+function ChooseInputType({ loading, inputType, handleChangeApplicationInputType }) {
+  const MenuItem = (props) => {
+    return (
+      <Div
+        borderT1
+        borderGray300
+        fontSize12
+        selfCenter
+        justifyCenter
+        w={130}
+        px10
+        py5
+        textCenter
+        bgGray200
+        relative
+        clx={`${props.active ? "bg-gray-300 font-bold" : "text-gray-800"}`}
+        cursorPointer
+        {...props}
+      >
+        {props.children}
+      </Div>
+    );
+  };
+  return loading ? (
+    <Div relative fontSize16 selfCenter justifyCenter w={130} px10 py10 textCenter bgGray200 fontBold>
+      {inputType == EventApplicationInputType.LINK
+        ? "링크"
+        : inputType == EventApplicationInputType.SELECT
+        ? "선택 카테고리"
+        : inputType == EventApplicationInputType.CUSTOM_INPUT
+        ? "유저 입력란"
+        : inputType == EventApplicationInputType.DISCORD_ID
+        ? "디스코드 아이디"
+        : inputType == EventApplicationInputType.TWITTER_ID
+        ? "트위터 아이디"
+        : "옵션 선택"}
+    </Div>
+  ) : (
+    <Div relative>
+      <Menu as="div">
+        <Menu.Button className="relative">
+          <Div relative fontSize16 selfCenter justifyCenter w={130} px10 py10 textCenter bgGray200 clx="hover:bg-gray-300" fontBold>
+            {inputType == EventApplicationInputType.LINK
+              ? "링크"
+              : inputType == EventApplicationInputType.SELECT
+              ? "선택 카테고리"
+              : inputType == EventApplicationInputType.CUSTOM_INPUT
+              ? "유저 입력란"
+              : inputType == EventApplicationInputType.DISCORD_ID
+              ? "디스코드 아이디"
+              : inputType == EventApplicationInputType.TWITTER_ID
+              ? "트위터 아이디"
+              : "옵션 선택"}
           </Div>
-        }
-      />
+        </Menu.Button>
+        <Transition
+          as={Fragment}
+          enter="transition ease-out duration-100"
+          enterFrom="transform opacity-0 scale-95"
+          enterTo="transform opacity-100 scale-100"
+          leave="transition ease-in duration-75"
+          leaveFrom="transform opacity-100 scale-100"
+          leaveTo="transform opacity-0 scale-95"
+        >
+          <Menu.Items className="origin-top-right absolute bg-gray-200 focus:outline-none " style={{ zIndex: 100 }}>
+            <Div relative textBase fontSize12>
+              <Menu.Item>
+                {({ active }) => (
+                  <MenuItem active={active} onClick={() => handleChangeApplicationInputType(EventApplicationInputType.LINK)}>
+                    링크
+                  </MenuItem>
+                )}
+              </Menu.Item>
+              <Menu.Item>
+                {({ active }) => (
+                  <MenuItem active={active} onClick={() => handleChangeApplicationInputType(EventApplicationInputType.SELECT)}>
+                    선택 카테고리
+                  </MenuItem>
+                )}
+              </Menu.Item>
+              <Menu.Item>
+                {({ active }) => (
+                  <MenuItem active={active} onClick={() => handleChangeApplicationInputType(EventApplicationInputType.CUSTOM_INPUT)}>
+                    유저 입력란
+                  </MenuItem>
+                )}
+              </Menu.Item>
+              <Menu.Item>
+                {({ active }) => (
+                  <MenuItem active={active} onClick={() => handleChangeApplicationInputType(EventApplicationInputType.DISCORD_ID)}>
+                    디스코드 아이디
+                  </MenuItem>
+                )}
+              </Menu.Item>
+              <Menu.Item>
+                {({ active }) => (
+                  <MenuItem active={active} onClick={() => handleChangeApplicationInputType(EventApplicationInputType.TWITTER_ID)}>
+                    트위터 아이디
+                  </MenuItem>
+                )}
+              </Menu.Item>
+            </Div>
+          </Menu.Items>
+        </Transition>
+      </Menu>
+    </Div>
+  );
+}
+
+function AddOptions({ handleAddApplicationCategory }) {
+  return (
+    <Div
+      justifyStart
+      w={"25vw"}
+      px20
+      py10
+      textCenter
+      bgGray200
+      fontSize20
+      fontBold
+      onClick={handleAddApplicationCategory}
+      cursorPointer
+      clx="hover:bg-gray-300"
+    >
+      +
     </Div>
   );
 }
@@ -738,16 +779,16 @@ function Title({ name, handleNameChange }) {
   );
 }
 
-function SelectApplication({ enableApplicationLink, toggleEnableApplicationLink, loading }) {
+function SelectOrderableType({ orderableType, setOrderableType, loading }) {
   return (
     <Div selfStart>
       <SelectEntry
-        firstText={"응모 링크"}
-        secondText={"옵션"}
-        clickFirst={toggleEnableApplicationLink}
-        clickSecond={toggleEnableApplicationLink}
-        isFirst={enableApplicationLink}
-        isSecond={!enableApplicationLink}
+        firstText={"홀더만 응모 가능"}
+        secondText={"누구나 응모 가능"}
+        clickFirst={() => setOrderableType(OrderableType.HOLDER_ONLY)}
+        clickSecond={() => setOrderableType(OrderableType.ALL)}
+        isFirst={orderableType == OrderableType.HOLDER_ONLY}
+        isSecond={orderableType == OrderableType.ALL}
         enable={!loading}
       />
     </Div>

@@ -7,7 +7,7 @@ import { useState } from "react";
 import { eventApplicationAction } from "src/store/reducers/adminReducer";
 import TimerText from "../common/timertext";
 import PaginationPageSizebox from "../common/paginationpagesizebox";
-import { CheckIcon, PencilAltIcon, RefreshIcon } from "@heroicons/react/outline";
+import { ArrowRightIcon, CheckIcon, PencilAltIcon, RefreshIcon } from "@heroicons/react/outline";
 import { Oval } from "react-loader-spinner";
 import Tooltip from "@mui/material/Tooltip";
 import Pagination from "@mui/material/Pagination";
@@ -391,8 +391,12 @@ function OptionDetail({ option }) {
               <FaDiscord size={18} />
             ) : inputType == EventApplicationInputType.TWITTER_ID ? (
               <FaTwitter size={18} />
-            ) : (
+            ) : inputType == EventApplicationInputType.CUSTOM_INPUT ? (
               <PencilAltIcon height={18} width={18} className="max-h-18 max-w-18" />
+            ) : inputType == EventApplicationInputType.LINK ? (
+              <ArrowRightIcon height={18} width={18} className="max-h-18 max-w-18" />
+            ) : (
+              <></>
             )}
           </Div>
           <Div
@@ -404,7 +408,7 @@ function OptionDetail({ option }) {
             {option?.draw_event_option?.category}
           </Div>
           <Div ml5 selfCenter px8 py2 bgWhite rounded>
-            {option?.value}
+            {inputType == EventApplicationInputType.LINK ? <CheckIcon height={18} width={18} className="max-h-18 max-w-18 text-success" /> : option?.value}
           </Div>
         </>
       )}

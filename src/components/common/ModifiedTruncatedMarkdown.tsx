@@ -33,48 +33,40 @@ export const ModifiledTruncatedMarkdown: TruncatedMarkdownType = function ({ tex
     resultLines.push(lines[lineIndex]);
   }
   const result = resultLines.join("\n");
+  // const temp = resultLines.join("\n\n");
   if (result.length != text.length) {
     if (onClickTruncated) {
-      return (
-        <Div breakAll>
-          <ReactMarkdown remarkPlugins={[remarkGfm]} children={result} />
-          <Div onClick={onClickTruncated} cursorPointer fontBold>
-            ...더보기
-          </Div>
-        </Div>
-      );
+      return <DefaultText text={result} optionalText={"...더보기"} onClick={onClickTruncated} />;
     }
-    return (
-      <Div breakAll>
-        <ReactMarkdown remarkPlugins={[remarkGfm]} children={result.concat("...")} />
-      </Div>
-    );
+    return <DefaultText text={result.concat("...")} />;
   }
-  return (
-    <Div breakAll>
-      <ReactMarkdown remarkPlugins={[remarkGfm]} children={result} />
-    </Div>
-  );
+  return <DefaultText text={result} />;
 };
 
 function TruncatedText({ text, maxLength }) {
   const [full, setfull] = useState(false);
   return full ? (
-    <Div breakAll>
-      <ReactMarkdown remarkPlugins={[remarkGfm]} children={text} />
-      <Div onClick={() => setfull(false)} cursorPointer fontBold>
-        간략히
-      </Div>
-    </Div>
+    <DefaultText text={text} optionalText={"간략히"} onClick={() => setfull(false)} />
   ) : (
     <ModifiledTruncatedMarkdown text={text} maxLength={maxLength} onClickTruncated={() => setfull(true)} />
   );
 }
 
-export function DefaultText({ text }) {
+export function DefaultText({
+  text,
+  optionalText = "",
+  onClick = () => {
+    return;
+  },
+}) {
   return (
     <Div breakAll>
       <ReactMarkdown remarkPlugins={[remarkGfm]} children={text} />
+      {optionalText != "" && (
+        <Div onClick={onClick} cursorPointer fontBold>
+          {optionalText}
+        </Div>
+      )}
     </Div>
   );
 }
