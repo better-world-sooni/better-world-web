@@ -45,6 +45,11 @@ const initialState = {
     data: null,
     title: "",
   },
+  EventBannerModal: {
+    enabled: false,
+    state: -1,
+    drawEvent: null,
+  },
 };
 
 // action type
@@ -59,6 +64,7 @@ export const NEWEVENT_MODAL = "modal/NEWEVENT_MODAL" as const;
 export const NEWCOLLECTION_MODAL = "modal/NEWCOLLECTION_MODAL" as const;
 export const EVENT_APPLICATION_MODAL = "modal/EVENT_APPLICATION_MODAL" as const;
 export const CHART_MODAL = "modal/CHART_MODAL" as const;
+export const EVENT_BANNER_MODAL = "modal/EVENT_BANNER_MODAL" as const;
 
 // action function
 export const confettiAction = ({ enabled }) => ({ type: CONFETTI, enabled });
@@ -75,6 +81,12 @@ export const newCollectionAction = ({ enabled, contractAddress, collection, erro
   contractAddress,
   collection,
   error,
+});
+export const eventBannerAction = ({ enabled, state, drawEvent }) => ({
+  type: EVENT_BANNER_MODAL,
+  enabled,
+  state,
+  drawEvent,
 });
 export const eventApplicationModalAction = ({ enabled }) => ({ type: EVENT_APPLICATION_MODAL, enabled });
 export const charModalAction = ({ enabled, chartType, data, title }) => ({ type: CHART_MODAL, enabled, chartType, data, title });
@@ -192,6 +204,17 @@ export const modalReducer = (state = initialState, action) => {
             chartType,
             data,
             title,
+          },
+        };
+      });
+    case EVENT_BANNER_MODAL:
+      return f(action, ({ enabled, state: EventBannerState, drawEvent }) => {
+        return {
+          ...state,
+          EventBannerModal: {
+            enabled,
+            state: EventBannerState,
+            drawEvent,
           },
         };
       });
