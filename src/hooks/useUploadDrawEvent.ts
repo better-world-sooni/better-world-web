@@ -114,8 +114,6 @@ export default function useUploadDrawEvent({ queryClient, uploadSuccessCallback 
   );
 
   const uploadDrawEvent = async () => {
-    setLoading((prev) => !prev);
-    return;
     if (loading || loadingUpload || loadingUpdate) {
       return;
     }
@@ -144,6 +142,29 @@ export default function useUploadDrawEvent({ queryClient, uploadSuccessCallback 
       setError("이미지는 8장 이하여야 합니다.");
       return;
     }
+    if (type == EventType.EVENT)
+      for (var i = 0; i < applicationCategories.length; i++) {
+        var applicationCategory = applicationCategories[i];
+        if (applicationCategory.category == "") {
+          setError("참여 조건 " + (i + 1) + "을/를 입력해주세요.");
+          return;
+        }
+        if (applicationCategory.inputType == EventApplicationInputType.NOT_SELECTED) {
+          setError("참여 조건 " + (i + 1) + "의 옵션을 선택해주세요.");
+          return;
+        }
+        if (
+          applicationCategory.inputType == EventApplicationInputType.LINK &&
+          (applicationCategory.name == "" || (!applicationCategory.name.startsWith("https://") && !applicationCategory.name.startsWith("http://")))
+        ) {
+          setError("참여 조건 " + (i + 1) + "에 올바른 링크를 적어주세요.");
+          return;
+        }
+        if (applicationCategory.inputType == EventApplicationInputType.SELECT && applicationCategory.options.length == 0) {
+          setError("참여 조건 " + (i + 1) + "의 옵션을 1개 이상 추가해주세요.");
+          return;
+        }
+      }
     setLoading(true);
     const keys = isModify ? [] : await getImageUriKeys();
     if (keys == null) {

@@ -6,7 +6,7 @@ import { newEventModalAction } from "src/store/reducers/modalReducer";
 import Tooltip from "@mui/material/Tooltip";
 import { getAllCollectionsQuery } from "src/hooks/queries/admin/events";
 import { ProfileImage, UploadImage } from "../common/ImageHelper";
-import { Fragment, useState } from "react";
+import { Fragment, useEffect, useRef, useState } from "react";
 import DefaultTransition from "../common/defaulttransition";
 import { ArrowRightIcon, CheckIcon, ChevronDownIcon, GlobeAltIcon, MinusIcon, PencilAltIcon, PlusIcon, SearchIcon } from "@heroicons/react/outline";
 import useUploadDrawEvent, { EventApplicationInputType, EventType, OrderableType } from "src/hooks/useUploadDrawEvent";
@@ -20,7 +20,7 @@ import DatePicker from "react-datepicker";
 import { ko } from "date-fns/locale";
 
 import "react-datepicker/dist/react-datepicker.css";
-import { Menu, Transition } from "@headlessui/react";
+import { Menu, Popover, Transition } from "@headlessui/react";
 import useLink from "src/hooks/useLink";
 
 export const useOpenNewEventModal = (data = null) => {
@@ -99,7 +99,6 @@ function EventDetails({ closeModal, event }) {
     eanbleExpires,
     setEnableExpires,
   } = useUploadDrawEvent({ queryClient, uploadSuccessCallback: closeModal, event });
-  console.log(applicationCategories);
   return (
     <Div zIndex={-1000} wFull hFull flex itemsCenter justifyCenter>
       <Div wFull mb10 flex flexCol px30 py30>
@@ -371,8 +370,6 @@ function ModifyOption({
   loading,
   handleChangeApplicationCategoryName,
 }) {
-  const [optionInput, handleChangeOptionInputText] = useState("");
-  const [error, setError] = useState(false);
   const handleChangeApplicationCategoryNameText = ({ target: { value } }) => {
     !loading && handleChangeApplicationCategoryName(value);
   };
@@ -380,12 +377,6 @@ function ModifyOption({
     mount: { opacity: 1, scale: 1 },
     unmount: { opacity: 0, scale: 0.95 },
     transition: { duration: 0.2 },
-  };
-  const onEnterOptions = (e) => {
-    if (e.key === "Enter" && optionInput != "") {
-      handleAddApplicationOption(optionInput);
-      handleChangeOptionInputText("");
-    }
   };
   return (
     <motion.div
@@ -436,8 +427,128 @@ function ModifyOption({
         {option.inputType == EventApplicationInputType.LINK && (
           <OptionLink loading={loading} handleChangeApplicationName={handleChangeApplicationName} link={option.name} />
         )}
+        {option.inputType == EventApplicationInputType.SELECT && (
+          <ModifyOptions
+            loading={loading}
+            handleAddApplicationOption={handleAddApplicationOption}
+            handleRemoveApplicationOption={handleRemoveApplicationOption}
+            options={option.options}
+          />
+        )}
       </Div>
     </motion.div>
+  );
+}
+
+function ModifyOptions({ loading, handleAddApplicationOption, handleRemoveApplicationOption, options = [] }) {
+  const width = 300;
+  const MenuItem = (props) => {
+    return (
+      <Div
+        {...props}
+        borderT1
+        borderGray400
+        selfCenter
+        justifyStart
+        w={width}
+        px10
+        py5
+        textLeft
+        bgGray300
+        relative
+        clx={`${props.active ? "bg-gray-300 font-bold" : "text-gray-800"}`}
+        cursorPointer
+        flex
+        flexRow
+      >
+        <Div selfCenter wFull textLeft breakAll>
+          {props.children}
+        </Div>
+        <Div selfCenter w={30} px10 textCenter fontSize20 fontBold cursorPointer>
+          -
+        </Div>
+      </Div>
+    );
+  };
+  return loading ? (
+    <Div relative fontSize16 selfCenter justifyCenter w={width} px10 py10 textCenter bgGray200 fontBold>
+      옵션 추가
+    </Div>
+  ) : (
+    <Div relative>
+      <Popover as="div">
+        {({ open, close }) => (
+          <>
+            {!open && (
+              <Popover.Button className="relative">
+                <Div relative fontSize16 selfCenter justifyCenter w={width} px10 py10 textCenter bgGray200 clx="hover:bg-gray-300" fontBold>
+                  옵션 추가
+                </Div>
+              </Popover.Button>
+            )}
+            <Popover.Panel className="origin-top-right absolute bg-gray-200 focus:outline-none " style={{ zIndex: 100 }} static>
+              {open && <AddOptionInput loading={loading} handleAddApplicationOption={handleAddApplicationOption} width={width} open={open} />}
+              <Transition
+                show={open}
+                enter="transition ease-out duration-100"
+                enterFrom="transform opacity-0 scale-95"
+                enterTo="transform opacity-100 scale-100"
+                leave="transition ease-in duration-75"
+                leaveFrom="transform opacity-100 scale-100"
+                leaveTo="transform opacity-0 scale-95"
+              >
+                <Div relative textBase fontSize15>
+                  {options.map((value, index) => (
+                    <MenuItem key={index} onClick={() => handleRemoveApplicationOption(index)}>
+                      {value}
+                    </MenuItem>
+                  ))}
+                </Div>
+              </Transition>
+            </Popover.Panel>
+          </>
+        )}
+      </Popover>
+    </Div>
+  );
+}
+
+function AddOptionInput({ loading, handleAddApplicationOption, width, open }) {
+  const [optionInput, setOptionInput] = useState("");
+  const ref = useRef(null);
+  const handleChangeOptionInputText = ({ target: { value } }) => {
+    !loading && setOptionInput(value);
+  };
+  const onEnterOptions = (e) => {
+    if (e.key === "Enter" && optionInput != "") {
+      handleAddApplicationOption(optionInput);
+      setOptionInput("");
+    }
+  };
+  const onClickAddOption = () => {
+    if (optionInput != "") {
+      handleAddApplicationOption(optionInput);
+      setOptionInput("");
+    }
+  };
+  useEffect(() => {
+    if (open) ref.current?.focus();
+  }, [open]);
+  return (
+    <Div relative fontSize16 selfCenter justifyCenter w={width} px10 py10 textCenter bgGray300 fontBold flex flexRow>
+      <input
+        ref={ref}
+        placeholder={"옵션 입력"}
+        value={optionInput}
+        className={"self-center h-full w-full focus:outline-none focus:border-gray-400 bg-transparent rounded-md"}
+        style={{ boxShadow: "none", border: "none" }}
+        onChange={handleChangeOptionInputText}
+        onKeyPress={onEnterOptions}
+      ></input>
+      <Div w={30} px10 textCenter fontSize20 fontBold onClick={onClickAddOption} cursorPointer>
+        +
+      </Div>
+    </Div>
   );
 }
 
@@ -490,7 +601,7 @@ function ChooseInputType({ loading, inputType, handleChangeApplicationInputType 
     );
   };
   return loading ? (
-    <Div relative fontSize16 selfCenter justifyCenter w={130} px10 py10 textCenter bgGray200>
+    <Div relative fontSize16 selfCenter justifyCenter w={130} px10 py10 textCenter bgGray200 fontBold>
       {inputType == EventApplicationInputType.LINK
         ? "링크"
         : inputType == EventApplicationInputType.SELECT
@@ -507,7 +618,7 @@ function ChooseInputType({ loading, inputType, handleChangeApplicationInputType 
     <Div relative>
       <Menu as="div">
         <Menu.Button className="relative">
-          <Div relative fontSize16 selfCenter justifyCenter w={130} px10 py10 textCenter bgGray200 clx="hover:bg-gray-300">
+          <Div relative fontSize16 selfCenter justifyCenter w={130} px10 py10 textCenter bgGray200 clx="hover:bg-gray-300" fontBold>
             {inputType == EventApplicationInputType.LINK
               ? "링크"
               : inputType == EventApplicationInputType.SELECT
