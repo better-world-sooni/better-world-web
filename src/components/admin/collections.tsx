@@ -163,7 +163,6 @@ function CollectionEntry({ collection }) {
   const queryClient = useQueryClient();
   const HandleOpen = (open) => open;
   const { Modal, openModal, isLoading } = DeleteCollectionModal(collection?.contract_address, queryClient);
-  console.log(collection);
   const onClickRemove = () => {
     if (collection?.member_count > 0) {
       alert("가입되어 있는 NFT가 존재하여 이 Collection은 삭제할 수 없습니다.");

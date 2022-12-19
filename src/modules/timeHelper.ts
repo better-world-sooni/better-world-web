@@ -32,7 +32,8 @@ export function getDate(time, format = "YYYY.MM.DD HH:mm:ss") {
   return kmoment(time).format(format);
 }
 
-export function getDateType(date) {
+export function getDateType(date = null) {
+  if (date == null) return Date.now();
   const dateType = new Date(date);
   return dateType;
 }

@@ -60,7 +60,7 @@ export function DefaultText({
   },
 }) {
   return (
-    <Div breakAll>
+    <Div breakAll maxWFull>
       <ReactMarkdown remarkPlugins={[remarkGfm]} children={text} />
       {optionalText != "" && (
         <Div onClick={onClick} cursorPointer fontBold>

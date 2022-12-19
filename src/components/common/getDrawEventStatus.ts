@@ -43,14 +43,14 @@ export default function getDrawEventStatus(event) {
   const expires =
     event.has_application == true && event?.status == DrawEventStatus.IN_PROGRESS && event.expires_at && new Date(event.expires_at) < new Date()
       ? {
-          string: "기한 지남",
-          color: { bgWarning: true, textWhite: true, w80: true },
+          string: "마감",
+          color: { bgDanger: true, textWhite: true },
         }
       : null;
   return {
     category: category,
 
-    status: status,
+    status: expires ? expires : status,
 
     expires: expires,
   };
