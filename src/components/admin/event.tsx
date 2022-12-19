@@ -611,7 +611,6 @@ function EventStatus({ event }) {
     <>
       {eventStatus?.category && <Theme status={eventStatus?.category} />}
       {eventStatus?.status && <Theme status={eventStatus?.status} />}
-      {eventStatus?.expires && <Theme status={eventStatus?.expires} />}
     </>
   );
 }
@@ -620,17 +619,18 @@ function ChangeStatus({ event }) {
   const eventId = event?.id;
   const queryClient = useQueryClient();
   const { mutate, isLoading } = setStatus(eventId, event?.created_at, queryClient);
+  const { expires } = getDrawEventStatus(event);
   return (
     <SelectEntry
       firstText={"진행 중"}
       secondText={"당첨 발표"}
       thirdText={"마감"}
-      clickFirst={() => mutate(DrawEventStatus.IN_PROGRESS)}
+      clickFirst={!expires && (() => mutate(DrawEventStatus.IN_PROGRESS))}
       clickSecond={() => mutate(DrawEventStatus.ANNOUNCED)}
       clickThird={() => mutate(DrawEventStatus.FINISHED)}
-      isFirst={event?.status == DrawEventStatus.IN_PROGRESS}
+      isFirst={!expires ? event?.status == DrawEventStatus.IN_PROGRESS : false}
       isSecond={event?.status == DrawEventStatus.ANNOUNCED}
-      isThird={event?.status == DrawEventStatus.FINISHED}
+      isThird={!expires ? event?.status == DrawEventStatus.FINISHED : true}
       enable={!isLoading}
     />
   );
