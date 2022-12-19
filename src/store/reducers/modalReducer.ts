@@ -49,6 +49,7 @@ const initialState = {
     enabled: false,
     state: -1,
     drawEvent: null,
+    eventBanner: null,
   },
 };
 
@@ -82,11 +83,12 @@ export const newCollectionAction = ({ enabled, contractAddress, collection, erro
   collection,
   error,
 });
-export const eventBannerAction = ({ enabled, state, drawEvent }) => ({
+export const eventBannerAction = ({ enabled, state, drawEvent, eventBanner = null }) => ({
   type: EVENT_BANNER_MODAL,
   enabled,
   state,
   drawEvent,
+  eventBanner,
 });
 export const eventApplicationModalAction = ({ enabled }) => ({ type: EVENT_APPLICATION_MODAL, enabled });
 export const charModalAction = ({ enabled, chartType, data, title }) => ({ type: CHART_MODAL, enabled, chartType, data, title });
@@ -208,13 +210,14 @@ export const modalReducer = (state = initialState, action) => {
         };
       });
     case EVENT_BANNER_MODAL:
-      return f(action, ({ enabled, state: EventBannerState, drawEvent }) => {
+      return f(action, ({ enabled, state: EventBannerState, drawEvent, eventBanner }) => {
         return {
           ...state,
           EventBannerModal: {
             enabled,
             state: EventBannerState,
             drawEvent,
+            eventBanner,
           },
         };
       });

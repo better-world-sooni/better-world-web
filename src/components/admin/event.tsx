@@ -15,7 +15,6 @@ import {
   TrashIcon,
   PencilIcon,
   ArrowRightIcon,
-  GlobeAltIcon,
 } from "@heroicons/react/outline";
 import Pagination from "@mui/material/Pagination";
 import { useDispatch } from "react-redux";
@@ -43,6 +42,7 @@ import EventApplicationModal, { useOpenEventApplicationModal } from "./EventAppl
 import { ChangeCreatedAtModal, DeleteEventModal } from "../modals/CheckModal";
 import DatePicker from "react-datepicker";
 import { ko } from "date-fns/locale";
+import EventBannerModal, { useOpenAddByDrawEventEventBannerModal, useOpenModifyEventBannerModal } from "./EventBannerModal";
 
 function EventScreen() {
   const { page_size, offset, search_key } = useSelector((state: RootState) => ({
@@ -83,6 +83,7 @@ function EventScreen() {
     debounceRefetchhEvenList(search_key_input);
   };
   const openModal = useOpenNewEventModal();
+  const openModeifyEventBannerModal = useOpenModifyEventBannerModal();
 
   return (
     <>
@@ -95,6 +96,21 @@ function EventScreen() {
             <Div selfCenter>개씩 보기</Div>
             <Div selfCenter ml10>
               <SearchBar w={250} placeholder={"Event를 검색해보세요."} initialText={searchKey} handleSearch={handleSearchBarChange} />
+            </Div>
+            <Div
+              selfCenter
+              ml30
+              px10
+              py5
+              bgGray100
+              clx="hover:bg-gray-200"
+              rounded
+              cursorPointer
+              onClick={openModeifyEventBannerModal}
+              whitespaceNowrap
+              fontBold
+            >
+              배너 관리
             </Div>
           </Div>
           <Div selfCenter flex flexRow>
@@ -154,6 +170,7 @@ function EventScreen() {
       </Div>
       <NewEventModal />
       <EventApplicationModal />
+      <EventBannerModal />
     </>
   );
 }
@@ -243,6 +260,7 @@ function EventDetails({ event }) {
   const queryClient = useQueryClient();
   const { Modal, openModal, isLoading } = DeleteEventModal(event?.id, queryClient);
   const openEventApplicationModal = useOpenEventApplicationModal(event?.id);
+  const openAddByDrawEventEventBannerModal = useOpenAddByDrawEventEventBannerModal(event);
   const originalCreatedAt = getDateType(event?.created_at);
   const [createdAt, setCreatedAt] = useState(originalCreatedAt);
   const { Modal: Modal2, openModal: openModal2, isLoading: isLoading2 } = ChangeCreatedAtModal(event?.id, createdAt, event?.status, queryClient);
@@ -253,6 +271,22 @@ function EventDetails({ event }) {
       <Modal2 />
       <Div px30 py10 flex flexCol justifyCenter gapY={20} textCenter>
         <Div wFull flex flexRow justifyStart gapX={10}>
+          {event?.has_application == false && (
+            <Div
+              ml10
+              fontSize14
+              rounded
+              fontSemibold
+              minW={80}
+              py5
+              bgGray200
+              clx="hover:bg-gray-300"
+              cursorPointer
+              onClick={openAddByDrawEventEventBannerModal}
+            >
+              배너에 추가
+            </Div>
+          )}
           <Div selfCenter flex flexRow wFull jsutifyStart gapX={10} flexWrap gapY={10}>
             {event?.has_application && <ApplicationLink event={event} />}
             {event?.has_application && <EventOptions event={event} />}
@@ -285,6 +319,20 @@ function EventDetails({ event }) {
             </Div>
             <Div ml10 fontSize14 rounded fontSemibold minW={80} py5 bgGray200 clx="hover:bg-gray-300" cursorPointer onClick={openEventApplicationModal}>
               응모 관리
+            </Div>
+            <Div
+              ml10
+              fontSize14
+              rounded
+              fontSemibold
+              minW={80}
+              py5
+              bgGray200
+              clx="hover:bg-gray-300"
+              cursorPointer
+              onClick={openAddByDrawEventEventBannerModal}
+            >
+              배너에 추가
             </Div>
             <Div wFull />
             {event?.expires_at && (

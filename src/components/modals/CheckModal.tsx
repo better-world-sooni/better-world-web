@@ -7,7 +7,7 @@ import { DialogTitle } from "@mui/material";
 import { useState } from "react";
 import LINKS from "src/modules/links";
 import { setSuperPrivilege } from "src/hooks/queries/admin/userlist";
-import { DeleteEvent } from "src/hooks/queries/admin/events";
+import { DeleteEvent, DeleteEventBanner } from "src/hooks/queries/admin/events";
 import { setStatus } from "src/hooks/queries/admin/events";
 import { DeleteCollection } from "src/hooks/queries/admin/collections";
 
@@ -85,6 +85,11 @@ export function DeleteEventModal(eventId, queryClient) {
 export function DeleteCollectionModal(contractAddress, queryClient) {
   const { isLoading, mutate } = DeleteCollection(contractAddress, queryClient);
   return { ...CheckModal("Collection 삭제", "이 Collection을 삭제할까요? 이 작업은 되돌릴 수 없습니다", mutate, "예", null, "아니오"), isLoading, mutate };
+}
+
+export function DeleteEventBannerModal(eventBannerId, queryClient) {
+  const { isLoading, mutate } = DeleteEventBanner(eventBannerId, queryClient);
+  return { ...CheckModal("배너 삭제", "이 배너를 삭제할까요? 이 작업은 되돌릴 수 없습니다", mutate, "예", null, "아니오"), isLoading, mutate };
 }
 
 export function ChangeCreatedAtModal(eventId, createdAt, eventStatus, queryClient) {

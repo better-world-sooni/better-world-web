@@ -7,6 +7,11 @@ import { queryHelperInitialPropsWithJwtFromContext, queryHelperMutationWithToken
 
 export const defaultPageSize = 50;
 
+export enum EventBannerAction {
+  UP = "up",
+  DOWN = "down",
+}
+
 export function getEventListQuery(page_size: Number, offset: Number, search_key: String, onsettled: any) {
   return queryHelperWithToken({
     key: querykeys.admin.events._(page_size, offset, search_key),
@@ -163,3 +168,59 @@ export function getEventApplications(event_id, page_size: Number, offset: Number
 export const cancelEventApplicationQuery = (queryClient: QueryClient, eventId) => {
   queryClient.cancelQueries(querykeys.admin.events.eventApplication(eventId));
 };
+
+export function getEventBanners(onsettled) {
+  return queryHelperWithToken({
+    key: querykeys.admin.events.banner(),
+    url: apis.admin.eventBanner._(),
+    options: {
+      keepPreviousData: true,
+      onSettled: onsettled,
+    },
+  });
+}
+
+export function uploadEventBanner(queryClient, uploadSuccessCallback = null, method = "POST") {
+  const mutation = queryHelperMutationWithToken({
+    url: apis.admin.eventBanner._(),
+    method: method,
+    options: {
+      onSettled: () => {
+        queryClient.invalidateQueries(querykeys.admin.events.banner());
+        uploadSuccessCallback && uploadSuccessCallback();
+      },
+    },
+  });
+  return { ...mutation, mutate: (body) => mutation?.mutate(body) };
+}
+
+export function DeleteEventBanner(eventBannerId, queryClient: QueryClient) {
+  const body = {
+    event_banner_id: eventBannerId,
+  };
+  const mutation = queryHelperMutationWithToken({
+    url: apis.admin.eventBanner._(),
+    method: "DELETE",
+    options: {
+      onSuccess: () => queryClient.invalidateQueries(querykeys.admin.events.banner()),
+    },
+  });
+  return { ...mutation, mutate: () => mutation?.mutate(body) };
+}
+
+export function actionEventBanner(eventBannerId, queryClient: QueryClient) {
+  const body = (action) => {
+    return {
+      event_banner_id: eventBannerId,
+      action: action,
+    };
+  };
+  const mutation = queryHelperMutationWithToken({
+    url: apis.admin.eventBanner.order(),
+    method: "PUT",
+    options: {
+      onSuccess: () => queryClient.invalidateQueries(querykeys.admin.events.banner()),
+    },
+  });
+  return { ...mutation, mutate: (action) => mutation?.mutate(body(action)) };
+}
