@@ -195,7 +195,7 @@ export default function useUploadDrawEvent({ queryClient, uploadSuccessCallback 
       description,
       images: keys,
       expires_at: type == EventType.EVENT && eanbleExpires ? expiresAt : null,
-      created_at: enableCreatedAt ? createdAt : new Date(),
+      created_at: enableCreatedAt ? createdAt : isModify ? null : new Date(),
       has_application: type == EventType.EVENT,
       application_link: null,
       discord_link: discordLink != "" ? discordLink : null,
