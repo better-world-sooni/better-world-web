@@ -79,7 +79,9 @@ export default function useUploadDrawEvent({ queryClient, uploadSuccessCallback 
               return { category: key, name: options[0].name, inputType: EventApplicationInputType.DISCORD_ID, index: getIndex(), options: [] };
             if (options.length == 1 && options[0].input_type == EventApplicationInputType.TWITTER_ID)
               return { category: key, name: options[0].name, inputType: EventApplicationInputType.TWITTER_ID, index: getIndex(), options: [] };
-            return { category: key, name: key, inputType: EventApplicationInputType.SELECT, index: getIndex(), options: options.map((value) => value?.name) };
+            if (options[0].input_type == EventApplicationInputType.SELECT)
+              return { category: key, name: key, inputType: EventApplicationInputType.SELECT, index: getIndex(), options: options.map((value) => value?.name) };
+            return { category: key, name: options[0].name, inputType: EventApplicationInputType.LINK, index: getIndex(), options: [] };
           })
           .value()
       : null;
