@@ -1,9 +1,11 @@
 import { useState } from "react";
 import useEdittableText from "./useEdittableText";
 
-export default function useLink(uri, canBlank = false) {
+export default function useLink(uri, options = { canBlank: false, canMailTo: false }) {
   const [link, linkHasChanged, handleChangeText] = useEdittableText(uri);
   const [linkError, setLinkError] = useState("");
+  const canBlank = options.canBlank;
+  const canMailTo = options.canMailTo;
   const handleClickLink =
     !linkError &&
     link != "" &&
@@ -22,8 +24,8 @@ export default function useLink(uri, canBlank = false) {
     if (canBlank && value.length == 0) {
       return "";
     }
-    if (!value.startsWith("https://") && !value.startsWith("http://")) {
-      return `링크는 "https://" 또는 "http://"로 시작해야 합니다.`;
+    if (!(value.startsWith("https://") || value.startsWith("http://") || (canMailTo && value.startsWith("mailto:")))) {
+      return canMailTo ? `링크는 "https://", "http://" 또는 "mailto:"로 시작해야 합니다.` : `링크는 "https://" 또는 "http://"로 시작해야 합니다.`;
     }
     return "";
   };

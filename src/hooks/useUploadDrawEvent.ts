@@ -54,7 +54,7 @@ export default function useUploadDrawEvent({ queryClient, uploadSuccessCallback 
     linkError: discordLinkError,
     handleChangeLink: handleChangeDiscordLink,
     handleClickLink: handleClickDiscordLink,
-  } = useLink(event?.discord_link ? event?.discord_link : "", true);
+  } = useLink(event?.discord_link ? event?.discord_link : "", { canBlank: true, canMailTo: false });
   const [orderableType, setOrderableType] = useState(event?.orderable_type ? event?.orderable_type : OrderableType.HOLDER_ONLY);
   const [eanbleExpires, setEnableExpires] = useState(event?.expires_at ? true : false);
   const [expiresAt, setExpiresAt] = useState(event?.expires_at ? getDateType(event?.expires_at) : new Date());
@@ -157,7 +157,12 @@ export default function useUploadDrawEvent({ queryClient, uploadSuccessCallback 
         }
         if (
           applicationCategory.inputType == EventApplicationInputType.LINK &&
-          (applicationCategory.name == "" || (!applicationCategory.name.startsWith("https://") && !applicationCategory.name.startsWith("http://")))
+          (applicationCategory.name == "" ||
+            !(
+              applicationCategory.name.startsWith("https://") ||
+              applicationCategory.name.startsWith("http://") ||
+              applicationCategory.name.startsWith("mailto:")
+            ))
         ) {
           setError("참여 조건 " + (i + 1) + "에 올바른 링크를 적어주세요.");
           return;

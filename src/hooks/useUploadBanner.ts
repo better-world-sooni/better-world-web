@@ -5,8 +5,7 @@ import useLink from "./useLink";
 
 export default function useUploadEventBanner({ queryClient, uploadSuccessCallback = null, drawEvent = null, state, lineLimit = 40, eventBanner }) {
   const { link, linkError, handleChangeLink, handleClickLink } = useLink(
-    state == EventBannerModalState.MODIFY && eventBanner?.banner_uri != "" ? eventBanner?.banner_uri : "",
-    false
+    state == EventBannerModalState.MODIFY && eventBanner?.banner_uri != "" ? eventBanner?.banner_uri : ""
   );
   const [description, setDescription] = useState(state == EventBannerModalState.MODIFY ? eventBanner.description : "");
   const [descriptionError, setDescriptionError] = useState("");

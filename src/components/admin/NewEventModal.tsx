@@ -553,7 +553,7 @@ function AddOptionInput({ loading, handleAddApplicationOption, width, open }) {
 }
 
 function OptionLink({ loading, handleChangeApplicationName, link }) {
-  const { linkError, handleChangeLink, handleClickLink } = useLink("", false);
+  const { linkError, handleChangeLink, handleClickLink } = useLink("", { canBlank: false, canMailTo: true });
   const handleChangeApplicationLink = ({ target: { value } }) => {
     !loading && handleChangeApplicationName(value);
     !loading && handleChangeLink({ target: { value } });
