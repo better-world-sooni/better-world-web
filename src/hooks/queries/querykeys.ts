@@ -22,8 +22,9 @@ const querykeys = {
         page_size || offset || search_key ? ["collections", "list", search_key, page_size, offset] : ["collections", "list"],
       list: () => ["all", "collections", "list"],
       newCollection: (contract_address) => ["all", "collections", "newCollection", contract_address],
+      info: () => ["all", "collections", "info"],
     },
-    dashboard: { _: () => ["dashboard"] },
+    dashboard: { _: () => ["dashboard"], events: (order, type) => ["dashboard", "events", order, type] },
   },
 };
 

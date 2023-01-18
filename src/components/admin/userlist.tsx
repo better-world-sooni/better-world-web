@@ -40,6 +40,7 @@ import { ProfileImage } from "../common/ImageHelper";
 import SearchBar from "src/hooks/SearchBar";
 import { MakeSuperPrivilegeModal } from "../modals/CheckModal";
 import { debounce } from "lodash";
+import useCheckPrivilege from "src/hooks/useCheckPrivilege";
 
 function UserList() {
   const { page_size, offset, search_key } = useSelector((state: RootState) => ({
@@ -245,12 +246,18 @@ function UserEntry({ user }) {
 }
 
 function NftEntry({ nft }) {
+  const { currentNft, isPrivilege, isSuperPrivilege } = useCheckPrivilege();
+  const openCondition = isSuperPrivilege || (isPrivilege && nft?.contract_address == currentNft?.contract_address);
   return (
     <Disclosure as="div" className="w-full">
       {({ open }) => (
         <>
-          <Disclosure.Button className="w-full bg-gray-100 text-gray-400 hover:bg-gray-200 hover:text-gray-500">
-            <Div py12 px16 wFull flex flexRow cursorPointer clx={`${open ? "bg-gray-200 text-gray-500" : ""}`}>
+          <Disclosure.Button
+            className={
+              openCondition ? "w-full bg-gray-100 text-gray-400 hover:bg-gray-200 hover:text-gray-500" : "w-full bg-gray-100 text-gray-400 cursor-default"
+            }
+          >
+            <Div py12 px16 wFull flex flexRow cursorPointer={openCondition} clx={`${open && openCondition ? "bg-gray-200 text-gray-500" : ""}`}>
               <Div mr15>
                 <ProfileImage width={75} height={75} nft={nft} />
               </Div>
@@ -274,17 +281,19 @@ function NftEntry({ nft }) {
                   <DataEntry w={120} label={"Followers : "} data={nft.follower_count} />
                 </Div>
               </Div>
-              <Div mr10 selfCenter justifyItemsEnd>
-                {open ? (
-                  <ChevronDownIcon height={20} width={20} className="text-gray-500" />
-                ) : (
-                  <AdjustmentsIcon height={20} width={20} className="text-gray-400" />
-                )}
-              </Div>
+              {openCondition && (
+                <Div mr10 selfCenter justifyItemsEnd>
+                  {open ? (
+                    <ChevronDownIcon height={20} width={20} className="text-gray-500" />
+                  ) : (
+                    <AdjustmentsIcon height={20} width={20} className="text-gray-400" />
+                  )}
+                </Div>
+              )}
             </Div>
           </Disclosure.Button>
           <DefaultTransition
-            show={open}
+            show={open && openCondition}
             content={
               <Disclosure.Panel className="bg-gray-200 text-gray-700 border-b-2 border-gray-300 py-16 px-12">
                 <NftDetails nft={nft} />
@@ -298,10 +307,8 @@ function NftEntry({ nft }) {
 }
 
 function NftDetails({ nft }) {
-  const { currentNft } = useSelector((state: RootState) => ({
-    currentNft: state.admin.currentNft.currentNft,
-  }));
-  // const LockAdminToggle = (currentNft?.contract_address==nft?.contract_address) && (currentNft?.token_id == nft?.token_id)
+  const { currentNft, isPrivilege, isSuperPrivilege } = useCheckPrivilege();
+  const LockAdminToggle = !isSuperPrivilege && isPrivilege && currentNft?.contract_address == nft?.contract_address && currentNft?.token_id == nft?.token_id;
   const [privilege, privilegeHasChanged, handleChangeprivilege] = useEdittableToggle(nft.privilege, false);
   const { name, nameHasChanged, nameError, handleChangeName } = useName(nft.name ? nft.name : "");
   const { story, storyHasChanged, storyError, handleChangeStory } = useStory(nft.story ? nft.story : "");
@@ -384,7 +391,7 @@ function NftDetails({ nft }) {
             }
             data={
               <Div>
-                <SwitchToggle checked={privilege} onChange={handleChangeprivilege} lock={false} />
+                <SwitchToggle checked={privilege} onChange={handleChangeprivilege} lock={LockAdminToggle} />
                 <EmptyBlock h={15} />
               </Div>
             }
@@ -437,6 +444,7 @@ function sort_nfts(list) {
 //Design Function
 
 function UserAddressPanel({ user_address, superPrivilege }) {
+  const { isPrivilege, isSuperPrivilege } = useCheckPrivilege();
   const { currentUser } = useSelector((state: RootState) => ({
     currentUser: state.admin.currentNft.currentUser,
   }));
@@ -465,23 +473,25 @@ function UserAddressPanel({ user_address, superPrivilege }) {
         <Div selfCenter px10 textInfo fontSemibold w400>
           <TimerText condtion={isCopied} text={"User Address가 복사되었습니다."} seconds={2} closecontidion={closeCopied} />
         </Div>
-        <Div wFull flex flexRow justifyEnd>
-          <DataEntry
-            w={200}
-            label={
-              <Div flex flexRow fontSize16 mt1>
-                <CogIcon height={20} width={20} className="max-h-20 max-w-20 mr-10 mb-20 mt-1" />
-                Super Privilege
-              </Div>
-            }
-            data={
-              <Div>
-                <SwitchToggle checked={superPrivilege} onChange={superPrivilege ? mutate : openModal} lock={currentUser?.address == user_address} />
-                <EmptyBlock h={15} />
-              </Div>
-            }
-          />
-        </Div>
+        {isSuperPrivilege && (
+          <Div wFull flex flexRow justifyEnd>
+            <DataEntry
+              w={200}
+              label={
+                <Div flex flexRow fontSize16 mt1>
+                  <CogIcon height={20} width={20} className="max-h-20 max-w-20 mr-10 mb-20 mt-1" />
+                  Super Privilege
+                </Div>
+              }
+              data={
+                <Div>
+                  <SwitchToggle checked={superPrivilege} onChange={superPrivilege ? mutate : openModal} lock={currentUser?.address == user_address} />
+                  <EmptyBlock h={15} />
+                </Div>
+              }
+            />
+          </Div>
+        )}
       </Div>
     </>
   );

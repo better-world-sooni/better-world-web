@@ -94,7 +94,7 @@ const apis = {
   },
   admin: {
     eventBanner: { _: () => apiV1(`/admin/event_banner`), order: () => apiV1(`/admin/event_banner/order`) },
-    dashboard: { _: () => apiV1(`/admin/dashboard`) },
+    dashboard: { _: () => apiV1(`/admin/dashboard`), events: (order, type) => apiV1(`/admin/dashboard/events${urlParams({ order, type })}`) },
     user: {
       list: (page_size, offset, search_key) => apiV1(`/admin/user/list${urlParams({ page_size, offset, search_key })}`),
       _: () => apiV1(`/admin/user`),

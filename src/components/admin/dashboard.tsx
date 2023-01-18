@@ -6,10 +6,12 @@ import { QuestionMarkCircleIcon, RefreshIcon } from "@heroicons/react/outline";
 import Tooltip from "@mui/material/Tooltip";
 import TimerText from "../common/timertext";
 import { getDashboardQuery } from "src/hooks/queries/admin/dashboard";
-import { BarChart, Bar, Cell, XAxis, YAxis, CartesianGrid, Tooltip as RechartTooltip, Legend, ResponsiveContainer } from "recharts";
-import { ProfileImage } from "../common/ImageHelper";
+import { ResponsiveContainer, AreaChart, Area, Tooltip as RechartTooltip } from "recharts";
 import ChartModal, { ChartModalType, useOpenChartModal } from "./ChartModal";
 import CollectionsChart from "../common/CollectionChart";
+import useCheckPrivilege from "src/hooks/useCheckPrivilege";
+import { IMAGES } from "src/modules/images";
+import KeyMetric from "../common/KeyMetric";
 
 export enum sortType {
   valueASC = 0,
@@ -77,7 +79,97 @@ function Dashboard() {
   );
 }
 
+function TotalComponent({ data }) {
+  return (
+    <Div rounded h80 wFull mx5 style={{ backgroundColor: "#F3F6FD" }} px10 py10>
+      <Div flex flexRow justifyStart>
+        <Div imgTag src={data.image} h15 w15 overflowHidden mr8 fontSemiBold />
+        <Div selfCenter textGray500 fontSize13 whitespaceNowrap>
+          {data.text}
+        </Div>
+      </Div>
+      <Div wFull flex flexRow justifyStart hFull>
+        <Div selfCenter clx="text-bw" fontSize24 fontBold whitespaceNowrap mb5>
+          {data.value}
+        </Div>
+      </Div>
+    </Div>
+  );
+}
+
+function DateComponent({ data, isLast = false }) {
+  const cum = data?.values?.cum;
+  const value = data?.values?.value;
+  const lastDayValue = cum ? (cum[cum.length - 2].value as number) : 0;
+  const todayValue = cum ? (cum[cum.length - 1].value as number) : 0;
+  const difference = lastDayValue != 0 ? ((todayValue - lastDayValue) / lastDayValue).toFixed(2) : (null as number);
+  const CustomTooltip = ({ active, payload, label }) => {
+    if (active && payload && payload.length) {
+      return (
+        <Div bgWhite px5 py2 bgOpacity90 flex flexCol rounded>
+          <Div selfCenter wFull fontSize13 textGray600>
+            {payload[0].payload.date}
+          </Div>
+          <Div selfCenter wFull fontSize14 textGray800>
+            {data.text + ": "}
+            <Div spanTag fontBold textBlack>
+              {payload[0].payload.value}
+            </Div>
+          </Div>
+        </Div>
+      );
+    }
+
+    return null;
+  };
+  return (
+    <Div rounded h80 wFull px10 py10 flex flexRow borderB2={!isLast}>
+      <Div flex flexCol selfCenter style={{ width: "40%" }}>
+        <Div flex flexRow justifyStart>
+          <Div selfCenter textGray600 fontSize13 whitespaceNowrap>
+            {data.text}
+          </Div>
+        </Div>
+        <Div wFull flex flexRow justifyStart hFull gapX={10}>
+          <Div selfEnd fontSize24 fontBold whitespaceNowrap>
+            {todayValue}
+          </Div>
+          <Div
+            selfEnd
+            fontSize16
+            whitespaceNowrap
+            mb5
+            fontBold
+            textGray500={!difference || difference == 0}
+            textSuccess={difference && difference > 0}
+            textDanger={difference && difference < 0}
+          >
+            {difference && difference != 0 ? (difference > 0 ? "+" : "-") + difference + "%" : "-%"}
+          </Div>
+        </Div>
+      </Div>
+      <Div flex flexCol selfCenter hFull style={{ width: "60%" }}>
+        <Div hFull wFull py10>
+          <ResponsiveContainer width="100%" height="100%">
+            <AreaChart data={value}>
+              <defs>
+                <linearGradient id="colorUv" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="#6953FF" stopOpacity={0.8} />
+                  <stop offset="100%" stopColor="#6953FF" stopOpacity={0} />
+                </linearGradient>
+              </defs>
+              <Area type="monotone" dataKey="value" stroke="#6953FF" fillOpacity={1} fill="url(#colorUv)" />
+              <RechartTooltip content={CustomTooltip} />
+            </AreaChart>
+          </ResponsiveContainer>
+        </Div>
+      </Div>
+    </Div>
+  );
+}
+
 function DataCharts({ data }) {
+  const { isPrivilege, isSuperPrivilege } = useCheckPrivilege();
   const Theme = (props) => {
     return (
       <Div wFull bgGray100 px5 py5 roundedLg flex flexCol justifyCenter overflowHidden>
@@ -106,6 +198,38 @@ function DataCharts({ data }) {
   const openChartModal = useOpenChartModal;
   const openNftByCollection = openChartModal(ChartModalType.NFT_BY_COLLECTIONS, data?.count_by_collections, "Collection별 통계");
   const openDay = openChartModal(ChartModalType.DAY, data?.count_by_collections, "날짜별 통계");
+  const total = data?.total;
+  const days = data?.date;
+  const summary = [
+    { image: IMAGES.dashboard.nft, text: "Total NFT", value: total?.nft_count ? total?.nft_count : 0 },
+    { image: IMAGES.dashboard.wallet, text: "Total Wallet", value: total?.wallet_count ? total?.wallet_count : 0 },
+    // { image: IMAGES.dashboard.collection, text: "Total Collections", value: total?.nft_collection_count ? total?.nft_collection_count : 0 },
+    { image: IMAGES.dashboard.event, text: "Total Events", value: total?.event_count ? total?.event_count : 0 },
+    { image: IMAGES.dashboard.announcement, text: "Total Announcements", value: total?.notification_count ? total?.notification_count : 0 },
+  ];
+  const date = [
+    { text: "Holders", values: { cum: days?.holders_cum, value: days?.holders } },
+    { text: "Event Views", values: { cum: days?.event_views_cum, value: days?.event_views } },
+    { text: "Event entry rate", values: { cum: days?.event_entry_rate_cum, value: days?.event_entry_rate } },
+  ];
+  if (!isSuperPrivilege)
+    return (
+      <Div mb100 wFull bgWhite flex flexCol justifyCenter gapY={10}>
+        <Div wFull flex flexRow>
+          {summary.map((value, key) => (
+            <TotalComponent key={key} data={value} />
+          ))}
+        </Div>
+        <Div wFull flex flexRow gapX={10}>
+          <KeyMetric />
+          <Div minW={300} flex flexCol mr10>
+            {date.map((value, key) => (
+              <DateComponent key={key} data={value} isLast={date.length - 1 == key} />
+            ))}
+          </Div>
+        </Div>
+      </Div>
+    );
   return (
     <Div mb100 wFull bgWhite flex flexRow justifyCenter gapX={"2%"}>
       <Container>

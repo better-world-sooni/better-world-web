@@ -38,6 +38,24 @@ export function InitialgetEventsQuery(queryClient: QueryClient, ctx: NextPageCon
   });
 }
 
+export function getNftCollection() {
+  const { data } = queryHelperWithToken({
+    key: querykeys.admin.collections.info(),
+    url: apis.admin.collections._(),
+    options: {},
+  });
+  return data != null && data?.success == true && data?.nft_collection;
+}
+
+export function InitialgetNftCollection(queryClient: QueryClient, ctx: NextPageContext) {
+  return queryHelperInitialPropsWithJwtFromContext({
+    key: querykeys.admin.collections.info(),
+    queryClient: queryClient,
+    ctx: ctx,
+    url: apis.admin.collections._(),
+  });
+}
+
 export function getAllCollectionsQuery() {
   return queryHelperWithToken({
     key: querykeys.admin.collections.list(),
@@ -118,6 +136,24 @@ export function setStatus(eventId, createdAt, queryClient: QueryClient) {
     },
   });
   return { ...mutation, mutate: (status) => mutation?.mutate(body(status)) };
+}
+
+export function setCreatedAt(eventId, status, queryClient: QueryClient) {
+  const body = (createdAt) => {
+    return {
+      event_id: eventId,
+      status: status,
+      created_at: createdAt,
+    };
+  };
+  const mutation = queryHelperMutationWithToken({
+    url: apis.admin.events.summery(),
+    method: "PUT",
+    options: {
+      onSuccess: () => queryClient.invalidateQueries(querykeys.admin.events._()),
+    },
+  });
+  return { ...mutation, mutate: (createdAt) => mutation?.mutate(body(createdAt)) };
 }
 
 export function setEventApplicationStatus(eventId, queryClient: QueryClient) {

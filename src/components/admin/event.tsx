@@ -27,7 +27,7 @@ import PaginationPageSizebox from "../common/paginationpagesizebox";
 import DataEntry from "../common/DataEntry";
 import { ImageSlide, ProfileImage } from "../common/ImageHelper";
 import SearchBar from "src/hooks/SearchBar";
-import { cancelEventListQuery, getEventListQuery, setStatus } from "src/hooks/queries/admin/events";
+import { cancelEventListQuery, getEventListQuery, getNftCollection, setStatus } from "src/hooks/queries/admin/events";
 import getDrawEventStatus, { DrawEventStatus } from "../common/getDrawEventStatus";
 import { motion } from "framer-motion";
 import TruncatedText from "../common/ModifiedTruncatedMarkdown";
@@ -43,6 +43,7 @@ import { ChangeCreatedAtModal, DeleteEventModal } from "../modals/CheckModal";
 import DatePicker from "react-datepicker";
 import { ko } from "date-fns/locale";
 import EventBannerModal, { useOpenAddByDrawEventEventBannerModal, useOpenModifyEventBannerModal } from "./EventBannerModal";
+import useCheckPrivilege from "src/hooks/useCheckPrivilege";
 
 function EventScreen() {
   const { page_size, offset, search_key } = useSelector((state: RootState) => ({
@@ -84,7 +85,8 @@ function EventScreen() {
   };
   const openModal = useOpenNewEventModal();
   const openModeifyEventBannerModal = useOpenModifyEventBannerModal();
-
+  const { isPrivilege, isSuperPrivilege } = useCheckPrivilege();
+  const nftCollection = getNftCollection();
   return (
     <>
       <Div flex flexCol>
@@ -97,21 +99,23 @@ function EventScreen() {
             <Div selfCenter ml10>
               <SearchBar w={250} placeholder={"Event를 검색해보세요."} initialText={searchKey} handleSearch={handleSearchBarChange} />
             </Div>
-            <Div
-              selfCenter
-              ml30
-              px10
-              py5
-              bgGray100
-              clx="hover:bg-gray-200"
-              rounded
-              cursorPointer
-              onClick={openModeifyEventBannerModal}
-              whitespaceNowrap
-              fontBold
-            >
-              배너 관리
-            </Div>
+            {isSuperPrivilege && (
+              <Div
+                selfCenter
+                ml30
+                px10
+                py5
+                bgGray100
+                clx="hover:bg-gray-200"
+                rounded
+                cursorPointer
+                onClick={openModeifyEventBannerModal}
+                whitespaceNowrap
+                fontBold
+              >
+                배너 관리
+              </Div>
+            )}
           </Div>
           <Div selfCenter flex flexRow>
             <Div minW={120} fontSize15 fontSemibold mr10 selfCenter>
@@ -168,7 +172,7 @@ function EventScreen() {
             </Div>
           ))}
       </Div>
-      <NewEventModal />
+      <NewEventModal nftCollection={nftCollection} />
       <EventApplicationModal />
       <EventBannerModal />
     </>
@@ -265,13 +269,14 @@ function EventDetails({ event }) {
   const [createdAt, setCreatedAt] = useState(originalCreatedAt);
   const { Modal: Modal2, openModal: openModal2, isLoading: isLoading2 } = ChangeCreatedAtModal(event?.id, createdAt, event?.status, queryClient);
   const openModifyEventModal = useOpenNewEventModal(event);
+  const { isPrivilege, isSuperPrivilege } = useCheckPrivilege();
   return (
     <>
       <Modal />
       <Modal2 />
       <Div px30 py10 flex flexCol justifyCenter gapY={20} textCenter>
         <Div wFull flex flexRow justifyStart gapX={10}>
-          {event?.has_application == false && (
+          {event?.has_application == false && isSuperPrivilege && (
             <Div
               ml10
               fontSize14
@@ -320,20 +325,22 @@ function EventDetails({ event }) {
             <Div ml10 fontSize14 rounded fontSemibold minW={80} py5 bgGray200 clx="hover:bg-gray-300" cursorPointer onClick={openEventApplicationModal}>
               응모 관리
             </Div>
-            <Div
-              ml10
-              fontSize14
-              rounded
-              fontSemibold
-              minW={80}
-              py5
-              bgGray200
-              clx="hover:bg-gray-300"
-              cursorPointer
-              onClick={openAddByDrawEventEventBannerModal}
-            >
-              배너에 추가
-            </Div>
+            {isSuperPrivilege && (
+              <Div
+                ml10
+                fontSize14
+                rounded
+                fontSemibold
+                minW={80}
+                py5
+                bgGray200
+                clx="hover:bg-gray-300"
+                cursorPointer
+                onClick={openAddByDrawEventEventBannerModal}
+              >
+                배너에 추가
+              </Div>
+            )}
             <Div wFull />
             {event?.expires_at && (
               <Div selfCenter whitespaceNowrap mt3 textDanger fontSemibold>

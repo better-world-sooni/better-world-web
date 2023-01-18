@@ -2,6 +2,7 @@ import { chain } from "lodash";
 import { useRef, useState } from "react";
 import { getDateType } from "src/modules/timeHelper";
 import { updateEventQuery, uploadDrawEventQuery } from "./queries/admin/events";
+import useCheckPrivilege from "./useCheckPrivilege";
 import useLink from "./useLink";
 import { useUploadImageUriKeys } from "./useUploadImageUriKey";
 
@@ -32,17 +33,17 @@ export enum OrderableType {
   ALL = 1,
 }
 
-export default function useUploadDrawEvent({ queryClient, uploadSuccessCallback = null, event = null }) {
+export default function useUploadDrawEvent({ queryClient, uploadSuccessCallback = null, event = null, nftCollection = null }) {
   const isModify = event != null;
   const [loading, setLoading] = useState(false);
-
+  const { currentNft, currentUser, isPrivilege, isSuperPrivilege } = useCheckPrivilege();
   const [collection, setCollection] = useState({
-    name: event?.nft_collection?.name,
-    contractAddress: event?.nft_collection?.contract_address,
-    imageUri: event?.nft_collection?.image_uri,
+    name: isSuperPrivilege ? event?.nft_collection?.name : nftCollection?.name,
+    contractAddress: isSuperPrivilege ? event?.nft_collection?.contract_address : nftCollection?.contract_address,
+    imageUri: isSuperPrivilege ? event?.nft_collection?.image_uri : nftCollection?.image_uri,
   });
-  const canModifyCollection = !isModify;
 
+  const canModifyCollection = !isModify && isSuperPrivilege;
   const [type, setType] = useState(event?.has_application ? (event?.has_application == true ? EventType.EVENT : EventType.NOTICE) : EventType.NOTICE);
   const canModifyType = !(event?.has_application == true && event?.event_application_count != 0);
 

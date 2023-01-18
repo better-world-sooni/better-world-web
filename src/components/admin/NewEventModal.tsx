@@ -29,7 +29,7 @@ export const useOpenNewEventModal = (data = null) => {
   return openNewEventModal;
 };
 
-export default function NewEventModal({}) {
+export default function NewEventModal({ nftCollection }) {
   const { enabled, event } = useSelector((state: RootState) => ({
     enabled: state.modal.newEventModal.enabled,
     event: state.modal.newEventModal.event,
@@ -48,12 +48,12 @@ export default function NewEventModal({}) {
       bdClx={"bg-black/50"}
       clx={"bg-white w-full"}
     >
-      <EventDetails closeModal={closeModal} event={event} />
+      <EventDetails closeModal={closeModal} event={event} nftCollection={nftCollection} />
     </Modal>
   );
 }
 
-function EventDetails({ closeModal, event }) {
+function EventDetails({ closeModal, event, nftCollection }) {
   const queryClient = useQueryClient();
   const {
     canModifyCollection,
@@ -98,7 +98,7 @@ function EventDetails({ closeModal, event }) {
     uploadDrawEvent,
     eanbleExpires,
     setEnableExpires,
-  } = useUploadDrawEvent({ queryClient, uploadSuccessCallback: closeModal, event });
+  } = useUploadDrawEvent({ queryClient, uploadSuccessCallback: closeModal, event, nftCollection });
   return (
     <Div zIndex={-1000} wFull hFull flex itemsCenter justifyCenter>
       <Div wFull mb10 flex flexCol px30 py30>

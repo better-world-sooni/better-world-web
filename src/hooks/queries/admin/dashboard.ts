@@ -1,7 +1,7 @@
 import apis from "src/modules/apis";
 import querykeys from "src/hooks/queries/querykeys";
 import { useCallback } from "react";
-import { QueryClient } from "react-query";
+import { QueryClient, useQueries } from "react-query";
 import { NextPageContext } from "next";
 import { queryHelperInitialPropsWithJwtFromContext, queryHelperMutationWithToken, queryHelperWithToken } from "../queryHelper";
 
@@ -20,6 +20,35 @@ export function getDashboardQuery(onsettled: any) {
   });
 }
 
+export enum DashboardOrderStatus {
+  DEFAULT = -1,
+  APPLICATION_ASC = 0,
+  APPLICATION_DESC = 1,
+  VIEW_ASC = 2,
+  VIEW_DESC = 3,
+  LIKE_ASC = 4,
+  LIKE_DESC = 5,
+  COMMENT_ASC = 6,
+  COMMENT_DESC = 7,
+}
+
+export enum DashboardShowType {
+  ANNOUNCEMENT = "announcement",
+  EVENT = "event",
+}
+
+export function getDashboardEventQuery(type = DashboardShowType.ANNOUNCEMENT, order = DashboardOrderStatus.DEFAULT) {
+  return queryHelperWithToken({
+    key: querykeys.admin.dashboard.events(order, type),
+    url: apis.admin.dashboard.events(order, type),
+    options: {
+      refetchOnMount: false,
+      refetchInterval: true,
+      keepPreviousData: true,
+    },
+  });
+}
+
 export const cancelEventListQuery = (queryClient: QueryClient) => {
   queryClient.cancelQueries(querykeys.admin.events._());
 };
@@ -30,5 +59,14 @@ export function InitialgetDashboardQuery(queryClient: QueryClient, ctx: NextPage
     queryClient: queryClient,
     ctx: ctx,
     url: apis.admin.dashboard._(),
+  });
+}
+
+export function InitialgetDashboardEventQuery(queryClient: QueryClient, ctx: NextPageContext) {
+  return queryHelperInitialPropsWithJwtFromContext({
+    key: querykeys.admin.dashboard.events(DashboardOrderStatus.DEFAULT, DashboardShowType.EVENT),
+    url: apis.admin.dashboard.events(DashboardOrderStatus.DEFAULT, DashboardShowType.EVENT),
+    queryClient: queryClient,
+    ctx: ctx,
   });
 }

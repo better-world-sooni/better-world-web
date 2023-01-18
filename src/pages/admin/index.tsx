@@ -12,21 +12,22 @@ import Joblist from "src/components/admin/joblist";
 import { dehydrate } from "react-query";
 import { InitialgetUserListQuery } from "src/hooks/queries/admin/userlist";
 import EventScreen from "src/components/admin/event";
-import { InitialgetAllCollectionsQuery, InitialgetEventsQuery } from "src/hooks/queries/admin/events";
+import { InitialgetAllCollectionsQuery, InitialgetEventsQuery, InitialgetNftCollection } from "src/hooks/queries/admin/events";
 import { InitialgetCollectionsQuery } from "src/hooks/queries/admin/collections";
 import CollectionsScreen from "src/components/admin/collections";
-import { InitialgetDashboardQuery } from "src/hooks/queries/admin/dashboard";
+import { InitialgetDashboardEventQuery, InitialgetDashboardQuery } from "src/hooks/queries/admin/dashboard";
 
 function Admin({ currentUser, currentNft }) {
   const dispatch = useDispatch();
-  if (!currentUser?.super_privilege) return <>Invalid Access</>;
-
+  const isSuperAdmin = currentUser?.super_privilege;
+  const isCollectionAdmin = currentNft?.privilege;
+  if (!(isSuperAdmin || isCollectionAdmin)) return <>Invalid Access</>;
   dispatch(currentNftAction({ currentNft: currentNft, currentUser: currentUser }));
   const frame = [
     <AdminTemplete key={0} name={"Dashboard"} Comps={Dashboard} />,
     <AdminTemplete key={1} name={"Events"} Comps={EventScreen} />,
-    <AdminTemplete key={2} name={"Users"} Comps={UserList} />,
-    <AdminTemplete key={3} name={"Collections"} Comps={CollectionsScreen} />,
+    <AdminTemplete key={2} name={isSuperAdmin ? "Users" : "Holders"} Comps={UserList} />,
+    <AdminTemplete key={3} name={isSuperAdmin ? "Collections" : "Collection"} Comps={CollectionsScreen} />,
   ];
 
   return (
@@ -44,8 +45,10 @@ Admin.getInitialProps = async (ctx: NextPageContext, queryClient) => {
   await InitialgetUserListQuery(queryClient, ctx);
   await InitialgetAllCollectionsQuery(queryClient, ctx);
   await InitialgetEventsQuery(queryClient, ctx);
+  await InitialgetNftCollection(queryClient, ctx);
   await InitialgetCollectionsQuery(queryClient, ctx);
   await InitialgetDashboardQuery(queryClient, ctx);
+  await InitialgetDashboardEventQuery(queryClient, ctx);
   return { dehydratedState: dehydrate(queryClient) };
 };
 

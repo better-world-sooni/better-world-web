@@ -53,6 +53,13 @@ const images = {
     bg: "/images/bwLogo_1.png",
     content: "/images/bwLogo_2.png",
   },
+  dashboard: {
+    announcement: "/images/dashboard/announcement.png",
+    collection: "/images/dashboard/collection.png",
+    event: "/images/dashboard/event.png",
+    nft: "/images/dashboard/nft.png",
+    wallet: "/images/dashboard/wallet.png",
+  },
   iphon13: "/images/iphone13_pro.png",
   gomzDAOExample: "/images/gomzDAOExample.png",
   backButton: "/images/back.png",

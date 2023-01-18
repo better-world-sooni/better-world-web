@@ -148,7 +148,7 @@ function ProfileDropdown({ currentNft, currentUser }) {
       >
         <Menu.Items className="origin-top-right absolute mt-2 rounded-lg border-1 bg-white focus:outline-none ">
           <Div textBase>
-            {currentUser?.super_privilege && (
+            {(currentUser?.super_privilege || currentNft?.privilege) && (
               <Menu.Item>
                 {({ active }) => (
                   <Div onClick={gotoAdmin} py12 px16 flex flexRow itemsCenter cursorPointer clx={`${active ? "bg-gray-100 text-black" : "text-gray-800"}`}>

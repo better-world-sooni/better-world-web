@@ -82,7 +82,7 @@ export function SizedImage({ width, height, uri, onClick = null, reload = null, 
   img.onload = () => setLoaded(true);
   img.onerror = () => setError(true);
   return (
-    <Div>
+    <Div relative>
       {!loaded ? (
         error ? (
           <>

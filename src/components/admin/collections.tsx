@@ -27,6 +27,7 @@ import { useUploadImageUriKey } from "src/hooks/useUploadImageUriKey";
 import { debounce } from "lodash";
 import NewCollectionModal, { useOpenNewCollectionModal } from "./NewCollectionModal";
 import { DeleteCollectionModal } from "../modals/CheckModal";
+import useCheckPrivilege from "src/hooks/useCheckPrivilege";
 
 function CollectionsScreen() {
   const { page_size, offset, search_key } = useSelector((state: RootState) => ({
@@ -67,6 +68,48 @@ function CollectionsScreen() {
     debounceRefetchCollectionsList(search_key_input);
   };
   const openModal = useOpenNewCollectionModal();
+  const { isPrivilege, isSuperPrivilege } = useCheckPrivilege();
+  if (!isSuperPrivilege)
+    return (
+      <Div flex flexCol>
+        <Div mt15 mb10 selfCenter flex flexRow wFull>
+          <Div selfCenter flex flexRow wFull justifyEnd>
+            <Div minW={120} fontSize15 fontSemibold mr10 selfCenter>
+              <Div spanTag textSuccess>
+                <TimerText
+                  condtion={!loading && LoadingButtonOn && !loading_status && !error}
+                  text={"Update Complete"}
+                  seconds={2}
+                  closecontidion={setLoadingButton}
+                />
+              </Div>
+              <Div spanTag textDanger>
+                <TimerText condtion={!loading && LoadingButtonOn && error} text={"Update error"} seconds={2} closecontidion={setLoadingButton} />
+              </Div>
+            </Div>
+            {collections &&
+              (loading_status ? (
+                <Div fontSize15 fontBold selfEnd px10 py5 textWhite rounded10 bgBW>
+                  <Oval height="14" width="14" color="#4738FF" secondaryColor="#FFFFFF" strokeWidth="5" />
+                </Div>
+              ) : (
+                <Tooltip title="업데이트" arrow>
+                  <Div fontBold selfEnd px10 cursorPointer py5 bgBWLight textBW rounded10 clx="hover:bg-bw hover:text-white" onClick={refetch}>
+                    <RefreshIcon height={20} width={20} className="max-h-20 max-w-20" />
+                  </Div>
+                </Tooltip>
+              ))}
+          </Div>
+        </Div>
+        {error ||
+          (collections && !collections.success && (
+            <Div fontSize20 mb100 textStart maxW={1100} mxAuto>
+              오류가 발생하였습니다. 다시 시도하여 주세요.
+            </Div>
+          ))}
+        {collections && collections.success && <CollectionEntry collection={collections.collection} isSuperPrivilege={isSuperPrivilege} />}
+      </Div>
+    );
   return (
     <>
       <NewCollectionModal />
@@ -156,12 +199,12 @@ function CollectionsArray({ collections }) {
   );
 }
 
-function CollectionEntry({ collection }) {
+function CollectionEntry({ collection, isSuperPrivilege = true }) {
   const { search_key } = useSelector((state: RootState) => ({
     search_key: state.admin.collectionsPage.search_key,
   }));
   const queryClient = useQueryClient();
-  const HandleOpen = (open) => open;
+  const HandleOpen = (open) => open || !isSuperPrivilege;
   const { Modal, openModal, isLoading } = DeleteCollectionModal(collection?.contract_address, queryClient);
   const onClickRemove = () => {
     if (collection?.member_count > 0) {
@@ -177,8 +220,19 @@ function CollectionEntry({ collection }) {
       <Disclosure as="div" className="w-full">
         {({ open }) => (
           <>
-            <Disclosure.Button className="w-full hover:bg-gray-100">
-              <Div px30 py10 cursorPointer flex flexRow justifyCenter border1 borderGray100 clx={`${HandleOpen(open) ? "bg-gray-100" : ""}`} overflowHidden>
+            <Disclosure.Button className={isSuperPrivilege ? "w-full hover:bg-gray-100" : "w-full cursor-default"}>
+              <Div
+                px30
+                py10
+                cursorPointer={isSuperPrivilege}
+                flex
+                flexRow
+                justifyCenter
+                border1={isSuperPrivilege}
+                borderGray100
+                clx={`${HandleOpen(open) ? (isSuperPrivilege ? "bg-gray-100" : "") : ""}`}
+                overflowHidden
+              >
                 <Div wFull flex flexRow justifyCenter selfCenter>
                   <Div wFull flex flexRow justifyStart gapX={20}>
                     <Div selfCenter>
@@ -210,21 +264,25 @@ function CollectionEntry({ collection }) {
                     />
                   </Div>
                 </Div>
-                <Div selfCenter>
-                  <motion.div animate={{ rotate: HandleOpen(open) ? 180 : 0 }} transition={{ duration: 0.2 }}>
-                    <ChevronUpIcon height={20} width={20} className="text-gray-400" />
-                  </motion.div>
-                </Div>
+                {isSuperPrivilege && (
+                  <Div selfCenter>
+                    <motion.div animate={{ rotate: HandleOpen(open) ? 180 : 0 }} transition={{ duration: 0.2 }}>
+                      <ChevronUpIcon height={20} width={20} className="text-gray-400" />
+                    </motion.div>
+                  </Div>
+                )}
               </Div>
             </Disclosure.Button>
             <DefaultTransition
               show={HandleOpen(open)}
               content={
-                <Disclosure.Panel static className="bg-gray-100 border-b-2">
+                <Disclosure.Panel static className={isSuperPrivilege ? "bg-gray-100 border-b-2" : ""}>
                   <Div wFull flex flexCol>
-                    <Div wFull flex flexRow justifyEnd px20>
-                      <DeleteButton loading={isLoading} openModal={onClickRemove} />
-                    </Div>
+                    {isSuperPrivilege && (
+                      <Div wFull flex flexRow justifyEnd px20>
+                        <DeleteButton loading={isLoading} openModal={onClickRemove} />
+                      </Div>
+                    )}
                     <CollectionsDetails collection={collection} />
                   </Div>
                 </Disclosure.Panel>
