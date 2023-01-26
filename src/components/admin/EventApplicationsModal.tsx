@@ -3,11 +3,11 @@ import Modal from "../modals/Modal";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "src/store/reducers/rootReducer";
 import { eventApplicationModalAction } from "src/store/reducers/modalReducer";
-import { useState } from "react";
+import React, { useState } from "react";
 import { eventApplicationAction } from "src/store/reducers/adminReducer";
 import TimerText from "../common/timertext";
 import PaginationPageSizebox from "../common/paginationpagesizebox";
-import { ArrowRightIcon, CheckIcon, PencilAltIcon, RefreshIcon } from "@heroicons/react/outline";
+import { ArrowRightIcon, CheckIcon, ClipboardIcon, PencilAltIcon, RefreshIcon } from "@heroicons/react/outline";
 import { Oval } from "react-loader-spinner";
 import Tooltip from "@mui/material/Tooltip";
 import Pagination from "@mui/material/Pagination";
@@ -20,6 +20,8 @@ import { EventApplicationInputType } from "src/hooks/useUploadDrawEvent";
 import { FaBars, FaDiscord, FaTwitter } from "react-icons/fa";
 import { getDate } from "src/modules/timeHelper";
 import DefaultTransition from "../common/defaulttransition";
+import MuiAlert, { AlertProps } from "@mui/material/Alert";
+import { Snackbar } from "@mui/material";
 
 export function useOpenEventApplicationModal(eventId) {
   const dispatch = useDispatch();
@@ -38,7 +40,6 @@ export default function EventApplicationModal({}) {
   const closeModal = () => {
     dispatch(eventApplicationModalAction({ enabled: false }));
   };
-
   return (
     <Modal open={enabled} onClose={closeModal} bdClx={"bg-black/50"} clx={"bg-white w-full"}>
       <EventApplicationModalEntry closeModal={closeModal} />
@@ -203,7 +204,7 @@ function EventApplicationModalEntry({ closeModal }) {
             )}
             {eventApplication?.success && (
               <Div selfCenter wFull flex flexCol>
-                <Div wFull selfCenter>
+                <Div wFull selfCenter minH={"50vh"} maxH={"60vh"} overflowHidden overflowYScroll>
                   <EventApplicationsDetail
                     eventApplications={eventApplications}
                     eventId={eventId}
@@ -211,7 +212,7 @@ function EventApplicationModalEntry({ closeModal }) {
                     isSelected={isSelected}
                   />
                 </Div>
-                <Div selfCenter>
+                <Div selfCenter mt50>
                   <Pagination
                     count={Math.ceil(eventApplication?.event_application_count / page_size)}
                     page={offset + 1}
@@ -248,7 +249,7 @@ function EventApplicationsDetail({ eventApplications, eventId, handleToggleEvent
     );
   }
   return (
-    <Div wFull mb50 flex flexCol justifyCenter border1>
+    <Div wFull flex flexCol justifyCenter hFull>
       {eventApplications.map((eventApplication, index) => (
         <ApplicationDetail
           eventApplication={eventApplication}
@@ -262,47 +263,78 @@ function EventApplicationsDetail({ eventApplications, eventId, handleToggleEvent
     </Div>
   );
 }
+const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(props, ref) {
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+});
 
 function ApplicationDetail({ eventApplication, isLast, eventId, handleToggle, isSelected }) {
   const nft = eventApplication?.nft;
+  const [open, setOpen] = useState(false);
+  const clickCopy =
+    nft?.user_address &&
+    (() => {
+      navigator.clipboard.writeText(nft?.user_address);
+      setOpen(true);
+    });
+
+  const handleClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setOpen(false);
+  };
   return (
-    <Div wFull flex flexRow justifyStart borderB1={!isLast} py5 px5 gapX={15} clx="hover:bg-gray-100">
-      <Div selfCenter cursorPointer onClick={handleToggle}>
-        <Div w20 h20 border1>
-          <DefaultTransition show={isSelected} duration={0.3} content={<CheckIcon height={18} width={18} className="max-h-18 max-w-18" />} />
-        </Div>
-      </Div>
-      <Div selfCenter cursorPointer onClick={handleToggle}>
-        <ProfileImage width={50} height={50} nft={nft} rounded={true} resize={true} />
-      </Div>
-      {nft?.name != null && nft?.name != "" ? (
-        <Div selfCenter minW={150} maxW={150} flex flexCol textLeft justifyStart cursorPointer onClick={handleToggle}>
-          <Div fontSize16 fontBold overflowEllipsis overflowHidden whitespaceNowrap>
-            {nft?.name}
-          </Div>
-          <Div fontSize12 overflowEllipsis overflowHidden whitespaceNowrap>
-            {nft?.nft_metadatum?.name}
+    <>
+      <Div wFull flex flexRow justifyStart borderB1={!isLast} py5 px5 gapX={15} clx="hover:bg-gray-100">
+        <Div selfCenter cursorPointer onClick={handleToggle}>
+          <Div w20 h20 border1>
+            <DefaultTransition show={isSelected} duration={0.3} content={<CheckIcon height={18} width={18} className="max-h-18 max-w-18" />} />
           </Div>
         </Div>
-      ) : (
-        <Div selfCenter minW={150} maxW={150} flex flexCol textLeft justifyStart>
-          <Div fontSize16 fontBold overflowEllipsis overflowHidden whitespaceNowrap>
-            {nft?.nft_metadatum?.name}
+        <Div selfCenter cursorPointer onClick={handleToggle}>
+          <ProfileImage width={50} height={50} nft={nft} rounded={true} resize={true} />
+        </Div>
+        {nft?.name != null && nft?.name != "" ? (
+          <Div selfCenter minW={150} maxW={150} flex flexCol textLeft justifyStart cursorPointer onClick={handleToggle}>
+            <Div fontSize16 fontBold overflowEllipsis overflowHidden whitespaceNowrap>
+              {nft?.name}
+            </Div>
+            <Div fontSize12 overflowEllipsis overflowHidden whitespaceNowrap>
+              {nft?.nft_metadatum?.name}
+            </Div>
+          </Div>
+        ) : (
+          <Div selfCenter minW={150} maxW={150} flex flexCol textLeft justifyStart>
+            <Div fontSize16 fontBold overflowEllipsis overflowHidden whitespaceNowrap>
+              {nft?.nft_metadatum?.name}
+            </Div>
+          </Div>
+        )}
+        <Div selfCenter flex flexRow wFull jsutifyStart gapX={10} flexWrap gapY={10} fontSize13>
+          {eventApplication?.event_application_options.map((option, index) => (
+            <OptionDetail key={index} option={option} />
+          ))}
+        </Div>
+        <Div selfCenter hFull flex flexRow>
+          <Tooltip title="User Address 복사" arrow>
+            <Div selfCenter px10 py5 bgBW rounded textWhite clx="hover:bg-bw-light hover:text-black" cursorPointer onClick={clickCopy}>
+              <ClipboardIcon height={18} width={18} className="max-h-18 max-w-18" />
+            </Div>
+          </Tooltip>
+        </Div>
+        <Div selfCenter flex flexCol justifyEnd gapY={5}>
+          <SelectStatus eventApplication={eventApplication} eventId={eventId} />
+          <Div whitespaceNowrap textRight textGray600>
+            {getDate(eventApplication?.created_at)}
           </Div>
         </Div>
-      )}
-      <Div selfCenter flex flexRow wFull jsutifyStart gapX={10} flexWrap gapY={10} fontSize13>
-        {eventApplication?.event_application_options.map((option, index) => (
-          <OptionDetail key={index} option={option} />
-        ))}
       </Div>
-      <Div selfCenter flex flexCol justifyEnd gapY={5}>
-        <SelectStatus eventApplication={eventApplication} eventId={eventId} />
-        <Div whitespaceNowrap textRight textGray600>
-          {getDate(eventApplication?.created_at)}
-        </Div>
-      </Div>
-    </Div>
+      <Snackbar open={open} autoHideDuration={1500} onClose={handleClose}>
+        <Alert onClose={handleClose} severity="success" sx={{ width: "100%" }}>
+          {(nft?.name || nft?.nft_metadatum?.name) + "의 지갑 주소가 복사되었습니다."}
+        </Alert>
+      </Snackbar>
+    </>
   );
 }
 
