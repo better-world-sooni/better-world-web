@@ -101,7 +101,7 @@ const apis = {
       setPrivilege: (address, superPrivilege) => apiV1(`/admin/user/super_privilege${urlParams({ address, superPrivilege })}`),
     },
     events: {
-      list: (page_size, offset, search_key) => apiV1(`/admin/draw_event/list${urlParams({ page_size, offset, search_key })}`),
+      list: (page_size, offset, search_key, filter="all") => apiV1(`/admin/draw_event/list${urlParams({ page_size, offset, search_key, filter })}`),
       _: () => apiV1(`/admin/draw_event`),
       summery: () => apiV1(`/admin/draw_event/summery`),
       eventApplication: {

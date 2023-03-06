@@ -46,10 +46,11 @@ import EventBannerModal, { useOpenAddByDrawEventEventBannerModal, useOpenModifyE
 import useCheckPrivilege from "src/hooks/useCheckPrivilege";
 
 function EventScreen() {
-  const { page_size, offset, search_key } = useSelector((state: RootState) => ({
+  const { page_size, offset, search_key, filter } = useSelector((state: RootState) => ({
     page_size: state.admin.EventListPage.page_size,
     offset: state.admin.EventListPage.offset,
     search_key: state.admin.EventListPage.search_key,
+    filter: state.admin.EventListPage.filter,
   }));
   const [searchKey, setSearchKey] = useState(search_key);
   const {
@@ -58,24 +59,24 @@ function EventScreen() {
     isError: error,
     data: events,
     refetch,
-  } = getEventListQuery(page_size, offset, search_key, () => setLoadingButton(true));
+  } = getEventListQuery(page_size, offset, search_key, filter, () => setLoadingButton(true));
   const [LoadingButtonOn, setLoadingButton] = useState(false);
   const loading_status = fetching && !loading;
   const dispatch = useDispatch();
   const queryClient = useQueryClient();
-  const refetchEventList = (page_size, offset, search_key) => {
+  const refetchEventList = (page_size, offset, search_key, filter) => {
     cancelEventListQuery(queryClient);
-    dispatch(EventListAction({ page_size: page_size, offset: offset, search_key: search_key }));
+    dispatch(EventListAction({ page_size: page_size, offset: offset, search_key: search_key, filter }));
   };
   const handlePaginationOffsetChange = (event: React.ChangeEvent<unknown>, value: number) => {
-    if (offset != value - 1) refetchEventList(page_size, value - 1, search_key);
+    if (offset != value - 1) refetchEventList(page_size, value - 1, search_key, filter);
   };
   const handlePaginationPageSizeChange = (page_size_input) => {
-    if (page_size != page_size_input) refetchEventList(page_size_input, 0, search_key);
+    if (page_size != page_size_input) refetchEventList(page_size_input, 0, search_key, filter);
   };
   const debounceRefetchhEvenList = useCallback(
     debounce((searchKey) => {
-      refetchEventList(page_size, 0, searchKey);
+      refetchEventList(page_size, 0, searchKey, filter);
     }, 500),
     [page_size]
   );
@@ -87,6 +88,11 @@ function EventScreen() {
   const openModeifyEventBannerModal = useOpenModifyEventBannerModal();
   const { isPrivilege, isSuperPrivilege } = useCheckPrivilege();
   const nftCollection = getNftCollection();
+  const onClickFilter = (changeFilter) => {
+    if (filter=="all") refetchEventList(page_size, 0, search_key, changeFilter=="event" ? "announcement" : "event" )
+    else if (filter=="announcement") refetchEventList(page_size, 0, search_key, changeFilter=="announcement" ? "event" : "all" )
+    else if (filter=="event") refetchEventList(page_size, 0, search_key, changeFilter=="event" ? "announcement" : "all" )
+  }
   return (
     <>
       <Div flex flexCol>
@@ -116,6 +122,14 @@ function EventScreen() {
                 배너 관리
               </Div>
             )}
+              <Div clx="bg-bw-light" ml10 cursorPointer rounded flex flexRow fontSemibold overflowHidden selfCenter>
+                <Div px10 py5 selfCenter bgBW={filter!="event"} textWhite={filter!="event"} onClick={()=>onClickFilter("announcement")} whitespaceNowrap>
+                  공지
+                </Div>
+                <Div px10 py5 selfCenter bgBW={filter!="announcement"} textWhite={filter!="announcement"} onClick={()=>onClickFilter("event")} whitespaceNowrap>
+                  이벤트
+                </Div>
+              </Div>
           </Div>
           <Div selfCenter flex flexRow>
             <Div minW={120} fontSize15 fontSemibold mr10 selfCenter>

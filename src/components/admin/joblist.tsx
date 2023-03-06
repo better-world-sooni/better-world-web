@@ -9,7 +9,7 @@ export default function Joblist({ frame }) {
   const dispatch = useDispatch();
   const defaultpatch = () => {
     dispatch(UserListAction({ page_size: defaultPageSize, offset: 0, search_key: "" }));
-    dispatch(EventListAction({ page_size: defaultPageSize, offset: 0, search_key: "" }));
+    dispatch(EventListAction({ page_size: defaultPageSize, offset: 0, search_key: "", filter:"all" }));
     dispatch(collectionsAction({ page_size: defaultPageSize, offset: 0, search_key: "" }));
   };
   return (

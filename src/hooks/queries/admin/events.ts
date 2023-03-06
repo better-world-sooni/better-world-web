@@ -12,10 +12,10 @@ export enum EventBannerAction {
   DOWN = "down",
 }
 
-export function getEventListQuery(page_size: Number, offset: Number, search_key: String, onsettled: any) {
+export function getEventListQuery(page_size: Number, offset: Number, search_key: String, filter: string, onsettled: any) {
   return queryHelperWithToken({
-    key: querykeys.admin.events._(page_size, offset, search_key),
-    url: apis.admin.events.list(page_size, offset, search_key),
+    key: querykeys.admin.events._(page_size, offset, search_key, filter),
+    url: apis.admin.events.list(page_size, offset, search_key, filter),
     options: {
       refetchOnMount: false,
       refetchInterval: false,

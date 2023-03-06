@@ -11,8 +11,8 @@ const querykeys = {
           : ["userlist", "post", contract_address, token_id],
     },
     events: {
-      _: (page_size: Number = null, offset: Number = null, search_key: String = null) =>
-        page_size || offset || search_key ? ["events", "list", search_key, page_size, offset] : ["events", "list"],
+      _: (page_size: Number = null, offset: Number = null, search_key: String = null, filter: String = "all") =>
+        page_size || offset || search_key ? ["events", "list", filter, search_key, page_size, offset] : ["events", "list", filter],
       eventApplication: (eventId, page_size: Number = null, offset: Number = null) =>
         page_size || offset ? ["events", "eventApplication", eventId, page_size, offset] : ["events", "eventApplication", eventId],
       banner: () => ["events", "banners"],
