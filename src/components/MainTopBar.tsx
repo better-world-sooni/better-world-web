@@ -69,44 +69,46 @@ const MainTopBar = ({ currentUser, currentNft }) => {
   }
 
   return (
-    <>
-      <BrowserModal />
-      <KaikasModal />
-      <BasicHead />
-      <SwitchAcountModal />
-      <EmailVerificationModal />
-      <LoginQRModal address={currentUser?.address} />
-      <Div px80 absolute top0 wFull z100>
-        <Div wFull mxAuto>
-          <Div flex itemsCenter py12 gapX={8}>
-            <Div flex itemsCenter py12 gapX={8} onClick={gotoHome}>
-              <Div rounded10 cursorPointer>
-                <Div w36 imgTag src={IMAGES.betterWorl_colorLogo}></Div>
-              </Div>
-              <Div w120 imgTag src={IMAGES.logoword.firstBlack} cursorPointer></Div>
-            </Div>
-            <Div flex1 />
-            {!currentNft && (
-              <Div bgOpacity50 ml8 bgBlack textWhite roundedFull fontSize15 py6 px20 cursorPointer onClick={gotoOnboarding}>
-                회원가입
-              </Div>
-            )}
-            {currentNft && <TopBarEntry onClick={handleGetQR} tooltip={"로그인용 QR 발급"} Content={<QrcodeIcon />} />}
-            {currentNft && <TopBarEntry onClick={handleSetPassword} tooltip={"비밀번호 재설정"} Content={<KeyIcon />} />}
-            {currentUser ? (
-              <ProfileDropdown currentUser={currentUser} currentNft={currentNft} />
-            ) : loginStatus ? (
-              <Div bgOpacity40 selfCenter ml20 h32 w32 roundedFull bgBlack flex itemsCenter justifyCenter>
-                <Oval height="24" width="24" color="black" secondaryColor="#FFFFFF" strokeWidth="8" />
-              </Div>
-            ) : (
-              <TopBarEntry onClick={loginWithKaikas} tooltip={"앱 로그인"} Content={<UserCircleIcon />} />
-            )}
-          </Div>
-        </Div>
-      </Div>
-    </>
-  );
+		<>
+			<BrowserModal />
+			<KaikasModal />
+			<BasicHead />
+			<SwitchAcountModal />
+			<EmailVerificationModal />
+			<LoginQRModal address={currentUser?.address} />
+			<Div px80 absolute top0 wFull z100>
+				<Div relative>
+					<Div>
+						<Div flex itemsCenter py12 gapX={8}>
+							<Div flex itemsCenter py12 gapX={8} onClick={gotoHome}>
+								<Div rounded10 cursorPointer>
+									<Div w36 imgTag src={IMAGES.betterWorl_colorLogo}></Div>
+								</Div>
+								<Div w120 imgTag src={IMAGES.logoword.firstBlack} cursorPointer></Div>
+							</Div>
+							<Div flex1 />
+							{!currentNft && (
+								<Div bgOpacity50 ml8 bgBlack textWhite roundedFull fontSize15 py6 px20 cursorPointer onClick={gotoOnboarding}>
+									회원가입
+								</Div>
+							)}
+							{currentNft && <TopBarEntry onClick={handleGetQR} tooltip={"로그인용 QR 발급"} Content={<QrcodeIcon />} />}
+							{currentNft && <TopBarEntry onClick={handleSetPassword} tooltip={"비밀번호 재설정"} Content={<KeyIcon />} />}
+							{currentUser ? (
+								<ProfileDropdown currentUser={currentUser} currentNft={currentNft} />
+							) : loginStatus ? (
+								<Div bgOpacity40 selfCenter ml20 h32 w32 roundedFull bgBlack flex itemsCenter justifyCenter>
+									<Oval height="24" width="24" color="black" secondaryColor="#FFFFFF" strokeWidth="8" />
+								</Div>
+							) : (
+								<TopBarEntry onClick={loginWithKaikas} tooltip={"앱 로그인"} Content={<UserCircleIcon />} />
+							)}
+						</Div>
+					</Div>
+				</Div>
+			</Div>
+		</>
+	);
 };
 
 function ProfileDropdown({ currentNft, currentUser }) {

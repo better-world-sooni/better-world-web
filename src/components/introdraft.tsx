@@ -63,58 +63,56 @@ export default function IntroDraft({ time, once, appstore, playstore }) {
   };
 
   return (
-    <Div wFull>
-      <motion.div initial="hidden" whileInView="show" viewport={{ once: once, amount: 0 }} onViewportLeave={() => sethref(false)}>
-        <motion.ul variants={container}>
-          <Div relative wFull flex itemsCenter justifyCenter>
-            <Div relative wFull top={"-6vw"}>
-              <Div imgTag src={IMAGES.mainbackground} />
-            </Div>
-            <Div absolute wFull hFull mb300 top={"10vw"} py50 px100 flex flexCol justifyStart>
-              <Div flex flexCol justifyCenter w={"55vw"}>
-                <motion.li variants={text1Animation}>
-                  <Div fontSize={"2.5vw"} textStart fontBold roundedFull whitespaceNowrap>
-                    프로젝트 별로 흩어진 공지 정보를 모아서{" "}
-                    <Div spanTag textBWgradient>
-                      한눈에
-                    </Div>
-                    ,
-                  </Div>
-                </motion.li>
-                <motion.li variants={text2Animation}>
-                  <Div fontSize={"2.5vw"} textStart fontBold roundedFull whitespaceNowrap>
-                    지갑 연결 한 번으로 홀더 커뮤니티 입장까지{" "}
-                    <Div spanTag textBWgradient>
-                      간편하게
-                    </Div>
-                    ,
-                  </Div>
-                </motion.li>
-                <motion.li variants={text3Animation}>
-                  <Div fontSize={"3.5vw"} textStart mxAuto fontBold roundedFull mt20 flex flexRow justifyStart whitespaceNowrap>
-                    <Div mb={"0.4vw"} selfCenter imgTag maxH={"3.5vw"} src={IMAGES.logoword.firstGradient} style={{ marginRight: "1.5vw" }} />
-                    하나로 NFT 완전 정복
-                  </Div>
-                </motion.li>
-                <motion.li variants={linkAnimation}>
-                  <Div flex flexRow justifyCenter style={{ marginTop: "5vw" }} gapX={"2vw"}>
-                    {canhref ? (
-                      <Div imgTag h={"3.5vw"} src={IMAGES.downloadOnAppStore} cursorPointer onClick={appstore} />
-                    ) : (
-                      <Div imgTag h={"3.5vw"} src={IMAGES.downloadOnAppStore} />
-                    )}
-                    {canhref ? (
-                      <Div imgTag h={"3.5vw"} src={IMAGES.downloadOnGooglePlay} cursorPointer onClick={playstore} />
-                    ) : (
-                      <Div imgTag h={"3.5vw"} src={IMAGES.downloadOnGooglePlay} />
-                    )}
-                  </Div>
-                </motion.li>
-              </Div>
-            </Div>
-          </Div>
-        </motion.ul>
-      </motion.div>
-    </Div>
-  );
+		<Div>
+			<motion.div initial="hidden" whileInView="show" viewport={{ once: once, amount: 0 }} onViewportLeave={() => sethref(false)}>
+				<motion.ul variants={container}>
+					<Div relative wFull flex itemsCenter justifyCenter>
+						<Div imgTag src={IMAGES.mainbackground} />
+						<Div absolute wFull hFull mb300 top={"10vw"} py50 flex flexCol justifyStart itemsCenter>
+							<Div flex flexCol justifyCenter w={"55vw"}>
+								<motion.li variants={text1Animation}>
+									<Div fontSize={"1.7vw"} textCenter fontBold roundedFull whitespaceNowrap>
+										프로젝트 별로 흩어진 공지 정보를 모아서{" "}
+										<Div spanTag textBWgradient>
+											한눈에
+										</Div>
+										,
+									</Div>
+								</motion.li>
+								<motion.li variants={text2Animation}>
+									<Div fontSize={"1.7vw"} textCenter fontBold roundedFull whitespaceNowrap>
+										지갑 연결 한 번으로 홀더 커뮤니티 입장까지{" "}
+										<Div spanTag textBWgradient>
+											간편하게
+										</Div>
+										,
+									</Div>
+								</motion.li>
+								<motion.li variants={text3Animation}>
+									<Div fontSize={"3vw"} textCenter mxAuto fontBold roundedFull mt20 flex flexRow justifyCenter whitespaceNowrap>
+										<Div mb={"0.4vw"} selfCenter imgTag maxH={"3vw"} src={IMAGES.logoword.firstGradient} style={{ marginRight: "1.5vw" }} />
+										하나로 NFT 완전 정복
+									</Div>
+								</motion.li>
+								<motion.li variants={linkAnimation}>
+									<Div flex flexRow justifyCenter style={{ marginTop: "5vw" }} gapX={"2vw"}>
+										{canhref ? (
+											<Div imgTag h={"3.5vw"} src={IMAGES.downloadOnAppStore} cursorPointer onClick={appstore} />
+										) : (
+											<Div imgTag h={"3.5vw"} src={IMAGES.downloadOnAppStore} />
+										)}
+										{canhref ? (
+											<Div imgTag h={"3.5vw"} src={IMAGES.downloadOnGooglePlay} cursorPointer onClick={playstore} />
+										) : (
+											<Div imgTag h={"3.5vw"} src={IMAGES.downloadOnGooglePlay} />
+										)}
+									</Div>
+								</motion.li>
+							</Div>
+						</Div>
+					</Div>
+				</motion.ul>
+			</motion.div>
+		</Div>
+	);
 }

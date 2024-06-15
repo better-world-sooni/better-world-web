@@ -1,4 +1,4 @@
-const prefix = "https://db8vrbsl16ap9.cloudfront.net";
+const prefix = "";
 
 const images = {
   KAKAO_KLIP_ICON: "/images/logos/klipLogo.svg",
