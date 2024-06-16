@@ -16,7 +16,7 @@ jobs:
       - name: Setup Node.js ⚡
         uses: actions/setup-node@v3
         with:
-          node-version: 19.5
+          node-version: 16.20.2
           cache: 'yarn'
 
       - name: Cache 📦
