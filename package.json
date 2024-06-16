@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start -p 3001",
-    "lint": "next lint"
+    "lint": "next lint",
+    "deployGithub": "next build && touch out/.nojekyll"
   },
   "dependencies": {
     "@anycable/web": "^0.3.2",
